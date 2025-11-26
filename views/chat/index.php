@@ -18,7 +18,7 @@
             <?php endif; ?>
         </div>
         <div class="border-t bg-white px-4 py-3">
-            <form method="post" action="<?php echo base_url('chat'); ?>" class="flex gap-3 items-end">
+            <form method="post" action="<?php echo base_url('chat'); ?>" class="flex gap-3 items-end" id="chat-form">
                 <div class="flex-1">
                     <label class="text-sm text-slate-600">Nội dung</label>
                     <textarea name="content" class="w-full mt-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" rows="3" placeholder="Nhập câu hỏi hoặc yêu cầu tư vấn..." required></textarea>
@@ -35,6 +35,16 @@
 (function(){
     const list = document.getElementById('chat-list');
     if (!list) return;
+    const form = document.getElementById('chat-form');
+    const textarea = form ? form.querySelector('textarea[name="content"]') : null;
+    if (textarea && form) {
+        textarea.addEventListener('keydown', function(e){
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                form.submit();
+            }
+        });
+    }
     const threadId = list.getAttribute('data-thread');
     let lastId = 0;
     list.querySelectorAll('[data-msg-id]').forEach(el => {

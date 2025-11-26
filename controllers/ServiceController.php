@@ -16,6 +16,21 @@ class ServiceController extends Controller {
         $service_id = (int)($_POST['service_id'] ?? 0);
         $note = trim($_POST['note'] ?? '');
 
+        $errors = [];
+        if ($name === '' || mb_strlen($name) > 30) {
+            $errors[] = 'Họ tên không được để trống và tối đa 30 ký tự.';
+        }
+        if ($phone === '' || !preg_match('/^0\\d{9}$/', $phone)) {
+            $errors[] = 'Số điện thoại phải bắt đầu bằng 0 và đủ 10 chữ số.';
+        }
+        if ($email !== '') {
+            if (mb_strlen($email) > 30) {
+                $errors[] = 'Email tối đa 30 ký tự.';
+            } elseif (!preg_match('/^[A-Za-z0-9._%+-]+@(gmail|email)[A-Za-z0-9.-]*\\.[A-Za-z0-9.-]+$/', $email)) {
+                $errors[] = 'Email phải chứa @gmail hoặc @email.';
+            }
+        }
+
         $schedule_at = '';
         if ($schedule_date !== '' && $schedule_time !== '') {
             $dt = \DateTime::createFromFormat('Y-m-d H:i', $schedule_date . ' ' . $schedule_time);
@@ -24,6 +39,11 @@ class ServiceController extends Controller {
             }
         }
 
+        if ($errors) {
+            $_SESSION['flash_error'] = implode(' ', $errors);
+            $this->redirect('/services');
+            return;
+        }
         if ($name && $phone && $address && $schedule_at && $service_id > 0) {
             $this->bookingModel->create($service_id, $name, $phone, $email, $address, $schedule_at, $note);
             $this->redirect('/services?success=1');

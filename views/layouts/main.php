@@ -360,6 +360,7 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .catch(() => {});
     };
+    pollNotify();
     setInterval(pollNotify, 1000);
 });
 </script>

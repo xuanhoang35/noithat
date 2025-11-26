@@ -35,7 +35,7 @@
                 <form method="post" action="<?php echo base_url('admin.php/chats/reply/' . $thread['id']); ?>" class="grid md:grid-cols-12 gap-3 items-end">
                     <div class="md:col-span-8">
                         <label class="text-sm text-slate-600">Nội dung</label>
-                        <textarea name="content" class="w-full mt-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" rows="3" placeholder="Nhập câu trả lời..."></textarea>
+                        <textarea name="content" class="w-full mt-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" rows="3" placeholder="Nhập câu trả lời..." id="admin-chat-textarea"></textarea>
                     </div>
                     <div class="md:col-span-2">
                         <label class="text-sm text-slate-600">Trạng thái</label>
@@ -90,6 +90,16 @@
             .catch(() => {});
     };
     setInterval(poll, 2000);
+    const textarea = document.getElementById('admin-chat-textarea');
+    const form = textarea ? textarea.closest('form') : null;
+    if (textarea && form) {
+        textarea.addEventListener('keydown', function(e){
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                form.submit();
+            }
+        });
+    }
 })();
 </script>
 <?php $content = ob_get_clean(); include __DIR__ . '/../layouts/main.php'; ?>

@@ -53,9 +53,9 @@
                     <input name="schedule_time" type="time" required class="px-3 py-2 border rounded w-full">
                 </div>
             </div>
-            <input name="name" required class="px-3 py-2 border rounded" placeholder="Họ tên">
-            <input name="phone" required class="px-3 py-2 border rounded" placeholder="Số điện thoại">
-            <input name="email" class="px-3 py-2 border rounded" placeholder="Email (tùy chọn)">
+            <input name="name" required class="px-3 py-2 border rounded" placeholder="Họ tên" maxlength="30">
+            <input name="phone" required class="px-3 py-2 border rounded" placeholder="Số điện thoại" maxlength="10" pattern="0[0-9]{9}" title="Chỉ nhập số, bắt đầu 0 và đủ 10 số">
+            <input name="email" class="px-3 py-2 border rounded" placeholder="Email (tùy chọn)" maxlength="30" pattern="[A-Za-z0-9._%+\-]+@(gmail|email)[A-Za-z0-9.\-]*\.[A-Za-z0-9.\-]+" title="Chỉ chữ không dấu/số, chứa @gmail hoặc @email, tối đa 30 ký tự">
             <input name="address" required class="px-3 py-2 border rounded col-span-2" placeholder="Địa chỉ thực hiện">
             <textarea name="note" class="px-3 py-2 border rounded col-span-2" rows="2" placeholder="Ghi chú thêm (tùy chọn)"></textarea>
             <div class="col-span-2 flex gap-3">

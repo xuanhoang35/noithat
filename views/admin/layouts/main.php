@@ -148,6 +148,37 @@
         complaints: document.querySelector('[data-badge="complaints"]')
     };
     let lastLatest = {};
+    let lastCount = {};
+    const currentPath = window.location.pathname + window.location.search;
+    const showToast = (msg) => {
+        let toast = document.querySelector('[data-admin-toast]');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.setAttribute('data-admin-toast','1');
+            toast.className = 'fixed right-4 bottom-4 z-50 bg-slate-900 text-white px-4 py-3 rounded-lg shadow-lg text-sm';
+            document.body.appendChild(toast);
+        }
+        toast.textContent = msg;
+        toast.style.opacity = '1';
+        setTimeout(() => { toast.style.opacity = '0'; }, 2000);
+    };
+    const hotReloadMain = () => {
+        const main = document.querySelector('main');
+        if (!main) return;
+        fetch(window.location.href, { cache: 'no-store' })
+            .then(r => r.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newMain = doc.querySelector('main');
+                if (newMain) {
+                    main.innerHTML = newMain.innerHTML;
+                } else {
+                    location.reload();
+                }
+            })
+            .catch(() => { location.reload(); });
+    };
     const poll = () => {
         fetch('<?php echo $adminUrl('notify/poll'); ?>', { cache: 'no-store' })
             .then(r => r.json())
@@ -164,10 +195,21 @@
                         setTimeout(() => badge.classList.remove('animate-pulse'), 1500);
                     }
                     lastLatest[key] = info.latest || lastLatest[key];
+                    if (typeof lastCount[key] !== 'undefined' && count > lastCount[key]) {
+                        showToast(`Có cập nhật mới: ${key}`);
+                        if ((key === 'orders' && currentPath.includes('/admin.php/orders')) ||
+                            (key === 'chats' && currentPath.includes('/admin.php/chats')) ||
+                            (key === 'complaints' && currentPath.includes('/admin.php/complaints')) ||
+                            (key === 'services' && currentPath.includes('/admin.php/services'))) {
+                            hotReloadMain();
+                        }
+                    }
+                    lastCount[key] = count;
                 });
             })
             .catch(() => {});
     };
+    poll(); // chạy ngay lần đầu
     setInterval(poll, 1000);
 })();
 </script>
