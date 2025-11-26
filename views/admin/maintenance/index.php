@@ -40,18 +40,16 @@
                 <label class="text-sm text-slate-600">Thông điệp</label>
                 <textarea name="message" rows="3" class="w-full px-3 py-2 border rounded"><?php echo htmlspecialchars($message); ?></textarea>
             </div>
-            <div class="grid md:grid-cols-2 gap-2">
-                <div>
-                    <label class="text-sm text-slate-600">Chọn ảnh</label>
-                    <input type="file" name="image" accept="image/*" class="w-full text-sm">
-                </div>
-                <div>
-                    <label class="text-sm text-slate-600">Hoặc URL ảnh</label>
-                    <input type="url" name="image_url" class="w-full px-3 py-2 border rounded" placeholder="https://..." value="<?php echo htmlspecialchars($image); ?>">
-                </div>
+            <div>
+                <label class="text-sm text-slate-600">Chọn ảnh (bắt buộc)</label>
+                <input type="file" name="image" accept="image/*" class="w-full text-sm">
             </div>
             <label class="inline-flex items-center gap-2">
-                <input type="checkbox" name="enabled" value="1" <?php echo $enabled ? 'checked' : ''; ?>>
+                <span class="relative inline-flex items-center">
+                    <input type="checkbox" name="enabled" value="1" <?php echo $enabled ? 'checked' : ''; ?> class="sr-only" id="maintenance-toggle">
+                    <span class="w-12 h-6 bg-slate-200 rounded-full transition peer-checked:bg-red-500"></span>
+                    <span class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow transition peer-checked:translate-x-6"></span>
+                </span>
                 <span class="text-sm text-red-600 font-semibold">Đóng trang web (bật chế độ bảo trì)</span>
             </label>
             <div class="flex gap-3">
@@ -81,4 +79,14 @@
         </div>
     </div>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    const toggle = document.getElementById('maintenance-toggle');
+    const form = toggle ? toggle.closest('form') : null;
+    if (!toggle || !form) return;
+    toggle.addEventListener('change', function(){
+        form.submit(); // gạt là lưu ngay
+    });
+});
+</script>
 <?php $content = ob_get_clean(); include __DIR__ . '/../layouts/main.php'; ?>

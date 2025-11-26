@@ -14,6 +14,7 @@ require __DIR__ . '/core/Controller.php';
 require __DIR__ . '/core/Model.php';
 require __DIR__ . '/helpers/url_helper.php';
 require __DIR__ . '/models/User.php';
+require __DIR__ . '/controllers/PageController.php';
 
 $config = include __DIR__ . '/config/config.php';
 $baseUrl = $config['base_url'] ?? '';

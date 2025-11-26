@@ -53,8 +53,6 @@ class MaintenanceAdminController extends Controller {
             if (move_uploaded_file($_FILES['image']['tmp_name'], $dest)) {
                 $imagePath = 'public/uploads/maintenance/' . $filename;
             }
-        } elseif (!empty($_POST['image_url'])) {
-            $imagePath = trim($_POST['image_url']);
         }
 
         if ($enabled && ($title === '' || $imagePath === '')) {
