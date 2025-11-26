@@ -19,6 +19,7 @@ class ChatController extends Controller {
             $this->chatModel->addMessage($thread['id'], (int)$userId, false, 'Khách hàng bắt đầu cuộc trò chuyện mới.');
         }
         $this->chatModel->markUserRead($thread['id']);
+        $this->chatModel->markAdminRead($thread['id']);
         $messages = $this->chatModel->messages($thread['id']);
         $view = $isEmbed ? 'chat/embed' : 'chat/index';
         $this->view($view, compact('thread','messages'));

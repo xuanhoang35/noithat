@@ -16,6 +16,7 @@ class ChatAdminController extends Controller {
         $thread = $this->chatModel->findThread((int)$id);
         if (!$thread) { http_response_code(404); echo 'Thread not found'; return; }
         $messages = $this->chatModel->messages((int)$id);
+        $this->chatModel->markAdminRead((int)$id);
         $this->view('admin/chat/show', compact('thread','messages'));
     }
 

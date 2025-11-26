@@ -6,7 +6,7 @@
             <p class="text-slate-500 text-sm">Danh sách phiên chat giữa khách và admin</p>
         </div>
     </div>
-    <div class="overflow-x-auto">
+    <div class="overflow-x-auto" id="chat-thread-list">
         <table class="min-w-full text-sm">
             <thead>
                 <tr class="bg-slate-100 text-left">
@@ -40,4 +40,21 @@
         </table>
     </div>
 </div>
+<script>
+(function(){
+    const badge = document.querySelector('[data-badge="chats"]');
+    const pollThreads = () => {
+        fetch('<?php echo base_url('admin.php/chats'); ?>', { headers: { 'X-Requested-With': 'XMLHttpRequest' }})
+            .catch(() => {});
+    };
+    // Polling badge đã có ở layout; optional: refresh list khi có unread
+    const refreshOnUnread = () => {
+        if (badge && badge.style.display !== 'none') {
+            // để đơn giản: reload trang khi badge chats >0 (giữ admin cập nhật danh sách)
+            location.reload();
+        }
+    };
+    setInterval(refreshOnUnread, 3000);
+})();
+</script>
 <?php $content = ob_get_clean(); include __DIR__ . '/../layouts/main.php'; ?>

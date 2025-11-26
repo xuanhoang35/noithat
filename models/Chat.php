@@ -9,6 +9,7 @@ class Chat extends Model {
                     user_id INT NOT NULL,
                     status ENUM('open','closed') DEFAULT 'open',
                     user_unread TINYINT(1) DEFAULT 0,
+                    admin_unread TINYINT(1) DEFAULT 0,
                     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                     FOREIGN KEY (user_id) REFERENCES users(id)
@@ -28,6 +29,7 @@ class Chat extends Model {
             ");
             // đảm bảo cột user_unread tồn tại khi nâng cấp
             $this->db->exec("ALTER TABLE chat_threads ADD COLUMN user_unread TINYINT(1) DEFAULT 0");
+            $this->db->exec("ALTER TABLE chat_threads ADD COLUMN admin_unread TINYINT(1) DEFAULT 0");
         } catch (\Throwable $e) { /* ignore */ }
     }
 
@@ -86,8 +88,9 @@ class Chat extends Model {
         }
         if ($userId <= 0) return;
         // ensure status open + set cờ đọc
-        $unread = $isAdmin ? 1 : 0;
-        $this->db->prepare("UPDATE chat_threads SET updated_at=NOW(), status='open', user_unread=? WHERE id=?")->execute([$unread,$threadId]);
+        $userUnread = $isAdmin ? 1 : 0;
+        $adminUnread = $isAdmin ? 0 : 1;
+        $this->db->prepare("UPDATE chat_threads SET updated_at=NOW(), status='open', user_unread=?, admin_unread=? WHERE id=?")->execute([$userUnread, $adminUnread, $threadId]);
         $stmt = $this->db->prepare('INSERT INTO chat_messages(thread_id,user_id,is_admin,content) VALUES(?,?,?,?)');
         $stmt->execute([$threadId,$userId,$isAdmin ? 1 : 0,$content]);
     }
@@ -108,6 +111,17 @@ class Chat extends Model {
         $this->ensureSchema();
         $stmt = $this->db->prepare('UPDATE chat_threads SET user_unread=0 WHERE id=?');
         $stmt->execute([$threadId]);
+    }
+
+    public function markAdminRead(int $threadId): void {
+        $this->ensureSchema();
+        $stmt = $this->db->prepare('UPDATE chat_threads SET admin_unread=0 WHERE id=?');
+        $stmt->execute([$threadId]);
+    }
+
+    public function hasUnreadForAdmin(): int {
+        $this->ensureSchema();
+        return (int)$this->db->query('SELECT COUNT(*) FROM chat_threads WHERE admin_unread=1')->fetchColumn();
     }
 
     public function hasUnreadForUser(int $userId): bool {

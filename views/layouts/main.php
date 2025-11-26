@@ -112,9 +112,7 @@ $hideFooter = $hideFooter ?? false;
             <?php if (Auth::check()): ?>
                 <a class="hover:underline relative inline-flex items-center gap-1" href="<?php echo base_url('orders'); ?>">
                     Đơn hàng
-                    <?php if ($orderHasUnread): ?>
-                        <span class="inline-flex w-2 h-2 rounded-full bg-red-500"></span>
-                    <?php endif; ?>
+                    <span data-order-indicator class="inline-flex w-2 h-2 rounded-full bg-red-500 <?php echo $orderHasUnread ? '' : 'hidden'; ?>"></span>
                 </a>
                 <?php if (Auth::isAdmin()): ?><a class="hover:underline" href="<?php echo base_url('admin.php'); ?>">Admin</a><?php endif; ?>
             <?php endif; ?>
@@ -281,6 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatFrame = document.querySelector('[data-chat-frame]');
     const chatClose = document.querySelector('[data-chat-close]');
     const chatIndicator = document.querySelector('[data-chat-indicator]');
+    const orderIndicator = document.querySelector('[data-order-indicator]');
     let chatOpen = false;
     const openChat = () => {
         if (!chatPanel) return;
@@ -344,6 +343,24 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         play();
     });
+
+    // Poll thông báo user (đơn hàng, chat) mỗi 1s
+    const pollNotify = () => {
+        fetch('<?php echo base_url('notify/poll'); ?>', { cache: 'no-store' })
+            .then(r => r.json())
+            .then(data => {
+                if (orderIndicator) {
+                    if (data.orders_unread) orderIndicator.classList.remove('hidden');
+                    else orderIndicator.classList.add('hidden');
+                }
+                if (chatIndicator) {
+                    if (data.chat_unread) chatIndicator.classList.remove('hidden');
+                    else chatIndicator.classList.add('hidden');
+                }
+            })
+            .catch(() => {});
+    };
+    setInterval(pollNotify, 1000);
 });
 </script>
 </body>

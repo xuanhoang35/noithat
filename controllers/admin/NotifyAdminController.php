@@ -12,7 +12,6 @@ class NotifyAdminController extends Controller {
         $tables = [
             'orders' => 'orders',
             'complaints' => 'complaints',
-            'chats' => 'chat_threads',
             'services' => 'service_bookings'
         ];
         foreach ($tables as $key => $table) {
@@ -28,6 +27,15 @@ class NotifyAdminController extends Controller {
                 'latest' => $latest
             ];
         }
+        // chats: đếm số phiên có tin nhắn chưa đọc cho admin
+        try {
+            $chatUnread = (int)$db->query("SELECT COUNT(*) FROM chat_threads WHERE admin_unread=1")->fetchColumn();
+            $chatLatest = $db->query("SELECT COALESCE(MAX(updated_at), MAX(created_at)) FROM chat_threads")->fetchColumn();
+        } catch (\Throwable $e) {
+            $chatUnread = 0;
+            $chatLatest = null;
+        }
+        $stats['chats'] = ['count' => $chatUnread, 'latest' => $chatLatest];
         echo json_encode($stats);
     }
 }

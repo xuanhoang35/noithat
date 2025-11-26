@@ -50,6 +50,7 @@ $router->get('/forgot/resend/{id}', 'AuthController@forgotResend');
 $router->get('/logout', 'AuthController@logout');
 $router->get('/profile', 'ProfileController@show');
 $router->post('/profile', 'ProfileController@update');
+$router->get('/notify/poll', 'NotifyController@poll');
 
 $request = new Request($baseUrl);
 $router->dispatch($request);
