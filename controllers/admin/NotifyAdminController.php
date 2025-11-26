@@ -12,12 +12,27 @@ class NotifyAdminController extends Controller {
         $tables = [
             'orders' => 'orders',
             'complaints' => 'complaints',
-            'services' => 'service_bookings'
+            'services' => 'service_bookings',
+            'users' => 'users'
         ];
-        foreach ($tables as $key => $table) {
+        $seen = $_SESSION['admin_seen'] ?? [];
+        $maxCreated = function($table) use ($db) {
             try {
-                $count = (int)$db->query("SELECT COUNT(*) FROM {$table}")->fetchColumn();
-                $latest = $db->query("SELECT COALESCE(MAX(updated_at), MAX(created_at), MAX(schedule_at), MAX(completed_at), MAX(delivered_at)) FROM {$table}")->fetchColumn();
+                return $db->query("SELECT COALESCE(MAX(updated_at), MAX(created_at), MAX(schedule_at), MAX(completed_at), MAX(delivered_at)) FROM {$table}")->fetchColumn() ?: date('Y-m-d H:i:s');
+            } catch (\Throwable $e) {
+                return date('Y-m-d H:i:s');
+            }
+        };
+        foreach ($tables as $key => $table) {
+            if (!isset($seen[$key])) {
+                $seen[$key] = strtotime($maxCreated($table));
+            }
+            $ts = date('Y-m-d H:i:s', $seen[$key]);
+            try {
+                $stmt = $db->prepare("SELECT COUNT(*) FROM {$table} WHERE created_at > ?");
+                $stmt->execute([$ts]);
+                $count = (int)$stmt->fetchColumn();
+                $latest = $maxCreated($table);
             } catch (\Throwable $e) {
                 $count = 0;
                 $latest = null;
@@ -27,7 +42,7 @@ class NotifyAdminController extends Controller {
                 'latest' => $latest
             ];
         }
-        // chats: đếm số phiên có tin nhắn chưa đọc cho admin
+        // chats: đếm số phiên có tin nhắn chưa đọc cho admin (tồn tại tới khi admin mở)
         try {
             $chatUnread = (int)$db->query("SELECT COUNT(*) FROM chat_threads WHERE admin_unread=1")->fetchColumn();
             $chatLatest = $db->query("SELECT COALESCE(MAX(updated_at), MAX(created_at)) FROM chat_threads")->fetchColumn();
@@ -36,6 +51,7 @@ class NotifyAdminController extends Controller {
             $chatLatest = null;
         }
         $stats['chats'] = ['count' => $chatUnread, 'latest' => $chatLatest];
+        $_SESSION['admin_seen'] = $seen;
         echo json_encode($stats);
     }
 }

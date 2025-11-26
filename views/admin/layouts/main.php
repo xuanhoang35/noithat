@@ -190,10 +190,7 @@
                     const count = parseInt(info.count, 10) || 0;
                     badge.textContent = count;
                     badge.style.display = count > 0 ? 'inline-flex' : 'none';
-                    if (lastLatest[key] && info.latest && info.latest !== lastLatest[key]) {
-                        badge.classList.add('animate-pulse');
-                        setTimeout(() => badge.classList.remove('animate-pulse'), 1500);
-                    }
+                    // Không nháy badge nữa, chỉ cập nhật số
                     lastLatest[key] = info.latest || lastLatest[key];
                     if (typeof lastCount[key] !== 'undefined' && count > lastCount[key]) {
                         showToast(`Có cập nhật mới: ${key}`);
