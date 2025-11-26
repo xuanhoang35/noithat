@@ -257,9 +257,7 @@ foreach ($flashStyles as $flashKey => $class) {
     <button type="button" data-chat-toggle class="relative shadow-lg rounded-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 flex items-center gap-2">
         <span class="inline-block w-2 h-2 rounded-full bg-emerald-300 animate-pulse"></span>
         <span class="text-sm font-semibold">Chat hỗ trợ</span>
-        <?php if ($chatHasUnread): ?>
-            <span data-chat-indicator class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-600 text-white text-xs flex items-center justify-center font-semibold shadow">!</span>
-        <?php endif; ?>
+        <span data-chat-indicator class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-red-600 shadow <?php echo $chatHasUnread ? '' : 'hidden'; ?>"></span>
     </button>
 </div>
 <?php endif; ?>
@@ -290,7 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
             chatFrame.setAttribute('src', '<?php echo base_url('chat?embed=1'); ?>');
         }
         if (chatIndicator) {
-            chatIndicator.remove();
+            chatIndicator.classList.add('hidden');
         }
         chatOpen = true;
     };
