@@ -33,7 +33,7 @@
             </div>
         </div>
         <div class="rounded-2xl overflow-hidden shadow-2xl border border-slate-800">
-            <img src="<?php echo $img; ?>" alt="Maintenance" class="w-full h-full object-cover">
+            <img src="<?php echo $img; ?>" alt="Maintenance" class="w-full h-full object-cover" onerror="this.src='<?php echo asset_url('public/assets/img/placeholder.svg'); ?>';">
         </div>
     </div>
 </body>

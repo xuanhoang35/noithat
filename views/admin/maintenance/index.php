@@ -76,4 +76,14 @@
     </div>
 
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    const form = document.querySelector('form[action$="maintenance"]');
+    if (!form) return;
+    const toggle = document.getElementById('maintenance-toggle');
+    if (toggle) {
+        toggle.addEventListener('change', () => form.submit());
+    }
+});
+</script>
 <?php $content = ob_get_clean(); include __DIR__ . '/../layouts/main.php'; ?>
