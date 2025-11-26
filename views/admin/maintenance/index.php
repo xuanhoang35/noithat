@@ -28,10 +28,9 @@
 
     <div class="grid lg:grid-cols-3 gap-4">
         <form class="lg:col-span-2 space-y-3" method="post" action="<?php echo base_url('admin.php/maintenance'); ?>" enctype="multipart/form-data">
-            <input type="hidden" name="mode" value="content">
             <div>
                 <label class="text-sm text-slate-600">Tiêu đề</label>
-                <input name="title" class="w-full px-3 py-2 border rounded" value="<?php echo htmlspecialchars($title); ?>" required>
+                <input name="title" class="w-full px-3 py-2 border rounded" value="<?php echo htmlspecialchars($title); ?>">
             </div>
             <div>
                 <label class="text-sm text-slate-600">Phụ đề</label>
@@ -53,8 +52,13 @@
                 </span>
                 <span class="text-sm text-red-600 font-semibold">Đóng trang web (bật chế độ bảo trì)</span>
             </label>
-            <div class="flex gap-3">
-                <button class="px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Lưu nội dung</button>
+            <div class="flex items-center gap-3">
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" name="enabled" value="1" class="sr-only peer" <?php echo $enabled ? 'checked' : ''; ?>>
+                    <div class="w-12 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:bg-red-500 transition"></div>
+                    <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow transition peer-checked:translate-x-6"></div>
+                </label>
+                <span class="text-sm text-red-600 font-semibold">Gạt để đóng/mở trang web (áp dụng ngay)</span>
                 <a class="px-4 py-2 bg-slate-100 text-slate-700 rounded hover:bg-slate-200 text-sm" href="<?php echo base_url('maintenance'); ?>" target="_blank">Xem trang bảo trì</a>
             </div>
         </form>
@@ -80,28 +84,8 @@
         </div>
     </div>
 
-    <div class="mt-4 p-4 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
-        <div>
-            <p class="text-sm font-semibold text-slate-800">Trạng thái website</p>
-            <p class="text-xs text-slate-500">Gạt để bật/tắt bảo trì (dùng nội dung đã lưu).</p>
-        </div>
-        <form method="post" action="<?php echo base_url('admin.php/maintenance'); ?>" id="maintenance-toggle-form">
-            <input type="hidden" name="mode" value="toggle">
-            <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" name="enabled" value="1" class="sr-only peer" <?php echo $enabled ? 'checked' : ''; ?>>
-                <div class="w-12 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:bg-red-500 transition"></div>
-                <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow transition peer-checked:translate-x-6"></div>
-            </label>
-        </form>
+    <div class="mt-4 text-right">
+        <a class="px-4 py-2 bg-slate-100 text-slate-700 rounded hover:bg-slate-200 text-sm" href="<?php echo base_url('maintenance'); ?>" target="_blank">Xem trang bảo trì</a>
     </div>
 </div>
-<script>
-document.addEventListener('DOMContentLoaded', function(){
-    const toggleForm = document.getElementById('maintenance-toggle-form');
-    if (toggleForm) {
-        const input = toggleForm.querySelector('input[type="checkbox"]');
-        input.addEventListener('change', () => toggleForm.submit());
-    }
-});
-</script>
 <?php $content = ob_get_clean(); include __DIR__ . '/../layouts/main.php'; ?>

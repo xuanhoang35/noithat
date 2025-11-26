@@ -35,53 +35,39 @@ class MaintenanceAdminController extends Controller {
 
     public function update() {
         $data = $this->load();
-        $mode = $_POST['mode'] ?? 'content';
-        $title = $data['title'] ?? '';
-        $subtitle = $data['subtitle'] ?? '';
-        $message = $data['message'] ?? '';
-        $enabled = (bool)($data['enabled'] ?? false);
+        $title = trim($_POST['title'] ?? $data['title']);
+        $subtitle = trim($_POST['subtitle'] ?? $data['subtitle']);
+        $message = trim($_POST['message'] ?? $data['message']);
+        $enabled = isset($_POST['enabled']) && $_POST['enabled'] === '1';
         $imagePath = $data['image'] ?? '';
 
-        if ($mode === 'content') {
-            $title = trim($_POST['title'] ?? $data['title']);
-            $subtitle = trim($_POST['subtitle'] ?? $data['subtitle']);
-            $message = trim($_POST['message'] ?? $data['message']);
-
-            if (!empty($_FILES['image']['tmp_name']) && is_uploaded_file($_FILES['image']['tmp_name'])) {
-                $uploadDir = __DIR__ . '/../../public/uploads/maintenance';
-                if (!is_dir($uploadDir) && !@mkdir($uploadDir, 0777, true)) {
-                    $_SESSION['flash_error'] = 'Không tạo được thư mục lưu ảnh. Vui lòng kiểm tra quyền ghi public/uploads/maintenance.';
-                    $this->redirect('/admin.php/maintenance');
-                }
-                $ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
-                $safe = preg_replace('/[^a-zA-Z0-9_-]/', '_', pathinfo($_FILES['image']['name'], PATHINFO_FILENAME));
-                $filename = $safe . '_' . time() . ($ext ? '.' . $ext : '');
-                $dest = $uploadDir . '/' . $filename;
-                if (is_dir($uploadDir) && is_writable($uploadDir) && move_uploaded_file($_FILES['image']['tmp_name'], $dest)) {
-                    $imagePath = 'public/uploads/maintenance/' . $filename;
-                } else {
-                    $_SESSION['flash_error'] = 'Tải ảnh thất bại. Vui lòng thử lại và kiểm tra quyền ghi thư mục uploads/maintenance.';
-                    $this->redirect('/admin.php/maintenance');
-                }
+        if (!empty($_FILES['image']['tmp_name']) && is_uploaded_file($_FILES['image']['tmp_name'])) {
+            $uploadDir = __DIR__ . '/../../public/uploads/maintenance';
+            if (!is_dir($uploadDir) && !@mkdir($uploadDir, 0777, true)) {
+                $_SESSION['flash_error'] = 'Không tạo được thư mục lưu ảnh. Vui lòng kiểm tra quyền ghi public/uploads/maintenance.';
+                $this->redirect('/admin.php/maintenance');
             }
-            $save = [
-                'enabled' => $enabled,
-                'title' => $title,
-                'subtitle' => $subtitle,
-                'message' => $message,
-                'image' => $imagePath
-            ];
-            $this->save($save);
-            $_SESSION['flash_success'] = 'Đã lưu nội dung trang bảo trì.';
-            $this->redirect('/admin.php/maintenance');
-            return;
+            $ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+            $safe = preg_replace('/[^a-zA-Z0-9_-]/', '_', pathinfo($_FILES['image']['name'], PATHINFO_FILENAME));
+            $filename = $safe . '_' . time() . ($ext ? '.' . $ext : '');
+            $dest = $uploadDir . '/' . $filename;
+            if (is_dir($uploadDir) && is_writable($uploadDir) && move_uploaded_file($_FILES['image']['tmp_name'], $dest)) {
+                $imagePath = 'public/uploads/maintenance/' . $filename;
+            } else {
+                $_SESSION['flash_error'] = 'Tải ảnh thất bại. Vui lòng thử lại và kiểm tra quyền ghi thư mục uploads/maintenance.';
+                $this->redirect('/admin.php/maintenance');
+            }
         }
 
-        // mode toggle: chỉ bật/tắt dựa trên nội dung đã lưu
-        $enabled = isset($_POST['enabled']) && $_POST['enabled'] === '1';
-        $data['enabled'] = $enabled;
-        $this->save($data);
-        $_SESSION['flash_success'] = $enabled ? 'Đã bật chế độ bảo trì.' : 'Đã tắt chế độ bảo trì.';
+        $save = [
+            'enabled' => $enabled,
+            'title' => $title,
+            'subtitle' => $subtitle,
+            'message' => $message,
+            'image' => $imagePath
+        ];
+        $this->save($save);
+        $_SESSION['flash_success'] = $enabled ? 'Đã bật chế độ bảo trì.' : 'Đã lưu nội dung và tắt bảo trì.';
         $this->redirect('/admin.php/maintenance');
     }
 }
