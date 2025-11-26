@@ -1,0 +1,350 @@
+<script>
+// Shield lỗi extension (chạy TRƯỚC mọi thứ)
+window.addEventListener('error', function(e) {
+    const src = e.filename || '';
+    if (src.startsWith('chrome-extension://')) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        return false;
+    }
+}, true);
+
+window.addEventListener('unhandledrejection', function(e) {
+    const reason = (e.reason || '').toString();
+    if (reason.includes('chrome-extension://') || reason === 'undefined') {
+        e.preventDefault();
+        return false;
+    }
+}, true);
+</script>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Noithat Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        html, body { margin:0 !important; padding:0 !important; }
+        * { box-sizing: border-box; }
+        @keyframes scroll-text {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        .animate-scroll-text {
+            display:inline-block;
+            white-space:nowrap;
+            animation: scroll-text 40s linear infinite;
+        }
+        .ticker-dynamic {
+            display:inline-block;
+            white-space:nowrap;
+        }
+    </style>
+    <style>
+        .chat-panel {
+            opacity: 0;
+            transform: translateY(12px) scale(0.96);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+        }
+        .chat-panel.is-active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+    </style>
+    <link rel="stylesheet" href="<?php echo base_url('public/assets/css/style.css'); ?>">
+</head>
+<!-- Shield chống lỗi extension (chrome-extension://...) -->
+<body class="bg-slate-50 min-h-screen flex flex-col">
+<?php
+$chatHasUnread = false;
+$orderHasUnread = false;
+$cartCount = 0;
+if (!empty($_SESSION['cart'])) {
+    foreach ($_SESSION['cart'] as $item) {
+        $cartCount += (int)($item['qty'] ?? 0);
+    }
+}
+if (Auth::check()) {
+    require_once __DIR__ . '/../../models/Chat.php';
+    require_once __DIR__ . '/../../models/Order.php';
+    $chatModelLayout = new Chat();
+    $orderModelLayout = new Order();
+    $chatHasUnread = $chatModelLayout->hasUnreadForUser(Auth::user()['id']);
+    $orderHasUnread = $orderModelLayout->hasUnread(Auth::user()['id']);
+}
+$defaultAvatarPath = 'public/Profile/user-iconprofile.png';
+$defaultAvatarUrl = asset_url($defaultAvatarPath);
+$hideFooter = $hideFooter ?? false;
+?>
+<header class="fixed top-0 left-0 right-0 z-30 bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white shadow-lg">
+    <div class="max-w-6xl mx-auto px-4 py-1 flex flex-col gap-1">
+        <div class="text-sm text-white/80 overflow-hidden">
+            <?php if (!empty($_SESSION['welcome_message'])): ?>
+                <div class="whitespace-nowrap animate-scroll-text">
+                    <?php echo htmlspecialchars($_SESSION['welcome_message']); unset($_SESSION['welcome_message']); ?>
+                </div>
+            <?php elseif (Auth::check()): ?>
+                <div class="whitespace-nowrap ticker-dynamic" data-ticker-cycle="Khám phá Nội Thất Store – hơn 2.000 sản phẩm nội thất & thiết bị gia dụng cao cấp, thiết kế độc đáo, vật liệu bền bỉ, giao nhanh – lắp đặt tận nơi, tư vấn 24/7, đổi trả linh hoạt, bảo hành minh bạch và ưu đãi thành viên hấp dẫn để nâng tầm không gian sống của bạn.|Mua hàng đi, đọc gì mà đọc lắm thế!" data-ticker-speed="20|8">
+                    Khám phá Nội Thất Store – hơn 2.000 sản phẩm nội thất & thiết bị gia dụng cao cấp, thiết kế độc đáo, vật liệu bền bỉ, giao nhanh – lắp đặt tận nơi, tư vấn 24/7, đổi trả linh hoạt, bảo hành minh bạch và ưu đãi thành viên hấp dẫn để nâng tầm không gian sống của bạn.
+                </div>
+            <?php else: ?>
+                <div class="whitespace-nowrap animate-scroll-text">
+                    Chào mừng quý khách đến với Nội Thất Store — Chúc quý khách lựa chọn được sản phẩm ưng ý và nâng tầm không gian sống!
+                </div>
+            <?php endif; ?>
+        </div>
+        <div class="flex items-center gap-4">
+            <a href="<?php echo base_url(); ?>" class="text-xl font-semibold tracking-tight">Noithat Store</a>
+            <nav class="flex-1 flex flex-wrap gap-4 text-sm">
+            <a class="hover:underline" href="<?php echo base_url(); ?>">Trang chủ</a>
+            <a class="hover:underline" href="<?php echo base_url('products'); ?>">Sản phẩm</a>
+            <a class="hover:underline" href="<?php echo base_url('services'); ?>">Dịch vụ</a>
+            <a class="hover:underline" href="<?php echo base_url('about'); ?>">Về chúng tôi</a>
+            <a class="hover:underline flex items-center gap-1 relative" href="<?php echo base_url('cart'); ?>">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="hidden sm:inline">Giỏ hàng</span>
+                <?php if ($cartCount > 0): ?>
+                    <span class="absolute -top-2 -right-3 bg-red-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-semibold"><?php echo $cartCount; ?></span>
+                <?php endif; ?>
+            </a>
+            <?php if (Auth::check()): ?>
+                <a class="hover:underline relative inline-flex items-center gap-1" href="<?php echo base_url('orders'); ?>">
+                    Đơn hàng
+                    <?php if ($orderHasUnread): ?>
+                        <span class="inline-flex w-2 h-2 rounded-full bg-red-500"></span>
+                    <?php endif; ?>
+                </a>
+                <?php if (Auth::isAdmin()): ?><a class="hover:underline" href="<?php echo base_url('admin.php'); ?>">Admin</a><?php endif; ?>
+            <?php endif; ?>
+            </nav>
+            <div class="hidden lg:block flex-shrink-0 text-sm text-white/80">
+                Hotline: 0974.734.668
+            </div>
+            <div class="flex items-center gap-2">
+            <?php if (Auth::check()): ?>
+                <?php
+                    $sessionUser = Auth::user();
+                    $avatarSource = !empty($sessionUser['avatar']) ? $sessionUser['avatar'] : $defaultAvatarPath;
+                    $avatar = asset_url($avatarSource);
+                ?>
+                <a class="px-3 py-2 text-sm bg-white/15 rounded-full hover:bg-white/25 flex items-center gap-2" href="<?php echo base_url('profile'); ?>">
+                    <img src="<?php echo $avatar; ?>" alt="Avatar" class="w-7 h-7 rounded-full object-cover border border-white/20" onerror="this.src='<?php echo $defaultAvatarUrl; ?>';">
+                    <span>Hi, <?php echo $sessionUser['name']; ?></span>
+                </a>
+                <a class="px-3 py-2 text-sm bg-white text-blue-700 rounded-full hover:bg-slate-100" href="<?php echo base_url('logout'); ?>">Đăng xuất</a>
+            <?php else: ?>
+                <a class="px-3 py-2 text-sm bg-white text-blue-700 rounded-full hover:bg-slate-100" href="<?php echo base_url('login'); ?>">Đăng nhập</a>
+                <a class="px-3 py-2 text-sm border border-white text-white rounded-full hover:bg-white/10" href="<?php echo base_url('register'); ?>">Đăng ký</a>
+            <?php endif; ?>
+            </div>
+        </div>
+    </div>
+</header>
+<?php
+$flashBag = [];
+$flashStyles = [
+    'flash_success' => 'bg-emerald-50 border border-emerald-200 text-emerald-800',
+    'flash_error' => 'bg-red-50 border border-red-200 text-red-700',
+    'flash_info' => 'bg-blue-50 border border-blue-200 text-blue-700'
+];
+foreach ($flashStyles as $flashKey => $class) {
+    if (!empty($_SESSION[$flashKey])) {
+        $flashBag[] = [
+            'message' => $_SESSION[$flashKey],
+            'class' => $class
+        ];
+        unset($_SESSION[$flashKey]);
+    }
+}
+?>
+<main class="flex-1 pt-[120px] md:pt-[110px] pb-8">
+    <div class="max-w-6xl mx-auto px-4">
+        <?php foreach ($flashBag as $flash): ?>
+            <div data-flash-message class="mb-4 rounded-xl px-4 py-3 text-sm transition-opacity duration-500 <?php echo $flash['class']; ?>">
+                <?php echo htmlspecialchars($flash['message'], ENT_QUOTES, 'UTF-8'); ?>
+            </div>
+        <?php endforeach; ?>
+        <?php echo $content ?? ''; ?>
+    </div>
+</main>
+<?php if (!$hideFooter): ?>
+<footer class="mt-auto bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-slate-100">
+    <div class="max-w-6xl mx-auto px-4 py-6 grid md:grid-cols-4 gap-6 text-sm">
+        <div class="space-y-2">
+            <div class="text-lg font-semibold">Noithat Store</div>
+            <p class="text-slate-300">Nội thất & thiết bị gia dụng cao cấp, giao nhanh, lắp đặt tận nơi.</p>
+            <div class="space-y-1 text-slate-200">
+                <div>Hotline: <strong>0974.734.668</strong></div>
+                <div>Email: <strong>huyendothi.79@gmail.com</strong></div>
+                <div>Showroom: Phương Canh, Nam Từ Liêm, Hà Nội</div>
+                <div>Giờ mở cửa: 8:00 - 22:00 (T2 - CN)</div>
+            </div>
+        </div>
+        <div class="space-y-2">
+            <div class="font-semibold text-slate-50">Liên kết nhanh</div>
+            <div class="flex flex-col gap-1 text-slate-200">
+                <a class="hover:text-white" href="<?php echo base_url('products'); ?>">Sản phẩm</a>
+                <a class="hover:text-white" href="<?php echo base_url('services'); ?>">Dịch vụ</a>
+                <a class="hover:text-white" href="<?php echo base_url('about'); ?>">Về chúng tôi</a>
+                <a class="hover:text-white flex items-center gap-1" href="<?php echo base_url('cart'); ?>"><i class="fas fa-shopping-cart"></i><span class="hidden sm:inline">Giỏ hàng</span></a>
+                <a class="hover:text-white" href="<?php echo base_url('orders'); ?>">Đơn hàng của tôi</a>
+            </div>
+        </div>
+        <div class="space-y-2">
+            <div class="font-semibold text-slate-50">Chính sách</div>
+            <div class="flex flex-col gap-1 text-slate-200">
+                <span>Giao hàng & lắp đặt</span>
+                <span>Bảo hành & đổi trả</span>
+                <span>Bảo mật thông tin</span>
+                <span>FAQ & hỗ trợ</span>
+            </div>
+            <div class="mt-2">
+                <div class="font-semibold text-slate-50 mb-1">Thanh toán</div>
+                <div class="flex gap-2 text-xs text-slate-200">
+                    <span class="px-2 py-1 rounded bg-slate-700">Visa/Master</span>
+                    <span class="px-2 py-1 rounded bg-slate-700">VNPay</span>
+                    <span class="px-2 py-1 rounded bg-slate-700">MoMo</span>
+                    <span class="px-2 py-1 rounded bg-slate-700">COD</span>
+                </div>
+            </div>
+            <div class="mt-2">
+                <div class="font-semibold text-slate-50 mb-1">Vận chuyển</div>
+                <div class="flex gap-2 text-xs text-slate-200">
+                    <span class="px-2 py-1 rounded bg-slate-700">Giao nhanh</span>
+                    <span class="px-2 py-1 rounded bg-slate-700">Bảo hiểm</span>
+                    <span class="px-2 py-1 rounded bg-slate-700">Lắp đặt</span>
+                </div>
+            </div>
+        </div>
+        <div class="space-y-2">
+            <div class="font-semibold text-slate-50">Kết nối</div>
+            <div class="flex gap-2 text-xs text-slate-200">
+                <a href="https://www.facebook.com/xuan.hoang.815641" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded bg-blue-600 hover:bg-blue-500">Facebook</a>
+                <a href="https://zalo.me/0325645518" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded bg-emerald-600 hover:bg-emerald-500">Zalo</a>
+                <a href="https://www.instagram.com/hnxams/" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded bg-pink-600 hover:bg-pink-500">Instagram</a>
+            </div>
+            <div class="mt-2">
+                <div class="font-semibold text-slate-50 mb-1 text-sm">Đăng ký nhận tin</div>
+                <form class="flex gap-2">
+                    <input class="flex-1 px-3 py-2 rounded bg-slate-800 border border-slate-700 text-slate-100 placeholder-slate-500" placeholder="Email của bạn">
+                    <button class="px-3 py-2 rounded bg-blue-600 hover:bg-blue-500 text-white text-sm">Gửi</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="border-t border-slate-800">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between text-xs text-slate-300">
+            <span>© 2025 Noithat Store. All rights reserved.</span>
+            <span>Thiết kế & vận hành bởi Noithat Store Team</span>
+        </div>
+    </div>
+</footer>
+<?php endif; ?>
+<?php if (Auth::check()): ?>
+<div class="fixed right-5 bottom-5 z-40 flex flex-col items-end gap-3">
+    <div id="chat-panel" data-chat-panel class="hidden chat-panel w-[360px]" aria-hidden="true">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
+            <div class="px-4 py-3 bg-blue-600 text-white flex items-center justify-between">
+                <div>
+                    <p class="text-xs uppercase tracking-widest text-blue-100">Chat hỗ trợ</p>
+                    <p class="text-sm font-semibold">Noithat Store</p>
+                </div>
+                <button type="button" data-chat-close class="text-white/80 hover:text-white text-xl leading-none">&times;</button>
+            </div>
+            <iframe data-chat-frame class="w-full h-[520px] border-0" title="Chat hỗ trợ"></iframe>
+        </div>
+    </div>
+    <button type="button" data-chat-toggle class="relative shadow-lg rounded-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 flex items-center gap-2">
+        <span class="inline-block w-2 h-2 rounded-full bg-emerald-300 animate-pulse"></span>
+        <span class="text-sm font-semibold">Chat hỗ trợ</span>
+        <?php if ($chatHasUnread): ?>
+            <span data-chat-indicator class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-600 text-white text-xs flex items-center justify-center font-semibold shadow">!</span>
+        <?php endif; ?>
+    </button>
+</div>
+<?php endif; ?>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const flashes = document.querySelectorAll('[data-flash-message]');
+    if (flashes.length) {
+        setTimeout(() => {
+            flashes.forEach(el => {
+                el.classList.add('opacity-0');
+                setTimeout(() => el.remove(), 600);
+            });
+        }, 2000);
+    }
+    const chatToggle = document.querySelector('[data-chat-toggle]');
+    const chatPanel = document.querySelector('[data-chat-panel]');
+    const chatFrame = document.querySelector('[data-chat-frame]');
+    const chatClose = document.querySelector('[data-chat-close]');
+    const chatIndicator = document.querySelector('[data-chat-indicator]');
+    let chatOpen = false;
+    const openChat = () => {
+        if (!chatPanel) return;
+        chatPanel.classList.remove('hidden');
+        requestAnimationFrame(() => chatPanel.classList.add('is-active'));
+        chatPanel.setAttribute('aria-hidden','false');
+        if (chatFrame && !chatFrame.getAttribute('src')) {
+            chatFrame.setAttribute('src', '<?php echo base_url('chat?embed=1'); ?>');
+        }
+        if (chatIndicator) {
+            chatIndicator.remove();
+        }
+        chatOpen = true;
+    };
+    const closeChat = () => {
+        if (!chatPanel || !chatOpen) return;
+        chatPanel.classList.remove('is-active');
+        chatPanel.addEventListener('transitionend', () => {
+            chatPanel.classList.add('hidden');
+            chatPanel.setAttribute('aria-hidden','true');
+        }, { once: true });
+        chatOpen = false;
+    };
+    const toggleChat = () => chatOpen ? closeChat() : openChat();
+    if (chatToggle) chatToggle.addEventListener('click', toggleChat);
+    if (chatClose) chatClose.addEventListener('click', closeChat);
+
+    document.querySelectorAll('[data-ticker-cycle]').forEach(el => {
+        const container = el.parentElement;
+        const messages = (el.getAttribute('data-ticker-cycle') || '').split('|').map(s => s.trim()).filter(Boolean);
+        if (messages.length <= 1 || !container) return;
+        const speedsRaw = (el.getAttribute('data-ticker-speed') || '').split('|').map(s => parseFloat(s)).filter(n => !isNaN(n));
+        const getSpeed = idx => (speedsRaw[idx] || speedsRaw[0] || 20) * 1000;
+        const gap = 40;
+        let idx = 0;
+        let current;
+        const play = () => {
+            const msg = messages[idx];
+            el.textContent = msg;
+            if (current) current.cancel();
+            requestAnimationFrame(() => {
+                const start = container.offsetWidth + gap;
+                const end = -el.scrollWidth - gap;
+                let speed = getSpeed(idx);
+                if (idx === 1) {
+                    speed = Math.max(400, speed / 3);
+                }
+                current = el.animate([
+                    { transform: `translateX(${start}px)` },
+                    { transform: `translateX(${end}px)` }
+                ], {
+                    duration: speed,
+                    easing: 'linear',
+                    fill: 'forwards'
+                });
+                current.onfinish = () => {
+                    idx = (idx + 1) % messages.length;
+                    play();
+                };
+            });
+        };
+        play();
+    });
+});
+</script>
+</body>
+</html>

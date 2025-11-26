@@ -1,0 +1,18 @@
+/* Minimal styles for shared layout/admin pages */
+:root {
+    color-scheme: light;
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+    background-color: #f1f5f9;
+    color: #0f172a;
+}
+
+a {
+    text-decoration: none;
+}
+
+[data-flash-message], [data-order-notice] {
+    transition: opacity .4s ease;
+}
