@@ -13,21 +13,26 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body, html { margin:0; padding:0; min-height:100vh; }
+        .glow { box-shadow: 0 10px 40px rgba(59,130,246,0.35); }
     </style>
 </head>
-<body class="bg-slate-900 text-white flex items-center justify-center px-4">
-    <div class="max-w-4xl w-full grid md:grid-cols-2 gap-6 items-center bg-slate-800/70 rounded-3xl p-6 shadow-2xl border border-slate-700">
-        <div class="space-y-3">
-            <p class="text-xs uppercase tracking-[0.2em] text-blue-300">Noithat Store</p>
-            <h1 class="text-3xl font-bold leading-tight"><?php echo htmlspecialchars($title); ?></h1>
+<body class="bg-slate-950 text-white flex items-center justify-center px-4 relative overflow-hidden">
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(59,130,246,0.15),transparent_25%),radial-gradient(circle_at_80%_10%,rgba(236,72,153,0.12),transparent_20%),radial-gradient(circle_at_50%_80%,rgba(16,185,129,0.12),transparent_20%)]"></div>
+    <div class="relative max-w-5xl w-full grid md:grid-cols-2 gap-6 items-center bg-slate-900/70 backdrop-blur-lg rounded-3xl p-6 md:p-8 border border-slate-800 glow">
+        <div class="space-y-4">
+            <div class="flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-blue-200">
+                <span class="inline-block w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
+                Noithat Store
+            </div>
+            <h1 class="text-3xl md:text-4xl font-bold leading-tight"><?php echo htmlspecialchars($title); ?></h1>
             <p class="text-lg text-blue-100"><?php echo htmlspecialchars($subtitle); ?></p>
-            <p class="text-sm text-slate-200 whitespace-pre-line"><?php echo htmlspecialchars($message); ?></p>
+            <p class="text-sm text-slate-200 whitespace-pre-line leading-relaxed"><?php echo htmlspecialchars($message); ?></p>
             <div class="flex flex-wrap gap-2 text-xs">
-                <span class="px-3 py-2 rounded-full bg-blue-600 text-white">Hotline: 0974.734.668</span>
-                <span class="px-3 py-2 rounded-full bg-slate-700 text-slate-100">Email: huyendothi.79@gmail.com</span>
+                <a href="tel:0974734668" class="px-4 py-2 rounded-full bg-blue-600 hover:bg-blue-500 text-white">Hotline: 0974.734.668</a>
+                <a href="mailto:huyendothi.79@gmail.com" class="px-4 py-2 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-100">Email: huyendothi.79@gmail.com</a>
             </div>
         </div>
-        <div class="rounded-2xl overflow-hidden shadow-xl border border-slate-700">
+        <div class="rounded-2xl overflow-hidden shadow-2xl border border-slate-800">
             <img src="<?php echo $img; ?>" alt="Maintenance" class="w-full h-full object-cover">
         </div>
     </div>
