@@ -79,10 +79,6 @@ class MaintenanceAdminController extends Controller {
 
         // mode toggle: chỉ bật/tắt dựa trên nội dung đã lưu
         $enabled = isset($_POST['enabled']) && $_POST['enabled'] === '1';
-        if ($enabled && ($title === '' || $imagePath === '')) {
-            $_SESSION['flash_error'] = 'Vui lòng thiết kế đủ tiêu đề và ảnh trước khi đóng trang web.';
-            $this->redirect('/admin.php/maintenance');
-        }
         $data['enabled'] = $enabled;
         $this->save($data);
         $_SESSION['flash_success'] = $enabled ? 'Đã bật chế độ bảo trì.' : 'Đã tắt chế độ bảo trì.';
