@@ -68,6 +68,13 @@ class Chat extends Model {
         return $stmt->fetchAll();
     }
 
+    public function messagesSince(int $threadId, int $lastId): array {
+        $this->ensureSchema();
+        $stmt = $this->db->prepare('SELECT cm.*, u.email FROM chat_messages cm JOIN users u ON cm.user_id=u.id WHERE thread_id=? AND cm.id > ? ORDER BY cm.id ASC');
+        $stmt->execute([$threadId, $lastId]);
+        return $stmt->fetchAll();
+    }
+
     public function addMessage(int $threadId, int $userId, bool $isAdmin, string $content): void {
         $this->ensureSchema();
         // fallback user id if missing (avoid FK error)

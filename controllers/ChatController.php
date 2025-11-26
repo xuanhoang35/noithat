@@ -44,4 +44,15 @@ class ChatController extends Controller {
         }
         $this->redirect($redirectTo);
     }
+
+    public function poll() {
+        Auth::requireLogin();
+        header('Content-Type: application/json');
+        $threadId = (int)($_GET['thread_id'] ?? 0);
+        $lastId = (int)($_GET['last_id'] ?? 0);
+        if ($threadId <= 0) { echo json_encode([]); return; }
+        $messages = $this->chatModel->messagesSince($threadId, $lastId);
+        $this->chatModel->markUserRead($threadId);
+        echo json_encode($messages);
+    }
 }

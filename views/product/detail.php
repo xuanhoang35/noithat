@@ -10,13 +10,13 @@
             <h2 class="text-2xl font-bold mb-1"><?php echo $product['name']; ?></h2>
             <p class="text-blue-600 font-bold text-xl mb-2"><?php echo number_format($product['price']); ?> đ</p>
             <p class="text-sm font-semibold <?php echo $stock > 0 ? 'text-emerald-600' : 'text-red-600'; ?>">
-                <?php echo $stock > 0 ? 'Còn ' . $stock . ' sản phẩm' : 'Tạm hết hàng'; ?>
+                <?php echo $stock > 0 ? 'Còn ' . $stock . ' sản phẩm' : 'Hàng đang về'; ?>
             </p>
             <p class="text-slate-600"><?php echo $product['description']; ?></p>
         </div>
         <?php if ($stock <= 0): ?>
             <div class="space-y-3">
-                <p class="text-red-600 font-semibold text-sm">Sản phẩm đã hết hàng. Vui lòng liên hệ để được hỗ trợ.</p>
+                <p class="text-red-600 font-semibold text-sm">Hàng đang về. Vui lòng liên hệ để được hỗ trợ.</p>
                 <a href="tel:0974734668" class="inline-flex items-center justify-center px-5 py-3 bg-amber-500 text-white rounded-lg hover:bg-amber-600 w-full sm:w-auto">Liên hệ</a>
             </div>
         <?php else: ?>
@@ -28,16 +28,15 @@
                     <input type="number" name="qty" value="1" min="1" max="<?php echo $stock; ?>" class="w-24 px-3 py-2 border rounded text-sm">
                     <button class="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Thêm vào giỏ</button>
                 </div>
-                <div class="grid gap-2">
-                    <label class="text-sm text-slate-600">Áp mã giảm giá</label>
-                    <input type="text" class="px-3 py-2 border rounded text-sm" placeholder="Nhập mã giảm giá">
-                </div>
-                <div class="grid gap-2">
-                    <label class="text-sm text-slate-600">Ghi chú đơn hàng</label>
-                    <textarea class="px-3 py-2 border rounded text-sm" rows="3" placeholder="Ghi chú cho đơn hàng"></textarea>
-                </div>
+                <p class="text-xs text-slate-500">Mã giảm giá áp dụng tại giỏ hàng.</p>
             </form>
         <?php endif; ?>
+    </div>
+</div>
+<div class="mt-6 bg-white rounded-2xl shadow-sm p-5">
+    <h3 class="text-lg font-semibold mb-2">Mô tả chi tiết</h3>
+    <div class="prose prose-sm max-w-none text-slate-700">
+        <?php echo nl2br(htmlspecialchars($product['description'] ?? '')); ?>
     </div>
 </div>
 <?php $content = ob_get_clean(); include __DIR__ . '/../layouts/main.php'; ?>

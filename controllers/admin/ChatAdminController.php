@@ -31,4 +31,14 @@ class ChatAdminController extends Controller {
         $this->chatModel->updateStatus((int)$id, $status);
         $this->redirect("/admin.php/chats/show/$id");
     }
+
+    public function poll($id) {
+        Auth::requireAdmin();
+        header('Content-Type: application/json');
+        $threadId = (int)$id;
+        $lastId = (int)($_GET['last_id'] ?? 0);
+        if ($threadId <= 0) { echo json_encode([]); return; }
+        $messages = $this->chatModel->messagesSince($threadId, $lastId);
+        echo json_encode($messages);
+    }
 }

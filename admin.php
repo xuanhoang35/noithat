@@ -37,7 +37,9 @@ $router->post('/complaints/update-status/{id}', 'admin/ComplaintAdminController@
 $router->post('/complaints/reply/{id}', 'admin/ComplaintAdminController@reply');
 $router->get('/chats', 'admin/ChatAdminController@index');
 $router->get('/chats/show/{id}', 'admin/ChatAdminController@show');
+$router->get('/chats/poll/{id}', 'admin/ChatAdminController@poll');
 $router->post('/chats/reply/{id}', 'admin/ChatAdminController@reply');
+$router->get('/notify/poll', 'admin/NotifyAdminController@poll');
 $router->get('/services', 'admin/ServiceAdminController@index');
 $router->post('/services/create', 'admin/ServiceAdminController@store');
 $router->post('/services/update/{id}', 'admin/ServiceAdminController@update');

@@ -44,12 +44,14 @@
         <?php $stock = (int)($p['stock'] ?? 0); ?>
         <div class="bg-white rounded-2xl shadow-sm hover:shadow-md transition p-3 flex flex-col border border-slate-100">
             <div class="overflow-hidden rounded-xl mb-3">
-                <img src="<?php echo $img; ?>" alt="<?php echo htmlspecialchars($p['name']); ?>" class="w-full h-40 object-cover hover:scale-105 transition">
+                <a href="<?php echo base_url('product/' . $p['id']); ?>">
+                    <img src="<?php echo $img; ?>" alt="<?php echo htmlspecialchars($p['name']); ?>" class="w-full h-40 object-cover hover:scale-105 transition">
+                </a>
             </div>
             <h6 class="text-sm font-semibold line-clamp-2"><?php echo $p['name']; ?></h6>
             <p class="text-blue-600 font-bold mb-2"><?php echo number_format($p['price']); ?> đ</p>
             <p class="text-xs font-semibold mb-2 <?php echo $stock > 0 ? 'text-emerald-600' : 'text-red-600'; ?>">
-                <?php echo $stock > 0 ? 'Còn ' . $stock . ' SP' : 'Hết hàng'; ?>
+                <?php echo $stock > 0 ? 'Còn ' . $stock . ' SP' : 'Hàng đang về'; ?>
             </p>
             <div class="mt-auto grid grid-cols-2 gap-2">
                 <a class="h-11 w-full inline-flex items-center justify-center text-sm border rounded-lg border-slate-200 hover:border-blue-500" href="<?php echo base_url('product/' . $p['id']); ?>">Xem</a>

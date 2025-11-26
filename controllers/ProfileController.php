@@ -34,14 +34,17 @@ class ProfileController extends Controller {
             $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
             $ext = $ext ? strtolower($ext) : 'jpg';
             $dir = __DIR__ . '/../public/uploads/profile';
-            if (!is_dir($dir)) {
-                mkdir($dir, 0777, true);
+            if (!is_dir($dir) && !@mkdir($dir, 0777, true)) {
+                $_SESSION['flash_error'] = 'Không thể tạo thư mục lưu ảnh đại diện. Vui lòng kiểm tra quyền ghi.';
+                $this->redirect('/profile');
             }
             $fileName = 'avatar_' . $_SESSION['user']['id'] . '_' . time() . '.' . $ext;
             $target = $dir . '/' . $fileName;
-            if (move_uploaded_file($file['tmp_name'], $target)) {
+            if (is_dir($dir) && is_writable($dir) && is_uploaded_file($file['tmp_name']) && move_uploaded_file($file['tmp_name'], $target)) {
                 $avatarPath = 'public/uploads/profile/' . $fileName;
                 $this->deleteOldFile($oldAvatar, 'public/Profile/user-iconprofile.png');
+            } else {
+                $_SESSION['flash_error'] = 'Tải ảnh đại diện thất bại. Vui lòng thử ảnh khác hoặc kiểm tra quyền ghi.';
             }
         }
         $this->userModel->updateProfile($_SESSION['user']['id'], $name, $phone, $address, $avatarPath);

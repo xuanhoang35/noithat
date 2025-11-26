@@ -87,10 +87,11 @@
         'chats' => $getCount('chat_threads','chats'),
         'complaints' => $getCount('complaints','complaints'),
     ];
-    $badge = function($num) {
-        if (empty($num)) return '';
+    $badge = function($num, $key) {
         $n = (int)$num;
-        return '<span class="inline-flex min-w-[20px] h-5 px-1 items-center justify-center rounded-full bg-red-500 text-white text-[10px]">'.$n.'</span>';
+        $classes = 'inline-flex min-w-[20px] h-5 px-1 items-center justify-center rounded-full bg-red-500 text-white text-[10px]';
+        $hidden = $n > 0 ? '' : ' style="display:none"';
+        return '<span data-badge="'.$key.'" class="'.$classes.'"'.$hidden.'>'.$n.'</span>';
     };
     $adminBase = base_url('admin.php');
     $adminUrl = function(string $path = '') use ($adminBase) {
@@ -113,23 +114,23 @@
         <div class="flex flex-col">
             <a class="px-4 py-3 hover:bg-slate-100" href="<?php echo $adminUrl(); ?>">Dashboard</a>
             <a class="px-4 py-3 hover:bg-slate-100 flex items-center justify-between gap-2" href="<?php echo $adminUrl('users'); ?>?seen=users">
-                <span>Khách hàng</span><?php echo $badge($sidebarCounts['users'] ?? 0); ?>
+                <span>Khách hàng</span><?php echo $badge($sidebarCounts['users'] ?? 0, 'users'); ?>
             </a>
             <a class="px-4 py-3 hover:bg-slate-100" href="<?php echo $adminUrl('categories'); ?>">Danh mục</a>
             <a class="px-4 py-3 hover:bg-slate-100" href="<?php echo $adminUrl('products'); ?>">Sản phẩm</a>
             <a class="px-4 py-3 hover:bg-slate-100" href="<?php echo $adminUrl('sliders'); ?>">Slide banner</a>
             <a class="px-4 py-3 hover:bg-slate-100 flex items-center justify-between gap-2" href="<?php echo $adminUrl('orders'); ?>?seen=orders">
-                <span>Đơn hàng</span><?php echo $badge($sidebarCounts['orders'] ?? 0); ?>
+                <span>Đơn hàng</span><?php echo $badge($sidebarCounts['orders'] ?? 0, 'orders'); ?>
             </a>
             <a class="px-4 py-3 hover:bg-slate-100 flex items-center justify-between gap-2" href="<?php echo $adminUrl('services'); ?>?seen=services">
-                <span>Dịch vụ</span><?php echo $badge($sidebarCounts['services'] ?? 0); ?>
+                <span>Dịch vụ</span><?php echo $badge($sidebarCounts['services'] ?? 0, 'services'); ?>
             </a>
             <a class="px-4 py-3 hover:bg-slate-100" href="<?php echo $adminUrl('vouchers'); ?>">Mã giảm giá</a>
             <a class="px-4 py-3 hover:bg-slate-100 flex items-center justify-between gap-2" href="<?php echo $adminUrl('chats'); ?>?seen=chats">
-                <span>Tư vấn khách</span><?php echo $badge($sidebarCounts['chats'] ?? 0); ?>
+                <span>Tư vấn khách</span><?php echo $badge($sidebarCounts['chats'] ?? 0, 'chats'); ?>
             </a>
             <a class="px-4 py-3 hover:bg-slate-100 flex items-center justify-between gap-2" href="<?php echo $adminUrl('complaints'); ?>?seen=complaints">
-                <span>Khiếu nại khách</span><?php echo $badge($sidebarCounts['complaints'] ?? 0); ?>
+                <span>Khiếu nại khách</span><?php echo $badge($sidebarCounts['complaints'] ?? 0, 'complaints'); ?>
             </a>
         </div>
     </aside>
@@ -137,5 +138,38 @@
         <?php echo $content ?? ''; ?>
     </main>
 </div>
+<script>
+(function(){
+    const badges = {
+        users: document.querySelector('[data-badge="users"]'),
+        orders: document.querySelector('[data-badge="orders"]'),
+        services: document.querySelector('[data-badge="services"]'),
+        chats: document.querySelector('[data-badge="chats"]'),
+        complaints: document.querySelector('[data-badge="complaints"]')
+    };
+    let lastLatest = {};
+    const poll = () => {
+        fetch('<?php echo $adminUrl('notify/poll'); ?>', { cache: 'no-store' })
+            .then(r => r.json())
+            .then(data => {
+                ['orders','complaints','chats','services','users'].forEach(key => {
+                    const info = data[key];
+                    const badge = badges[key];
+                    if (!info || !badge) return;
+                    const count = parseInt(info.count, 10) || 0;
+                    badge.textContent = count;
+                    badge.style.display = count > 0 ? 'inline-flex' : 'none';
+                    if (lastLatest[key] && info.latest && info.latest !== lastLatest[key]) {
+                        badge.classList.add('animate-pulse');
+                        setTimeout(() => badge.classList.remove('animate-pulse'), 1500);
+                    }
+                    lastLatest[key] = info.latest || lastLatest[key];
+                });
+            })
+            .catch(() => {});
+    };
+    setInterval(poll, 1000);
+})();
+</script>
 </body>
 </html>

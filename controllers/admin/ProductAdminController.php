@@ -33,15 +33,19 @@ class ProductAdminController extends Controller {
         // Upload file ảnh nếu có
         if (!empty($_FILES['image_file']['tmp_name']) && is_uploaded_file($_FILES['image_file']['tmp_name'])) {
             $uploadDir = __DIR__ . '/../../public/uploads';
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0777, true);
+            if (!is_dir($uploadDir) && !@mkdir($uploadDir, 0777, true)) {
+                $_SESSION['flash_error'] = 'Không tạo được thư mục lưu ảnh sản phẩm. Vui lòng kiểm tra quyền ghi.';
+                $this->redirect('/admin.php/products');
             }
             $ext = pathinfo($_FILES['image_file']['name'], PATHINFO_EXTENSION);
             $safeName = preg_replace('/[^a-zA-Z0-9_-]/', '_', pathinfo($_FILES['image_file']['name'], PATHINFO_FILENAME));
             $filename = $safeName . '_' . time() . ($ext ? '.' . $ext : '');
             $dest = $uploadDir . '/' . $filename;
-            if (move_uploaded_file($_FILES['image_file']['tmp_name'], $dest)) {
+            if (is_dir($uploadDir) && is_writable($uploadDir) && move_uploaded_file($_FILES['image_file']['tmp_name'], $dest)) {
                 $data['image'] = 'public/uploads/' . $filename;
+            } else {
+                $_SESSION['flash_error'] = 'Tải ảnh sản phẩm thất bại. Vui lòng thử ảnh khác hoặc kiểm tra quyền ghi.';
+                $this->redirect('/admin.php/products');
             }
         }
         // Nếu không upload, dùng link ảnh nếu có
@@ -77,16 +81,20 @@ class ProductAdminController extends Controller {
         }
         if (!empty($_FILES['image_file']['tmp_name']) && is_uploaded_file($_FILES['image_file']['tmp_name'])) {
             $uploadDir = __DIR__ . '/../../public/uploads';
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0777, true);
+            if (!is_dir($uploadDir) && !@mkdir($uploadDir, 0777, true)) {
+                $_SESSION['flash_error'] = 'Không tạo được thư mục lưu ảnh sản phẩm. Vui lòng kiểm tra quyền ghi.';
+                $this->redirect('/admin.php/products');
             }
             $ext = pathinfo($_FILES['image_file']['name'], PATHINFO_EXTENSION);
             $safeName = preg_replace('/[^a-zA-Z0-9_-]/', '_', pathinfo($_FILES['image_file']['name'], PATHINFO_FILENAME));
             $filename = $safeName . '_' . time() . ($ext ? '.' . $ext : '');
             $dest = $uploadDir . '/' . $filename;
-            if (move_uploaded_file($_FILES['image_file']['tmp_name'], $dest)) {
+            if (is_dir($uploadDir) && is_writable($uploadDir) && move_uploaded_file($_FILES['image_file']['tmp_name'], $dest)) {
                 $data['image'] = 'public/uploads/' . $filename;
                 $this->deleteLocalFile($oldImage);
+            } else {
+                $_SESSION['flash_error'] = 'Tải ảnh sản phẩm thất bại. Vui lòng thử ảnh khác hoặc kiểm tra quyền ghi.';
+                $this->redirect('/admin.php/products');
             }
         }
         if (!$data['image'] && !empty($_POST['image_url'])) {

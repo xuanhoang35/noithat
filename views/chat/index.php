@@ -1,10 +1,10 @@
 <?php ob_start(); ?>
 <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
     <div class="h-[520px] flex flex-col">
-        <div class="flex-1 overflow-y-auto bg-slate-50 px-4 py-3 space-y-3">
+        <div class="flex-1 overflow-y-auto bg-slate-50 px-4 py-3 space-y-3" id="chat-list" data-thread="<?php echo (int)$thread['id']; ?>">
             <?php foreach ($messages as $m): ?>
                 <?php $isAdmin = (bool)$m['is_admin']; ?>
-                <div class="flex <?php echo $isAdmin ? 'justify-start' : 'justify-end'; ?>">
+                <div class="flex <?php echo $isAdmin ? 'justify-start' : 'justify-end'; ?>" data-msg-id="<?php echo $m['id']; ?>">
                     <div class="max-w-[70%] rounded-2xl px-4 py-3 shadow-sm <?php echo $isAdmin ? 'bg-white' : 'bg-blue-600 text-white'; ?>">
                         <div class="text-xs mb-1 <?php echo $isAdmin ? 'text-slate-500' : 'text-blue-50'; ?>">
                             <?php echo $isAdmin ? 'Admin' : 'Bạn'; ?> · <?php echo date('d/m H:i', strtotime($m['created_at'])); ?>
@@ -14,7 +14,7 @@
                 </div>
             <?php endforeach; ?>
             <?php if (empty($messages)): ?>
-                <div class="text-center text-slate-500 text-sm py-10">Chưa có tin nhắn nào, hãy đặt câu hỏi cho chúng tôi.</div>
+                <div class="text-center text-slate-500 text-sm py-10" data-empty>Chưa có tin nhắn nào, hãy đặt câu hỏi cho chúng tôi.</div>
             <?php endif; ?>
         </div>
         <div class="border-t bg-white px-4 py-3">
@@ -31,4 +31,44 @@
         </div>
     </div>
 </div>
+<script>
+(function(){
+    const list = document.getElementById('chat-list');
+    if (!list) return;
+    const threadId = list.getAttribute('data-thread');
+    let lastId = 0;
+    list.querySelectorAll('[data-msg-id]').forEach(el => {
+        const id = parseInt(el.getAttribute('data-msg-id'), 10);
+        if (id > lastId) lastId = id;
+    });
+    const append = (items) => {
+        const empty = list.querySelector('[data-empty]');
+        if (empty) empty.remove();
+        items.forEach(m => {
+            const wrap = document.createElement('div');
+            wrap.className = 'flex ' + (m.is_admin ? 'justify-start' : 'justify-end');
+            wrap.setAttribute('data-msg-id', m.id);
+            wrap.innerHTML = `
+                <div class="max-w-[70%] rounded-2xl px-4 py-3 shadow-sm ${m.is_admin ? 'bg-white' : 'bg-blue-600 text-white'}">
+                    <div class="text-xs mb-1 ${m.is_admin ? 'text-slate-500' : 'text-blue-50'}">
+                        ${m.is_admin ? 'Admin' : 'Bạn'} · ${m.created_at}
+                    </div>
+                    <div class="text-sm leading-relaxed whitespace-pre-line"></div>
+                </div>
+            `;
+            wrap.querySelector('div > div:last-child').textContent = m.content;
+            list.appendChild(wrap);
+            lastId = Math.max(lastId, parseInt(m.id, 10));
+        });
+        list.scrollTop = list.scrollHeight;
+    };
+    const poll = () => {
+        fetch(`<?php echo base_url('chat/poll'); ?>?thread_id=${threadId}&last_id=${lastId}`, { cache: 'no-store' })
+            .then(r => r.json())
+            .then(data => { if (Array.isArray(data) && data.length) append(data); })
+            .catch(() => {});
+    };
+    setInterval(poll, 2000);
+})();
+</script>
 <?php $content = ob_get_clean(); include __DIR__ . '/../layouts/main.php'; ?>

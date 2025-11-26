@@ -37,6 +37,7 @@ $router->post('/complaints/create/{orderId}', 'ComplaintController@store');
 $router->post('/complaints/reply/{id}', 'ComplaintController@reply');
 $router->get('/chat', 'ChatController@index');
 $router->post('/chat', 'ChatController@send');
+$router->get('/chat/poll', 'ChatController@poll');
 $router->get('/login', 'AuthController@loginForm');
 $router->post('/login', 'AuthController@login');
 $router->get('/register', 'AuthController@registerForm');
