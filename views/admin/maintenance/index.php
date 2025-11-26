@@ -41,25 +41,16 @@
                 <textarea name="message" rows="3" class="w-full px-3 py-2 border rounded"><?php echo htmlspecialchars($message); ?></textarea>
             </div>
             <div>
-                <label class="text-sm text-slate-600">Chọn ảnh (bắt buộc)</label>
+                <label class="text-sm text-slate-600">Chọn ảnh</label>
                 <input type="file" name="image" accept="image/*" class="w-full text-sm">
             </div>
-            <label class="inline-flex items-center gap-2">
-                <span class="relative inline-flex items-center">
-                    <input type="checkbox" name="enabled" value="1" <?php echo $enabled ? 'checked' : ''; ?> class="sr-only" id="maintenance-toggle">
-                    <span class="w-12 h-6 bg-slate-200 rounded-full transition peer-checked:bg-red-500"></span>
-                    <span class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow transition peer-checked:translate-x-6"></span>
-                </span>
-                <span class="text-sm text-red-600 font-semibold">Đóng trang web (bật chế độ bảo trì)</span>
-            </label>
             <div class="flex items-center gap-3">
                 <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" name="enabled" value="1" class="sr-only peer" <?php echo $enabled ? 'checked' : ''; ?>>
+                    <input type="checkbox" name="enabled" value="1" class="sr-only peer" id="maintenance-toggle" <?php echo $enabled ? 'checked' : ''; ?>>
                     <div class="w-12 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:bg-red-500 transition"></div>
                     <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow transition peer-checked:translate-x-6"></div>
                 </label>
                 <span class="text-sm text-red-600 font-semibold">Gạt để đóng/mở trang web (áp dụng ngay)</span>
-                <a class="px-4 py-2 bg-slate-100 text-slate-700 rounded hover:bg-slate-200 text-sm" href="<?php echo base_url('maintenance'); ?>" target="_blank">Xem trang bảo trì</a>
             </div>
         </form>
         <div class="lg:col-span-1">
@@ -84,8 +75,5 @@
         </div>
     </div>
 
-    <div class="mt-4 text-right">
-        <a class="px-4 py-2 bg-slate-100 text-slate-700 rounded hover:bg-slate-200 text-sm" href="<?php echo base_url('maintenance'); ?>" target="_blank">Xem trang bảo trì</a>
-    </div>
 </div>
 <?php $content = ob_get_clean(); include __DIR__ . '/../layouts/main.php'; ?>
