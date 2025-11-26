@@ -40,6 +40,8 @@ $router->get('/chats/show/{id}', 'admin/ChatAdminController@show');
 $router->get('/chats/poll/{id}', 'admin/ChatAdminController@poll');
 $router->post('/chats/reply/{id}', 'admin/ChatAdminController@reply');
 $router->get('/notify/poll', 'admin/NotifyAdminController@poll');
+$router->get('/maintenance', 'admin/MaintenanceAdminController@index');
+$router->post('/maintenance', 'admin/MaintenanceAdminController@update');
 $router->get('/services', 'admin/ServiceAdminController@index');
 $router->post('/services/create', 'admin/ServiceAdminController@store');
 $router->post('/services/update/{id}', 'admin/ServiceAdminController@update');

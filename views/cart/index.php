@@ -127,10 +127,10 @@
                 <a href="tel:0974734668" class="w-full inline-flex items-center justify-center px-4 py-3 bg-amber-500 text-white rounded-lg hover:bg-amber-600 font-semibold">Liên hệ</a>
             <?php else: ?>
                 <form method="post" action="<?php echo base_url('order/checkout'); ?>" class="grid grid-cols-1 gap-3">
-                    <input class="px-3 py-2 border rounded w-full" name="name" placeholder="Họ tên" required>
-                    <input class="px-3 py-2 border rounded w-full" name="phone" placeholder="SĐT" required>
-                    <input class="px-3 py-2 border rounded w-full" name="email" placeholder="Email" required>
-                    <input class="px-3 py-2 border rounded w-full" name="address" placeholder="Địa chỉ" required>
+                    <input class="px-3 py-2 border rounded w-full" name="name" placeholder="Họ tên" required maxlength="30">
+                    <input class="px-3 py-2 border rounded w-full" name="phone" placeholder="SĐT" required maxlength="10" pattern="0[0-9]{9}" title="Chỉ nhập số, bắt đầu 0 và đủ 10 số">
+                    <input class="px-3 py-2 border rounded w-full" name="email" placeholder="Email" required maxlength="30" pattern="[A-Za-z0-9._%+\-]+@(gmail|email)[A-Za-z0-9.\-]*\.[A-Za-z0-9.\-]+" title="Chỉ chữ không dấu/số, chứa @gmail hoặc @email, tối đa 30 ký tự">
+                    <input class="px-3 py-2 border rounded w-full" name="address" placeholder="Địa chỉ" required maxlength="255">
                     <div class="space-y-2">
                         <p class="text-sm font-semibold text-slate-700">Phương thức thanh toán</p>
                         <label class="flex items-center gap-2 px-3 py-2 border rounded cursor-pointer hover:border-blue-500">

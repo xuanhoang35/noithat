@@ -43,6 +43,23 @@ class OrderController extends Controller {
             'address'=>$_POST['address']??'',
             'note'=>$_POST['note']??'',
         ];
+        $errors = [];
+        if ($customer['name'] === '' || mb_strlen($customer['name']) > 30) {
+            $errors[] = 'Họ tên không được để trống và tối đa 30 ký tự.';
+        }
+        if (!preg_match('/^0\\d{9}$/', $customer['phone'])) {
+            $errors[] = 'Số điện thoại phải bắt đầu bằng 0 và đủ 10 chữ số.';
+        }
+        if ($customer['email'] === '' || mb_strlen($customer['email']) > 30 || !preg_match('/^[A-Za-z0-9._%+-]+@(gmail|email)[A-Za-z0-9.-]*\\.[A-Za-z0-9.-]+$/', $customer['email'])) {
+            $errors[] = 'Email phải chứa @gmail hoặc @email, tối đa 30 ký tự.';
+        }
+        if ($customer['address'] === '' || mb_strlen($customer['address']) > 255) {
+            $errors[] = 'Địa chỉ không được để trống và tối đa 255 ký tự.';
+        }
+        if ($errors) {
+            $_SESSION['cart_error'] = implode(' ', $errors);
+            $this->redirect('/cart');
+        }
         $voucher = $_SESSION['cart_voucher'] ?? null;
         $paymentMethod = $_POST['payment_method'] ?? 'cod';
         $allowedMethods = ['cod','vnpay','momo'];

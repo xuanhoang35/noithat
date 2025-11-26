@@ -18,7 +18,7 @@
     <div class="overflow-auto">
         <table class="min-w-full text-sm">
             <tr class="bg-slate-100 text-left">
-                <th class="p-3">ID</th><th class="p-3">Tên</th><th class="p-3">Email</th><th class="p-3">Điện thoại</th><th class="p-3">Role</th><th class="p-3">Trạng thái</th><th class="p-3">Kích hoạt</th><th class="p-3">Xóa</th>
+                <th class="p-3">ID</th><th class="p-3">Tên</th><th class="p-3">Email</th><th class="p-3">Điện thoại</th><th class="p-3">Role</th><th class="p-3">Trạng thái</th><th class="p-3">Online</th><th class="p-3">Kích hoạt</th><th class="p-3">Xóa</th>
             </tr>
             <?php foreach ($users as $u): ?>
             <tr class="border-b hover:bg-slate-50">
@@ -31,6 +31,12 @@
                     <?php $active = (int)$u['is_active'] === 1; ?>
                     <span class="inline-flex items-center h-8 px-3 text-xs rounded-full <?php echo $active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-700'; ?>">
                         <?php echo $active ? 'Đang mở' : 'Đang khóa'; ?>
+                    </span>
+                </td>
+                <td class="p-3 align-middle">
+                    <?php $online = (int)($u['is_online'] ?? 0) === 1; ?>
+                    <span class="inline-flex items-center h-8 px-3 text-xs rounded-full <?php echo $online ? 'bg-blue-50 text-blue-700' : 'bg-slate-100 text-slate-600'; ?>">
+                        <?php echo $online ? 'Online' : 'Offline'; ?>
                     </span>
                 </td>
                 <td class="p-3 align-middle">

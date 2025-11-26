@@ -17,6 +17,11 @@ class User extends Model {
         } catch (\Throwable $e) {
             // đã có
         }
+        try {
+            $this->db->exec("ALTER TABLE users ADD COLUMN is_online TINYINT(1) DEFAULT 0");
+        } catch (\Throwable $e) {
+            // đã có
+        }
     }
     public function findByEmail(string $email): ?array {
         $this->ensureSchema();
@@ -69,5 +74,11 @@ class User extends Model {
         // Không cho phép xóa admin
         $stmt = $this->db->prepare("UPDATE users SET deleted_at=NOW(), is_active=0 WHERE id=? AND role!='admin'");
         $stmt->execute([$id]);
+    }
+
+    public function setOnline(int $id, bool $online): void {
+        $this->ensureSchema();
+        $stmt = $this->db->prepare('UPDATE users SET is_online=? WHERE id=?');
+        $stmt->execute([$online ? 1 : 0, $id]);
     }
 }

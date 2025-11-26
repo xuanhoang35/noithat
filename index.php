@@ -13,9 +13,48 @@ require __DIR__ . '/core/Auth.php';
 require __DIR__ . '/core/Controller.php';
 require __DIR__ . '/core/Model.php';
 require __DIR__ . '/helpers/url_helper.php';
+require __DIR__ . '/models/User.php';
 
+$config = include __DIR__ . '/config/config.php';
 $baseUrl = $config['base_url'] ?? '';
 $router = new Router();
+
+// Kiểm tra phiên user đã bị khóa hoặc xóa
+if (Auth::check()) {
+    $sessionUser = Auth::user();
+    if (!empty($sessionUser['id'])) {
+        $userModel = new User();
+        $fresh = $userModel->findById((int)$sessionUser['id']);
+        if (!$fresh || (int)($fresh['is_active'] ?? 1) !== 1) {
+            $_SESSION['flash_error'] = 'Hết phiên đăng nhập, vui lòng đăng nhập lại.';
+            Auth::logout();
+            header('Location: ' . base_url());
+            exit;
+        }
+    }
+}
+
+// Nếu bật bảo trì: chặn mọi route người dùng (không chặn admin + login/register/forgot/logout)
+$maintenanceCfgFile = __DIR__ . '/config/maintenance.json';
+$maintenanceCfg = [];
+if (file_exists($maintenanceCfgFile)) {
+    $maintenanceCfg = json_decode(file_get_contents($maintenanceCfgFile), true) ?: [];
+}
+$maintenanceEnabled = !empty($maintenanceCfg['enabled']);
+$uri = $_SERVER['REQUEST_URI'] ?? '';
+if ($maintenanceEnabled && !Auth::isAdmin()) {
+    $path = parse_url($uri, PHP_URL_PATH) ?: '/';
+    $allowed = ['/login','/register','/forgot','/forgot/wait','/forgot/status','/forgot/resend','/logout','/maintenance'];
+    $isAllowed = false;
+    foreach ($allowed as $allow) {
+        if (str_starts_with($path, $allow)) { $isAllowed = true; break; }
+    }
+    if (!$isAllowed) {
+        http_response_code(503);
+        (new PageController())->maintenancePage();
+        exit;
+    }
+}
 
 $router->get('/', 'HomeController@index');
 $router->get('/products', 'ProductController@index');
@@ -54,3 +93,4 @@ $router->get('/notify/poll', 'NotifyController@poll');
 
 $request = new Request($baseUrl);
 $router->dispatch($request);
+$router->get('/maintenance', 'PageController@maintenancePage');

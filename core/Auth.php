@@ -14,9 +14,18 @@ class Auth {
 
     public static function login(array $user): void {
         $_SESSION['user'] = $user;
+        // cập nhật trạng thái online
+        if (!empty($user['id'])) {
+            require_once __DIR__ . '/../models/User.php';
+            try { (new User())->setOnline((int)$user['id'], true); } catch (\Throwable $e) {}
+        }
     }
 
     public static function logout(): void {
+        if (!empty($_SESSION['user']['id'])) {
+            require_once __DIR__ . '/../models/User.php';
+            try { (new User())->setOnline((int)$_SESSION['user']['id'], false); } catch (\Throwable $e) {}
+        }
         unset($_SESSION['user']);
     }
 

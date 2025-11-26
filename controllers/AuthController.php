@@ -45,10 +45,10 @@ class AuthController extends Controller {
             $this->view('auth/register', compact('error', 'name', 'email', 'phone'));
             return;
         }
-        // email phải chứa @gmail, @gmai hoặc @email, không dùng ký tự có dấu, đuôi miền tự do (.com, .edu, .yahoo, ...)
-        $emailPattern = '/^[A-Za-z0-9._%+-]+@(gmail|gmai|email)[A-Za-z0-9.-]*\\.[A-Za-z0-9.-]+$/';
+        // email phải chứa @gmail hoặc @email, không dùng ký tự có dấu, đuôi miền tự do (.com, .edu, .yahoo, ...)
+        $emailPattern = '/^[A-Za-z0-9._%+-]+@(gmail|email)[A-Za-z0-9.-]*\\.[A-Za-z0-9.-]+$/';
         if (!preg_match($emailPattern, $email)) {
-            $error = 'Email không hợp lệ (chỉ chữ không dấu/số, chứa @gmail/@gmai/@email).';
+            $error = 'Email không hợp lệ (chỉ chữ không dấu/số, chứa @gmail hoặc @email).';
             $this->view('auth/register', compact('error', 'name', 'email', 'phone'));
             return;
         }

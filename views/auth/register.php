@@ -17,7 +17,7 @@
         <?php if (!empty($error)) echo '<div class="p-3 mb-2 bg-red-50 text-red-600 rounded">'.$error.'</div>'; ?>
         <form method="post" action="<?php echo base_url('register'); ?>" class="grid gap-2">
             <input class="px-3 py-2 border rounded" name="name" placeholder="Họ tên" required maxlength="30" value="<?php echo htmlspecialchars($name ?? ''); ?>">
-            <input class="px-3 py-2 border rounded" type="email" name="email" placeholder="Email" required maxlength="30" pattern="[A-Za-z0-9._%+\-]+@(gmail|gmai|email)[A-Za-z0-9.\-]*\.[A-Za-z0-9.\-]+" title="Chỉ chữ không dấu/số, chứa @gmail/@gmai/@email, đuôi miền tùy ý, tối đa 30 ký tự" value="<?php echo htmlspecialchars($email ?? ''); ?>">
+            <input class="px-3 py-2 border rounded" type="email" name="email" placeholder="Email" required maxlength="30" pattern="[A-Za-z0-9._%+\-]+@(gmail|email)[A-Za-z0-9.\-]*\.[A-Za-z0-9.\-]+" title="Chỉ chữ không dấu/số, chứa @gmail hoặc @email, đuôi miền tùy ý, tối đa 30 ký tự" value="<?php echo htmlspecialchars($email ?? ''); ?>">
             <input class="px-3 py-2 border rounded" type="tel" inputmode="numeric" name="phone" placeholder="SĐT" required maxlength="10" pattern="0[0-9]{9}" title="Chỉ nhập số, bắt đầu bằng 0 và đủ 10 chữ số" value="<?php echo htmlspecialchars($phone ?? ''); ?>">
             <input class="px-3 py-2 border rounded" type="password" name="password" placeholder="Mật khẩu" required maxlength="30" pattern="[A-Za-z0-9]{1,30}" title="Chỉ chữ không dấu và số, tối đa 30 ký tự">
             <button class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Đăng ký</button>

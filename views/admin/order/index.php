@@ -36,6 +36,11 @@
                     <td class="p-3 text-blue-600"><?php echo number_format($o['total_amount']); ?></td>
                     <td class="p-3 text-slate-600 text-sm"><?php echo $paymentLabel; ?></td>
                     <td class="p-3"><span class="px-2 py-1 rounded <?php echo $badge; ?>"><?php echo $label; ?></span></td>
+                    <?php
+                        $dt = new DateTime($o['created_at'], new DateTimeZone('Asia/Ho_Chi_Minh'));
+                        $displayTime = $dt->format('d/m/Y H:i');
+                    ?>
+                    <td class="p-3 text-slate-600 text-sm"><?php echo $displayTime; ?></td>
                     <td class="p-3">
                         <form method="post" action="<?php echo base_url('admin.php/orders/update-status/' . $o['id']); ?>" class="flex gap-2">
                             <select class="px-3 py-2 border rounded text-sm" name="status">

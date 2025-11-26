@@ -40,8 +40,12 @@
                 <td class="p-3 font-medium"><?php echo $o['code']; ?></td>
                 <td class="p-3 text-sm text-slate-600"><?php echo $paymentLabel; ?></td>
                 <td class="p-3"><span class="px-2 py-1 rounded <?php echo $badge; ?>"><?php echo $statusLabel; ?></span></td>
+                <?php
+                    $dt = new DateTime($o['created_at'], new DateTimeZone('Asia/Ho_Chi_Minh'));
+                    $displayTime = $dt->format('d/m/Y H:i');
+                ?>
                 <td class="p-3 text-blue-600 font-semibold"><?php echo number_format($o['total_amount']); ?> đ</td>
-                <td class="p-3 text-slate-600"><?php echo $o['created_at']; ?></td>
+                <td class="p-3 text-slate-600"><?php echo $displayTime; ?></td>
                 <td class="p-3">
                     <a class="px-3 py-1.5 text-sm rounded bg-red-50 text-red-600 hover:bg-red-100" href="<?php echo base_url('complaints/create/' . $o['id']); ?>">Khiếu nại</a>
                 </td>
