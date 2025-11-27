@@ -85,7 +85,7 @@ $hideFooter = $hideFooter ?? false;
         <div class="flex items-center text-xs text-white/80 gap-3">
             <div class="flex-1 min-h-[20px] overflow-hidden">
                 <?php if (!empty($_SESSION['welcome_message'])): ?>
-                    <div class="whitespace-nowrap animate-scroll-text text-white">
+                    <div class="whitespace-nowrap ticker-dynamic text-white" data-ticker-cycle="<?php echo htmlspecialchars($_SESSION['welcome_message']); ?>|<?php echo htmlspecialchars($_SESSION['welcome_message']); ?>" data-ticker-speed="12">
                         <?php echo htmlspecialchars($_SESSION['welcome_message']); unset($_SESSION['welcome_message']); ?>
                     </div>
                 <?php elseif (Auth::check()): ?>
@@ -93,7 +93,7 @@ $hideFooter = $hideFooter ?? false;
                         Khám phá Nội Thất Store – hơn 2.000 sản phẩm nội thất & thiết bị gia dụng cao cấp, thiết kế độc đáo, vật liệu bền bỉ, giao nhanh – lắp đặt tận nơi, tư vấn 24/7, đổi trả linh hoạt, bảo hành minh bạch và ưu đãi thành viên hấp dẫn để nâng tầm không gian sống của bạn.
                     </div>
                 <?php else: ?>
-                    <div class="whitespace-nowrap animate-scroll-text text-white">
+                    <div class="whitespace-nowrap ticker-dynamic text-white" data-ticker-cycle="Chào mừng quý khách đến với Nội Thất Store — Chúc quý khách lựa chọn được sản phẩm ưng ý và nâng tầm không gian sống!|Chào mừng quý khách đến với Nội Thất Store — Chúc quý khách lựa chọn được sản phẩm ưng ý và nâng tầm không gian sống!" data-ticker-speed="12">
                         Chào mừng quý khách đến với Nội Thất Store — Chúc quý khách lựa chọn được sản phẩm ưng ý và nâng tầm không gian sống!
                     </div>
                 <?php endif; ?>
