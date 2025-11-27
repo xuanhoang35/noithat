@@ -112,7 +112,7 @@ $isActive = function ($path) use ($currentPath) {
                 <span class="text-white/70">Hỗ trợ nhanh 24/7</span>
             </div>
         </div>
-        <div class="glass-panel rounded-2xl px-4 py-2.5 flex items-center gap-4 shadow-xl">
+        <div class="rounded-2xl px-4 py-2.5 flex items-center gap-4 shadow-none bg-transparent border border-white/50 backdrop-blur-sm">
             <a href="<?php echo base_url(); ?>" class="text-2xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-blue-100 to-blue-300">
                 Noithat Store
             </a>

@@ -49,12 +49,13 @@ class Product extends Model {
         if ($conditions) {
             $sql .= ' WHERE ' . implode(' AND ', $conditions);
         }
+        // Luôn ưu tiên còn hàng trước, sau đó mới áp dụng sắp xếp theo giá hoặc mặc định
         if ($priceSort === 'asc') {
-            $sql .= ' ORDER BY price ASC';
+            $sql .= ' ORDER BY (stock > 0) DESC, price ASC';
         } elseif ($priceSort === 'desc') {
-            $sql .= ' ORDER BY price DESC';
+            $sql .= ' ORDER BY (stock > 0) DESC, price DESC';
         } else {
-            $sql .= ' ORDER BY id DESC';
+            $sql .= ' ORDER BY (stock > 0) DESC, id DESC';
         }
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
