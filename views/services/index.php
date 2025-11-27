@@ -1,7 +1,7 @@
 <?php ob_start(); ?>
 <div class="space-y-6">
     <section class="p-6 rounded-3xl bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white shadow-md">
-        <h1 class="text-2xl font-bold mb-2">Dịch vụ Noithat Store</h1>
+        <h1 class="text-2xl font-bold mb-2">Dịch vụ Nội Thất Store - Cửa hàng nội thất và thiết bị gia dụng</h1>
         <p class="text-blue-100">Lắp đặt, bảo trì, vận chuyển và tư vấn – tất cả trong một.</p>
     </section>
 

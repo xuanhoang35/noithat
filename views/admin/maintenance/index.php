@@ -6,8 +6,16 @@
     $subtitle = $c['subtitle'] ?? '';
     $message = $c['message'] ?? '';
     $image = $c['image'] ?? '';
+    $images = $c['images'] ?? [];
+    if (empty($images) && $image) { $images[] = $image; }
     $video = $c['video'] ?? '';
-    $previewImage = $image ? asset_url($image) : asset_url('public/assets/img/placeholder.svg');
+    $previewImages = [];
+    foreach ($images as $img) {
+        if ($img) { $previewImages[] = asset_url($img); }
+    }
+    if (empty($previewImages)) {
+        $previewImages[] = asset_url('public/assets/img/placeholder.svg');
+    }
     $previewVideo = '';
     $previewEmbed = '';
     if (!empty($video)) {
@@ -69,12 +77,12 @@
                 <textarea name="message" rows="3" class="w-full px-3 py-2 border rounded"><?php echo htmlspecialchars($message); ?></textarea>
             </div>
             <div>
-                <label class="text-sm text-slate-600">Ảnh nền (tùy chọn)</label>
+                <label class="text-sm text-slate-600">Ảnh nền (tùy chọn, có thể chọn nhiều)</label>
                 <div class="flex items-center gap-2 mt-1">
-                    <input type="file" name="image" accept="image/*" class="w-full text-sm" id="maintenance-image">
-                    <button type="button" id="maintenance-image-clear" class="px-2 py-1 text-xs bg-slate-100 text-slate-700 rounded hover:bg-slate-200 hidden">X</button>
+                    <input type="file" name="images[]" accept="image/*" class="w-full text-sm" id="maintenance-image" multiple>
+                    <button type="button" id="maintenance-image-clear" class="px-2 py-1 text-xs bg-slate-100 text-slate-700 rounded hover:bg-slate-200 hidden" aria-label="Xóa danh sách ảnh">X</button>
                 </div>
-                <p class="text-xs text-slate-500 mt-1">Chọn ảnh sẽ bỏ URL video và video hiện tại.</p>
+                <p class="text-xs text-slate-500 mt-1">Chọn nhiều ảnh, trang bảo trì sẽ tự chuyển mượt sau mỗi 5 giây. Chọn ảnh sẽ bỏ URL video và video hiện tại.</p>
                 <div id="maintenance-image-name" class="text-xs text-blue-600 mt-1 hidden"></div>
             </div>
             <div>
@@ -100,7 +108,7 @@
                     <p class="text-xs uppercase tracking-widest text-blue-200">Preview</p>
                     <p class="text-lg font-semibold">Trang bảo trì</p>
                 </div>
-                <div class="p-4 space-y-2 bg-slate-50">
+                <div class="p-4 space-y-3 bg-slate-50">
                     <?php if ($previewEmbed): ?>
                         <div class="w-full h-48 rounded-lg border border-slate-200 overflow-hidden">
                             <iframe src="<?php echo htmlspecialchars($previewEmbed); ?>" class="w-full h-full" allowfullscreen allow="autoplay; encrypted-media"></iframe>
@@ -108,7 +116,11 @@
                     <?php elseif ($previewVideo): ?>
                         <video src="<?php echo $previewVideo; ?>" class="w-full h-48 rounded-lg border border-slate-200 object-cover" controls autoplay loop playsinline></video>
                     <?php else: ?>
-                        <img src="<?php echo $previewImage; ?>" alt="Preview" class="w-full h-48 object-cover rounded-lg border border-slate-200">
+                        <div class="relative w-full h-48 rounded-lg border border-slate-200 overflow-hidden bg-black/60">
+                            <?php foreach ($previewImages as $idx => $url): ?>
+                                <img src="<?php echo $url; ?>" alt="Preview" class="maintenance-preview-slide absolute inset-0 w-full h-full object-cover <?php echo $idx === 0 ? 'is-active' : ''; ?>" data-maintenance-preview-slide>
+                            <?php endforeach; ?>
+                        </div>
                     <?php endif; ?>
                     <div class="bg-white rounded-xl p-3 shadow border border-slate-100">
                         <p class="text-lg font-bold text-slate-800"><?php echo htmlspecialchars($title); ?></p>
@@ -139,7 +151,11 @@ document.addEventListener('DOMContentLoaded', function(){
     const updateState = () => {
         const hasImg = imgInput && imgInput.files && imgInput.files.length > 0;
         if (imgName) {
-            if (hasImg) { imgName.textContent = imgInput.files[0].name; imgName.classList.remove('hidden'); }
+            if (hasImg) {
+                const names = Array.from(imgInput.files).map(f => f.name).join(', ');
+                imgName.textContent = names;
+                imgName.classList.remove('hidden');
+            }
             else { imgName.textContent = ''; imgName.classList.add('hidden'); }
         }
         if (imgClear) imgClear.classList.toggle('hidden', !hasImg);
@@ -155,6 +171,21 @@ document.addEventListener('DOMContentLoaded', function(){
         toggle.addEventListener('change', () => form.submit());
     }
     form.addEventListener('submit', () => { if (submitBtn) submitBtn.disabled = true; });
+
+    // Preview slider (5s)
+    const slides = document.querySelectorAll('[data-maintenance-preview-slide]');
+    if (slides.length > 1) {
+        let idx = 0;
+        setInterval(() => {
+            slides[idx].classList.remove('is-active');
+            idx = (idx + 1) % slides.length;
+            slides[idx].classList.add('is-active');
+        }, 5000);
+    }
 });
 </script>
+<style>
+.maintenance-preview-slide { opacity: 0; transform: scale(1.02); transition: opacity 0.8s ease, transform 0.8s ease; }
+.maintenance-preview-slide.is-active { opacity: 1; transform: scale(1); }
+</style>
 <?php $content = ob_get_clean(); include __DIR__ . '/../layouts/main.php'; ?>

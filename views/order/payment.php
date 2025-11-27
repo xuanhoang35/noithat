@@ -85,7 +85,7 @@
                 <div class="space-y-3 text-sm text-[#6d2c51]">
                     <div>
                         <p class="text-xs uppercase text-[#d38bae]">Nhà cung cấp</p>
-                        <p class="font-semibold">Noithat Store</p>
+                        <p class="font-semibold">Nội Thất Store - Cửa hàng nội thất và thiết bị gia dụng</p>
                     </div>
                     <div>
                         <p class="text-xs uppercase text-[#d38bae]">Mã đơn hàng</p>

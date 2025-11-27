@@ -1,6 +1,19 @@
 <?php ob_start(); ?>
 <?php
-    $img = asset_url(!empty($image) ? $image : 'public/assets/img/placeholder.svg');
+    $imageList = [];
+    if (!empty($images) && is_array($images)) {
+        foreach ($images as $it) {
+            $it = trim((string)$it);
+            if ($it !== '') $imageList[] = $it;
+        }
+    }
+    if (empty($imageList) && !empty($image)) {
+        $imageList[] = $image;
+    }
+    if (empty($imageList)) {
+        $imageList[] = 'public/assets/img/placeholder.svg';
+    }
+    $imageUrls = array_map(fn($i) => asset_url($i), $imageList);
     $videoSrc = '';
     $videoEmbed = '';
     if (!empty($video)) {
@@ -29,12 +42,13 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Bảo trì | Noithat Store</title>
+    <title>Bảo trì | Nội Thất Store - Cửa hàng nội thất và thiết bị gia dụng</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body, html { margin:0; padding:0; min-height:100vh; }
         .glow { box-shadow: 0 10px 40px rgba(59,130,246,0.35); }
     </style>
+    <link rel="icon" type="image/png" href="<?php echo asset_url('public/bank/noithat_logo.png'); ?>">
 </head>
 <body class="bg-slate-950 text-white flex items-center justify-center px-4 relative overflow-hidden">
     <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(59,130,246,0.15),transparent_25%),radial-gradient(circle_at_80%_10%,rgba(236,72,153,0.12),transparent_20%),radial-gradient(circle_at_50%_80%,rgba(16,185,129,0.12),transparent_20%)]"></div>
@@ -42,7 +56,7 @@
         <div class="space-y-4">
             <div class="flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-blue-200">
                 <span class="inline-block w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
-                Noithat Store
+                Nội Thất Store
             </div>
             <h1 class="text-3xl md:text-4xl font-bold leading-tight"><?php echo htmlspecialchars($title); ?></h1>
             <p class="text-lg text-blue-100"><?php echo htmlspecialchars($subtitle); ?></p>
@@ -58,7 +72,9 @@
             <?php elseif ($videoSrc): ?>
                 <video src="<?php echo $videoSrc; ?>" class="absolute inset-0 w-full h-full object-cover" autoplay loop playsinline controls data-force-play></video>
             <?php else: ?>
-                <img src="<?php echo $img; ?>" alt="Maintenance" class="absolute inset-0 w-full h-full object-cover" onerror="this.src='<?php echo asset_url('public/assets/img/placeholder.svg'); ?>';">
+                <?php foreach ($imageUrls as $idx => $url): ?>
+                    <img src="<?php echo $url; ?>" alt="Maintenance" class="maintenance-slide absolute inset-0 w-full h-full object-cover <?php echo $idx === 0 ? 'is-active' : ''; ?>" data-maintenance-slide onerror="this.src='<?php echo asset_url('public/assets/img/placeholder.svg'); ?>';">
+                <?php endforeach; ?>
             <?php endif; ?>
         </div>
     </div>
@@ -68,7 +84,20 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('video[data-force-play]').forEach(v => {
         v.play().catch(() => {});
     });
+    const slides = document.querySelectorAll('[data-maintenance-slide]');
+    if (slides.length > 1) {
+        let current = 0;
+        setInterval(() => {
+            slides[current].classList.remove('is-active');
+            current = (current + 1) % slides.length;
+            slides[current].classList.add('is-active');
+        }, 5000);
+    }
 });
 </script>
+<style>
+.maintenance-slide { opacity: 0; transform: scale(1.02); transition: opacity 0.9s ease, transform 0.9s ease; }
+.maintenance-slide.is-active { opacity: 1; transform: scale(1); }
+</style>
 </html>
 <?php ob_end_flush(); ?>

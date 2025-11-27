@@ -2,12 +2,13 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Admin - Noithat Store</title>
+    <title>Admin - Nội Thất Store - Cửa hàng nội thất và thiết bị gia dụng</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         html, body { margin:0 !important; padding:0 !important; }
         * { box-sizing: border-box; }
     </style>
+    <link rel="icon" type="image/png" href="<?php echo asset_url('public/bank/noithat_logo.png'); ?>">
     <link rel="stylesheet" href="<?php echo asset_url('public/assets/css/style.css'); ?>">
     <script>
         (function () {

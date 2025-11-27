@@ -4,7 +4,7 @@
         <div>
             <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">Về chúng tôi</span>
             <h1 class="text-3xl font-bold mt-3 mb-3 text-slate-800">Không gian sống hiện đại, tinh tế và tiện nghi</h1>
-            <p class="text-slate-600">Noithat Store mang đến giải pháp nội thất & thiết bị gia dụng đồng bộ, giao nhanh, bảo hành rõ ràng.</p>
+            <p class="text-slate-600">Nội Thất Store - Cửa hàng nội thất và thiết bị gia dụng mang đến giải pháp đồng bộ, giao nhanh, bảo hành rõ ràng.</p>
         </div>
         <div class="text-right">
             <div class="text-2xl font-bold text-blue-600">++ 2.000+</div>

@@ -1,6 +1,6 @@
 <?php
 return [
-    'app_name' => 'Noithat Store',
+    'app_name' => 'Nội Thất Store - Cửa hàng nội thất và thiết bị gia dụng',
     // Đặt base_url = '' nếu triển khai ở gốc domain. Nếu chạy trong thư mục con,
     // ví dụ https://example.com/app, hãy đặt thành '/app' hoặc URL đầy đủ.
     'base_url' => '',

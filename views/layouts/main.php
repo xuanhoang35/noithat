@@ -21,7 +21,23 @@ window.addEventListener('unhandledrejection', function(e) {
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Noithat Store</title>
+    <?php
+        $appCfg = include __DIR__ . '/../../config/config.php';
+        $appName = $appCfg['app_name'] ?? 'Nội Thất Store - Cửa hàng nội thất và thiết bị gia dụng';
+        $brandShort = 'Nội Thất Store';
+        $brandTagline = 'Cửa hàng nội thất và thiết bị gia dụng';
+        $appDesc = 'Chào mừng quý khách đến với ' . $brandShort . ' — ' . $brandTagline . '. Chúc quý khách lựa chọn được sản phẩm ưng ý và nâng tầm không gian sống!';
+        $appUrl = base_url('');
+        $appImage = asset_url('public/bank/noithat_logo.png');
+    ?>
+    <title><?php echo htmlspecialchars($appName); ?></title>
+    <meta name="description" content="<?php echo htmlspecialchars($appDesc); ?>">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="<?php echo htmlspecialchars($brandShort); ?>">
+    <meta property="og:title" content="<?php echo htmlspecialchars($appName); ?>">
+    <meta property="og:description" content="<?php echo htmlspecialchars($appDesc); ?>">
+    <meta property="og:url" content="<?php echo htmlspecialchars($appUrl); ?>">
+    <meta property="og:image" content="<?php echo htmlspecialchars($appImage); ?>">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         html, body { margin:0 !important; padding:0 !important; }
@@ -53,6 +69,7 @@ window.addEventListener('unhandledrejection', function(e) {
             pointer-events: auto;
         }
     </style>
+    <link rel="icon" type="image/png" href="<?php echo asset_url('public/bank/noithat_logo.png'); ?>">
     <link rel="stylesheet" href="<?php echo base_url('public/assets/css/style.css'); ?>">
 </head>
 <!-- Shield chống lỗi extension (chrome-extension://...) -->
@@ -113,8 +130,9 @@ $isActive = function ($path) use ($currentPath) {
             </div>
         </div>
         <div class="rounded-2xl px-4 py-2.5 flex items-center gap-4 shadow-none bg-transparent border border-white/50 backdrop-blur-sm">
-            <a href="<?php echo base_url(); ?>" class="text-2xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-blue-100 to-blue-300">
-                Noithat Store
+            <a href="<?php echo base_url(); ?>" class="flex flex-col leading-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-blue-100 to-blue-300">
+                <span class="text-xl sm:text-2xl font-bold tracking-tight"><?php echo htmlspecialchars($brandShort); ?></span>
+                <span class="text-xs sm:text-sm font-medium text-white/90"><?php echo htmlspecialchars('Cửa hàng nội thất và thiết bị gia dụng'); ?></span>
             </a>
             <nav class="flex-1 flex flex-wrap items-center gap-2 text-sm font-semibold">
                 <a class="px-3 py-2 rounded-lg hover:bg-white/10 <?php echo $isActive('/') ?: ''; ?>" href="<?php echo base_url(); ?>">Trang chủ</a>
@@ -191,8 +209,8 @@ foreach ($flashStyles as $flashKey => $class) {
     <div class="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_20%_20%,rgba(59,130,246,0.35),transparent_30%),radial-gradient(circle_at_80%_10%,rgba(14,165,233,0.35),transparent_30%)]"></div>
     <div class="max-w-7xl mx-auto px-4 py-6 grid md:grid-cols-4 gap-6 text-sm relative z-10">
         <div class="space-y-2">
-            <div class="text-lg font-semibold">Noithat Store</div>
-            <p class="text-slate-300">Nội thất & thiết bị gia dụng cao cấp, giao nhanh, lắp đặt tận nơi.</p>
+            <div class="text-lg font-semibold"><?php echo htmlspecialchars($brandShort); ?></div>
+            <p class="text-slate-300"><?php echo htmlspecialchars('Nội Thất Store - Cửa hàng nội thất và thiết bị gia dụng.'); ?></p>
             <div class="space-y-1 text-slate-200">
                 <div>Hotline: <strong>0974.734.668</strong></div>
                 <div>Email: <strong>huyendothi.79@gmail.com</strong></div>
@@ -254,8 +272,8 @@ foreach ($flashStyles as $flashKey => $class) {
     </div>
     <div class="border-t border-slate-800 relative z-10">
         <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between text-xs text-slate-300">
-            <span>© 2025 Noithat Store. All rights reserved.</span>
-            <span>Thiết kế & vận hành bởi Noithat Store Team</span>
+            <span>© 2025 <?php echo htmlspecialchars($appName); ?>. All rights reserved.</span>
+            <span>Thiết kế & vận hành bởi <?php echo htmlspecialchars($brandShort); ?> Team</span>
         </div>
     </div>
 </footer>
@@ -267,7 +285,7 @@ foreach ($flashStyles as $flashKey => $class) {
             <div class="px-4 py-3 bg-blue-600 text-white flex items-center justify-between">
                 <div>
                     <p class="text-xs uppercase tracking-widest text-blue-100">Chat hỗ trợ</p>
-                    <p class="text-sm font-semibold">Noithat Store</p>
+                    <p class="text-sm font-semibold"><?php echo htmlspecialchars($brandShort); ?></p>
                 </div>
                 <button type="button" data-chat-close class="text-white/80 hover:text-white text-xl leading-none">&times;</button>
             </div>

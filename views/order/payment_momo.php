@@ -199,7 +199,7 @@ header h1 {
                 <div>
                     <div class="card">
                         <h2>Thông tin đơn hàng</h2>
-                        <div class="info-row"><span>Nhà cung cấp</span><strong>Noithat Store</strong></div>
+                        <div class="info-row"><span>Nhà cung cấp</span><strong>Nội Thất Store - Cửa hàng nội thất và thiết bị gia dụng</strong></div>
                         <div class="info-row"><span>Mã đơn hàng</span><strong><?php echo $orderCode; ?></strong></div>
                         <div class="info-row"><span>Mô tả</span><strong><?php echo $orderCode; ?></strong></div>
                         <div class="info-row"><span>Số tiền</span></div>

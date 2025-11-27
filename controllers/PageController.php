@@ -21,12 +21,27 @@ class PageController extends Controller {
             'subtitle' => 'Sẽ trở lại sớm nhất',
             'message' => 'Xin lỗi vì sự bất tiện.',
             'image' => '',
+            'images' => [],
             'video' => ''
         ];
         if (file_exists($configFile)) {
             $json = file_get_contents($configFile);
             $cfg = json_decode($json, true);
-            if (is_array($cfg)) $data = array_merge($data, $cfg);
+            if (is_array($cfg)) {
+                $data = array_merge($data, $cfg);
+                $images = [];
+                if (!empty($data['images']) && is_array($data['images'])) {
+                    foreach ($data['images'] as $img) {
+                        $img = trim((string)$img);
+                        if ($img !== '') $images[] = $img;
+                    }
+                }
+                if (empty($images) && !empty($data['image'])) {
+                    $images[] = $data['image'];
+                }
+                $data['images'] = array_values(array_unique($images));
+                $data['image'] = $data['images'][0] ?? '';
+            }
         }
         $this->view('maintenance', $data);
     }
