@@ -8,7 +8,10 @@
         html, body { margin:0 !important; padding:0 !important; }
         * { box-sizing: border-box; }
     </style>
-    <link rel="icon" type="image/png" href="<?php echo asset_url('public/bank/noithat_logo.png'); ?>">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?php echo asset_url('public/favicon.png'); ?>">
+    <link rel="icon" type="image/png" sizes="192x192" href="<?php echo asset_url('public/favicon.png'); ?>">
+    <link rel="apple-touch-icon" href="<?php echo asset_url('public/apple-touch-icon.png'); ?>">
+    <link rel="shortcut icon" href="<?php echo asset_url('public/favicon.png'); ?>">
     <link rel="stylesheet" href="<?php echo asset_url('public/assets/css/style.css'); ?>">
     <script>
         (function () {

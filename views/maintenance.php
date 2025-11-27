@@ -48,10 +48,14 @@
         body, html { margin:0; padding:0; min-height:100vh; }
         .glow { box-shadow: 0 10px 40px rgba(59,130,246,0.35); }
     </style>
-    <link rel="icon" type="image/png" href="<?php echo asset_url('public/bank/noithat_logo.png'); ?>">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?php echo asset_url('public/favicon.png'); ?>">
+    <link rel="icon" type="image/png" sizes="192x192" href="<?php echo asset_url('public/favicon.png'); ?>">
+    <link rel="apple-touch-icon" href="<?php echo asset_url('public/apple-touch-icon.png'); ?>">
+    <link rel="shortcut icon" href="<?php echo asset_url('public/favicon.png'); ?>">
 </head>
 <body class="bg-slate-950 text-white flex items-center justify-center px-4 relative overflow-hidden">
     <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(59,130,246,0.15),transparent_25%),radial-gradient(circle_at_80%_10%,rgba(236,72,153,0.12),transparent_20%),radial-gradient(circle_at_50%_80%,rgba(16,185,129,0.12),transparent_20%)]"></div>
+    <img src="<?php echo asset_url('public/bank/noithat1_logo.png'); ?>" alt="Nội Thất Store" class="absolute top-4 md:top-6 left-1/2 -translate-x-1/2 z-10 h-24 md:h-28 w-auto object-contain drop-shadow-[0_8px_20px_rgba(0,0,0,0.35)]" onerror="this.style.display='none';">
     <div class="relative max-w-5xl w-full grid md:grid-cols-2 gap-6 items-center bg-slate-900/70 backdrop-blur-lg rounded-3xl p-6 md:p-8 border border-slate-800 glow">
         <div class="space-y-4">
             <div class="flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-blue-200">

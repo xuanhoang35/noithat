@@ -1,6 +1,6 @@
 <?php ob_start(); ?>
 <?php $hideFooter = true; ?>
-<div class="max-w-lg mx-auto">
+<div class="max-w-lg mx-auto mt-8 md:mt-12">
     <div class="glass-panel rounded-3xl shadow-xl p-6 space-y-4">
         <div class="text-center space-y-1">
             <p class="text-sm uppercase tracking-[0.2em] text-slate-400">Đặt lại mật khẩu</p>

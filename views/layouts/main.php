@@ -69,7 +69,10 @@ window.addEventListener('unhandledrejection', function(e) {
             pointer-events: auto;
         }
     </style>
-    <link rel="icon" type="image/png" href="<?php echo asset_url('public/bank/noithat_logo.png'); ?>">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?php echo asset_url('public/favicon.png'); ?>">
+    <link rel="icon" type="image/png" sizes="192x192" href="<?php echo asset_url('public/favicon.png'); ?>">
+    <link rel="apple-touch-icon" href="<?php echo asset_url('public/apple-touch-icon.png'); ?>">
+    <link rel="shortcut icon" href="<?php echo asset_url('public/favicon.png'); ?>">
     <link rel="stylesheet" href="<?php echo base_url('public/assets/css/style.css'); ?>">
 </head>
 <!-- Shield chống lỗi extension (chrome-extension://...) -->
@@ -130,9 +133,14 @@ $isActive = function ($path) use ($currentPath) {
             </div>
         </div>
         <div class="rounded-2xl px-4 py-2.5 flex items-center gap-4 shadow-none bg-transparent border border-white/50 backdrop-blur-sm">
-            <a href="<?php echo base_url(); ?>" class="flex flex-col leading-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-blue-100 to-blue-300">
-                <span class="text-xl sm:text-2xl font-bold tracking-tight"><?php echo htmlspecialchars($brandShort); ?></span>
-                <span class="text-xs sm:text-sm font-medium text-white/90"><?php echo htmlspecialchars('Cửa hàng nội thất và thiết bị gia dụng'); ?></span>
+            <a href="<?php echo base_url(); ?>" class="flex items-center gap-3">
+                <span class="inline-flex w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/15 border border-white/40 overflow-hidden shadow-sm">
+                    <img src="<?php echo asset_url('public/bank/noithat_logo.png'); ?>" alt="Nội Thất Store" class="w-full h-full object-contain">
+                </span>
+                <span class="flex flex-col leading-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-blue-100 to-blue-300">
+                    <span class="text-xl sm:text-2xl font-bold tracking-tight"><?php echo htmlspecialchars($brandShort); ?></span>
+                    <span class="text-xs sm:text-sm font-medium text-white/90"><?php echo htmlspecialchars('Cửa hàng nội thất và thiết bị gia dụng'); ?></span>
+                </span>
             </a>
             <nav class="flex-1 flex flex-wrap items-center gap-2 text-sm font-semibold">
                 <a class="px-3 py-2 rounded-lg hover:bg-white/10 <?php echo $isActive('/') ?: ''; ?>" href="<?php echo base_url(); ?>">Trang chủ</a>

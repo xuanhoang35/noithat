@@ -1,6 +1,6 @@
 <?php ob_start(); ?>
 <?php $hideFooter = true; ?>
-<div class="max-w-lg mx-auto space-y-4">
+<div class="max-w-lg mx-auto space-y-4 mt-8 md:mt-12">
     <?php
         $msg = $success ?? ($_SESSION['welcome_message'] ?? '');
         $target = $redirect ?? base_url('');
