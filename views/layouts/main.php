@@ -77,6 +77,7 @@ if (Auth::check()) {
 $defaultAvatarPath = 'public/Profile/user-iconprofile.png';
 $defaultAvatarUrl = asset_url($defaultAvatarPath);
 $hideFooter = $hideFooter ?? false;
+$hideHeader = $hideHeader ?? false;
 $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
 $isActive = function ($path) use ($currentPath) {
     if ($path === '/') {
@@ -85,6 +86,7 @@ $isActive = function ($path) use ($currentPath) {
     return strpos($currentPath, $path) === 0 ? 'bg-white/15 text-white font-semibold' : '';
 };
 ?>
+<?php if (!$hideHeader): ?>
 <header class="fixed top-0 left-0 right-0 z-30 text-white">
     <div class="absolute inset-0 bg-gradient-to-r from-slate-900 via-blue-900 to-blue-700"></div>
     <div class="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_20%_20%,rgba(59,130,246,0.5),transparent_25%),radial-gradient(circle_at_80%_0%,rgba(14,165,233,0.45),transparent_25%)]"></div>
@@ -154,6 +156,7 @@ $isActive = function ($path) use ($currentPath) {
         </div>
     </div>
 </header>
+<?php endif; ?>
 <?php
 $flashBag = [];
 $flashStyles = [
@@ -171,7 +174,8 @@ foreach ($flashStyles as $flashKey => $class) {
     }
 }
 ?>
-<main class="flex-1 pt-[132px] md:pt-[124px] pb-10 relative">
+<?php $mainTop = $hideHeader ? 'pt-6' : 'pt-[132px] md:pt-[124px]'; ?>
+<main class="flex-1 <?php echo $mainTop; ?> pb-10 relative">
     <div class="absolute inset-x-0 top-0 h-64 tile-grid opacity-70 pointer-events-none"></div>
     <div class="max-w-7xl mx-auto px-4 relative z-10">
         <?php foreach ($flashBag as $flash): ?>
