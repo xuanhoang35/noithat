@@ -134,8 +134,8 @@ $isActive = function ($path) use ($currentPath) {
         </div>
         <div class="rounded-2xl px-4 py-2.5 flex items-center gap-4 shadow-none bg-transparent border border-white/50 backdrop-blur-sm">
             <a href="<?php echo base_url(); ?>" class="flex items-center gap-3">
-                <span class="inline-flex w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/15 border border-white/40 overflow-hidden shadow-sm">
-                    <img src="<?php echo asset_url('public/bank/noithat_logo.png'); ?>" alt="Nội Thất Store" class="w-full h-full object-contain">
+                <span class="inline-flex w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white border border-white/60 overflow-hidden shadow-sm">
+                    <img src="<?php echo asset_url('public/bank/noithat1_logo.png'); ?>" alt="Nội Thất Store" class="w-full h-full object-contain">
                 </span>
                 <span class="flex flex-col leading-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-blue-100 to-blue-300">
                     <span class="text-xl sm:text-2xl font-bold tracking-tight"><?php echo htmlspecialchars($brandShort); ?></span>
