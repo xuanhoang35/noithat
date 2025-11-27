@@ -94,13 +94,13 @@
                 </div>
                 <div class="p-4 space-y-2 bg-slate-50">
                     <?php if ($previewEmbed): ?>
-                        <div class="w-full h-40 rounded-lg border border-slate-200 overflow-hidden">
+                        <div class="w-full h-48 rounded-lg border border-slate-200 overflow-hidden">
                             <iframe src="<?php echo htmlspecialchars($previewEmbed); ?>" class="w-full h-full" allowfullscreen allow="autoplay; encrypted-media"></iframe>
                         </div>
                     <?php elseif ($previewVideo): ?>
-                        <video src="<?php echo $previewVideo; ?>" class="w-full h-40 rounded-lg border border-slate-200 object-cover" controls muted loop></video>
+                        <video src="<?php echo $previewVideo; ?>" class="w-full h-48 rounded-lg border border-slate-200 object-cover" controls muted loop></video>
                     <?php else: ?>
-                        <img src="<?php echo $previewImage; ?>" alt="Preview" class="w-full h-40 object-cover rounded-lg border border-slate-200">
+                        <img src="<?php echo $previewImage; ?>" alt="Preview" class="w-full h-48 object-cover rounded-lg border border-slate-200">
                     <?php endif; ?>
                     <div class="bg-white rounded-xl p-3 shadow border border-slate-100">
                         <p class="text-lg font-bold text-slate-800"><?php echo htmlspecialchars($title); ?></p>
