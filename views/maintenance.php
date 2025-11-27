@@ -56,12 +56,19 @@
             <?php if ($videoEmbed): ?>
                 <iframe src="<?php echo htmlspecialchars($videoEmbed); ?>" class="absolute inset-0 w-full h-full" allow="autoplay; encrypted-media" allowfullscreen style="border:0; object-fit: cover;"></iframe>
             <?php elseif ($videoSrc): ?>
-                <video src="<?php echo $videoSrc; ?>" class="absolute inset-0 w-full h-full object-cover" autoplay loop playsinline controls></video>
+                <video src="<?php echo $videoSrc; ?>" class="absolute inset-0 w-full h-full object-cover" autoplay loop playsinline controls data-force-play></video>
             <?php else: ?>
                 <img src="<?php echo $img; ?>" alt="Maintenance" class="absolute inset-0 w-full h-full object-cover" onerror="this.src='<?php echo asset_url('public/assets/img/placeholder.svg'); ?>';">
             <?php endif; ?>
         </div>
     </div>
 </body>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('video[data-force-play]').forEach(v => {
+        v.play().catch(() => {});
+    });
+});
+</script>
 </html>
 <?php ob_end_flush(); ?>

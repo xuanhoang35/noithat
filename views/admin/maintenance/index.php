@@ -106,7 +106,7 @@
                             <iframe src="<?php echo htmlspecialchars($previewEmbed); ?>" class="w-full h-full" allowfullscreen allow="autoplay; encrypted-media"></iframe>
                         </div>
                     <?php elseif ($previewVideo): ?>
-                        <video src="<?php echo $previewVideo; ?>" class="w-full h-48 rounded-lg border border-slate-200 object-cover" controls autoplay loop></video>
+                        <video src="<?php echo $previewVideo; ?>" class="w-full h-48 rounded-lg border border-slate-200 object-cover" controls autoplay loop playsinline></video>
                     <?php else: ?>
                         <img src="<?php echo $previewImage; ?>" alt="Preview" class="w-full h-48 object-cover rounded-lg border border-slate-200">
                     <?php endif; ?>
