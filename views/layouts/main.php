@@ -84,7 +84,6 @@ $hideFooter = $hideFooter ?? false;
     <div class="max-w-7xl mx-auto px-4 py-2 relative space-y-2">
         <div class="flex items-center justify-between text-xs text-white/80">
             <div class="flex items-center gap-3 overflow-hidden">
-                <span class="pill bg-white/10 text-white">Mở cửa 8:00 - 22:00</span>
                 <?php if (!empty($_SESSION['welcome_message'])): ?>
                     <div class="whitespace-nowrap animate-scroll-text text-white">
                         <?php echo htmlspecialchars($_SESSION['welcome_message']); unset($_SESSION['welcome_message']); ?>
