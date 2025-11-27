@@ -15,11 +15,19 @@
         if ($isUrl) {
             // YouTube (loop bằng playlist)
             if (preg_match('#(?:youtube\\.com/watch\\?v=|youtu\\.be/)([A-Za-z0-9_-]{6,})#', $video, $m)) {
-                $previewEmbed = 'https://www.youtube.com/embed/' . $m[1] . '?rel=0&autoplay=0&mute=1&loop=1&playlist=' . $m[1];
+                $previewEmbed = 'https://www.youtube.com/embed/' . $m[1] . '?rel=0&autoplay=1&mute=0&loop=1&playlist=' . $m[1];
             }
             // Google Drive preview (không hỗ trợ loop chuẩn)
             elseif (preg_match('#drive\\.google\\.com/file/d/([^/]+)/?#', $video, $m)) {
-                $previewEmbed = 'https://drive.google.com/file/d/' . $m[1] . '/preview';
+                $previewEmbed = 'https://drive.google.com/file/d/' . $m[1] . '/preview?autoplay=1';
+            }
+            // Facebook video
+            elseif (strpos($video, 'facebook.com') !== false) {
+                $previewEmbed = 'https://www.facebook.com/plugins/video.php?href=' . urlencode($video) . '&show_text=false&autoplay=true';
+            }
+            // TikTok (embed)
+            elseif (strpos($video, 'tiktok.com') !== false) {
+                $previewEmbed = 'https://www.tiktok.com/embed/v2/' . rawurlencode($video) . '?autoplay=1';
             } else {
                 $previewVideo = $video;
             }
@@ -98,7 +106,7 @@
                             <iframe src="<?php echo htmlspecialchars($previewEmbed); ?>" class="w-full h-full" allowfullscreen allow="autoplay; encrypted-media"></iframe>
                         </div>
                     <?php elseif ($previewVideo): ?>
-                        <video src="<?php echo $previewVideo; ?>" class="w-full h-48 rounded-lg border border-slate-200 object-cover" controls muted loop></video>
+                        <video src="<?php echo $previewVideo; ?>" class="w-full h-48 rounded-lg border border-slate-200 object-cover" controls autoplay loop></video>
                     <?php else: ?>
                         <img src="<?php echo $previewImage; ?>" alt="Preview" class="w-full h-48 object-cover rounded-lg border border-slate-200">
                     <?php endif; ?>

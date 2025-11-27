@@ -7,9 +7,13 @@
         $isUrl = preg_match('#^https?://#', $video);
         if ($isUrl) {
             if (preg_match('#(?:youtube\\.com/watch\\?v=|youtu\\.be/)([A-Za-z0-9_-]{6,})#', $video, $m)) {
-                $videoEmbed = 'https://www.youtube.com/embed/' . $m[1] . '?rel=0&autoplay=1&mute=1&loop=1&playlist=' . $m[1];
+                $videoEmbed = 'https://www.youtube.com/embed/' . $m[1] . '?rel=0&autoplay=1&mute=0&loop=1&playlist=' . $m[1];
             } elseif (preg_match('#drive\\.google\\.com/file/d/([^/]+)/?#', $video, $m)) {
-                $videoEmbed = 'https://drive.google.com/file/d/' . $m[1] . '/preview';
+                $videoEmbed = 'https://drive.google.com/file/d/' . $m[1] . '/preview?autoplay=1';
+            } elseif (strpos($video, 'facebook.com') !== false) {
+                $videoEmbed = 'https://www.facebook.com/plugins/video.php?href=' . urlencode($video) . '&show_text=false&autoplay=true';
+            } elseif (strpos($video, 'tiktok.com') !== false) {
+                $videoEmbed = 'https://www.tiktok.com/embed/v2/' . rawurlencode($video) . '?autoplay=1';
             } else {
                 $videoSrc = $video;
             }
@@ -50,7 +54,7 @@
         </div>
         <div class="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-800 bg-black/60 aspect-video">
             <?php if ($videoEmbed): ?>
-                <iframe src="<?php echo htmlspecialchars($videoEmbed); ?>" class="absolute inset-0 w-full h-full" allow="autoplay; encrypted-media" allowfullscreen style="border:0;"></iframe>
+                <iframe src="<?php echo htmlspecialchars($videoEmbed); ?>" class="absolute inset-0 w-full h-full" allow="autoplay; encrypted-media" allowfullscreen style="border:0; object-fit: cover;"></iframe>
             <?php elseif ($videoSrc): ?>
                 <video src="<?php echo $videoSrc; ?>" class="absolute inset-0 w-full h-full object-cover" autoplay loop playsinline controls></video>
             <?php else: ?>
