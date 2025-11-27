@@ -14,7 +14,7 @@
     <?php endif; ?>
     <div class="glass-panel rounded-3xl shadow-xl p-6 space-y-4">
         <div class="text-center space-y-1">
-            <p class="section-title text-slate-500 justify-center">Chào mừng trở lại</p>
+            <p class="text-sm uppercase tracking-[0.2em] text-slate-400">Chào mừng quý khách đến với Nội Thất Store</p>
             <h1 class="text-2xl font-bold">Đăng nhập</h1>
             <p class="text-sm text-slate-500">Tiếp tục mua sắm và theo dõi đơn hàng của bạn.</p>
         </div>

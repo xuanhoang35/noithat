@@ -6,7 +6,9 @@
     $subtitle = $c['subtitle'] ?? '';
     $message = $c['message'] ?? '';
     $image = $c['image'] ?? '';
-    $preview = $image ? asset_url($image) : asset_url('public/assets/img/placeholder.svg');
+    $video = $c['video'] ?? '';
+    $previewImage = $image ? asset_url($image) : asset_url('public/assets/img/placeholder.svg');
+    $previewVideo = $video ? asset_url($video) : '';
 ?>
 <div class="bg-white rounded-2xl shadow-sm p-5 space-y-4">
     <div class="flex items-center justify-between">
@@ -40,9 +42,25 @@
                 <label class="text-sm text-slate-600">Thông điệp</label>
                 <textarea name="message" rows="3" class="w-full px-3 py-2 border rounded"><?php echo htmlspecialchars($message); ?></textarea>
             </div>
-            <div>
-                <label class="text-sm text-slate-600">Chọn ảnh</label>
-                <input type="file" name="image" accept="image/*" class="w-full text-sm">
+            <div class="grid md:grid-cols-2 gap-3">
+                <div>
+                    <label class="text-sm text-slate-600">Chọn ảnh</label>
+                    <div class="flex items-center gap-2 mt-1">
+                        <input type="file" name="image" accept="image/*" class="w-full text-sm" id="maintenance-image">
+                        <button type="button" id="maintenance-image-clear" class="px-2 py-1 text-xs bg-slate-100 text-slate-700 rounded hover:bg-slate-200 hidden">X</button>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-1">Chọn ảnh sẽ xóa video hiện tại.</p>
+                    <div id="maintenance-image-name" class="text-xs text-blue-600 mt-1 hidden"></div>
+                </div>
+                <div>
+                    <label class="text-sm text-slate-600">Chọn video</label>
+                    <div class="flex items-center gap-2 mt-1">
+                        <input type="file" name="video" accept="video/*" class="w-full text-sm" id="maintenance-video">
+                        <button type="button" id="maintenance-video-clear" class="px-2 py-1 text-xs bg-slate-100 text-slate-700 rounded hover:bg-slate-200 hidden">X</button>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-1">Chọn video sẽ xóa ảnh hiện tại.</p>
+                    <div id="maintenance-video-name" class="text-xs text-blue-600 mt-1 hidden"></div>
+                </div>
             </div>
             <div class="flex items-center gap-3">
                 <label class="relative inline-flex items-center cursor-pointer">
@@ -60,7 +78,11 @@
                     <p class="text-lg font-semibold">Trang bảo trì</p>
                 </div>
                 <div class="p-4 space-y-2 bg-slate-50">
-                    <img src="<?php echo $preview; ?>" alt="Preview" class="w-full h-40 object-cover rounded-lg border border-slate-200">
+                    <?php if ($previewVideo): ?>
+                        <video src="<?php echo $previewVideo; ?>" class="w-full h-40 rounded-lg border border-slate-200 object-cover" controls muted loop></video>
+                    <?php else: ?>
+                        <img src="<?php echo $previewImage; ?>" alt="Preview" class="w-full h-40 object-cover rounded-lg border border-slate-200">
+                    <?php endif; ?>
                     <div class="bg-white rounded-xl p-3 shadow border border-slate-100">
                         <p class="text-lg font-bold text-slate-800"><?php echo htmlspecialchars($title); ?></p>
                         <p class="text-sm text-slate-600"><?php echo htmlspecialchars($subtitle); ?></p>
@@ -84,6 +106,42 @@ document.addEventListener('DOMContentLoaded', function(){
     if (toggle) {
         toggle.addEventListener('change', () => form.submit());
     }
+    const imgInput = document.getElementById('maintenance-image');
+    const videoInput = document.getElementById('maintenance-video');
+    const imgClear = document.getElementById('maintenance-image-clear');
+    const vidClear = document.getElementById('maintenance-video-clear');
+    const imgName = document.getElementById('maintenance-image-name');
+    const vidName = document.getElementById('maintenance-video-name');
+    const disableCls = ['opacity-50','cursor-not-allowed'];
+    const updateState = () => {
+        const hasImg = imgInput && imgInput.files && imgInput.files.length > 0;
+        const hasVid = videoInput && videoInput.files && videoInput.files.length > 0;
+        if (imgInput) {
+            if (hasVid) { imgInput.disabled = true; imgInput.classList.add(...disableCls); }
+            else { imgInput.disabled = false; imgInput.classList.remove(...disableCls); }
+        }
+        if (videoInput) {
+            if (hasImg) { videoInput.disabled = true; videoInput.classList.add(...disableCls); }
+            else { videoInput.disabled = false; videoInput.classList.remove(...disableCls); }
+        }
+        if (imgName) {
+            if (hasImg) { imgName.textContent = imgInput.files[0].name; imgName.classList.remove('hidden'); }
+            else { imgName.textContent = ''; imgName.classList.add('hidden'); }
+        }
+        if (vidName) {
+            if (hasVid) { vidName.textContent = videoInput.files[0].name; vidName.classList.remove('hidden'); }
+            else { vidName.textContent = ''; vidName.classList.add('hidden'); }
+        }
+        if (imgClear) imgClear.classList.toggle('hidden', !hasImg);
+        if (vidClear) vidClear.classList.toggle('hidden', !hasVid);
+    };
+    if (imgInput && videoInput) {
+        imgInput.addEventListener('change', () => { if (imgInput.files.length) videoInput.value=''; updateState(); });
+        videoInput.addEventListener('change', () => { if (videoInput.files.length) imgInput.value=''; updateState(); });
+    }
+    if (imgClear) imgClear.addEventListener('click', () => { imgInput.value=''; updateState(); });
+    if (vidClear) vidClear.addEventListener('click', () => { videoInput.value=''; updateState(); });
+    updateState();
 });
 </script>
 <?php $content = ob_get_clean(); include __DIR__ . '/../layouts/main.php'; ?>

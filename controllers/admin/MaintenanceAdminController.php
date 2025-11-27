@@ -20,12 +20,23 @@ class MaintenanceAdminController extends Controller {
             'title' => 'Chúng tôi đang bảo trì',
             'subtitle' => 'Nội Thất Store sẽ trở lại sớm nhất',
             'message' => 'Xin lỗi vì sự bất tiện.',
-            'image' => ''
+            'image' => '',
+            'video' => ''
         ];
     }
 
     private function save(array $data): void {
         file_put_contents($this->configFile, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    }
+
+    private function deleteIfLocal(string $path): void {
+        if (!$path) return;
+        $full = __DIR__ . '/../../' . $path;
+        $root = realpath(__DIR__ . '/../../public/uploads/maintenance');
+        $fullReal = realpath($full);
+        if ($root && $fullReal && strpos($fullReal, $root) === 0 && file_exists($fullReal)) {
+            @unlink($fullReal);
+        }
     }
 
     public function index() {
@@ -40,6 +51,7 @@ class MaintenanceAdminController extends Controller {
         $message = trim($_POST['message'] ?? $data['message']);
         $enabled = isset($_POST['enabled']) && $_POST['enabled'] === '1';
         $imagePath = $data['image'] ?? '';
+        $videoPath = $data['video'] ?? '';
 
         if (!empty($_FILES['image']['tmp_name']) && is_uploaded_file($_FILES['image']['tmp_name'])) {
             $uploadDir = __DIR__ . '/../../public/uploads/maintenance';
@@ -52,6 +64,8 @@ class MaintenanceAdminController extends Controller {
             $filename = $safe . '_' . time() . ($ext ? '.' . $ext : '');
             $dest = $uploadDir . '/' . $filename;
             if (is_dir($uploadDir) && is_writable($uploadDir) && move_uploaded_file($_FILES['image']['tmp_name'], $dest)) {
+                $this->deleteIfLocal($videoPath); // ảnh mới => bỏ video cũ
+                $videoPath = '';
                 $imagePath = 'public/uploads/maintenance/' . $filename;
             } else {
                 $_SESSION['flash_error'] = 'Tải ảnh thất bại. Vui lòng thử lại và kiểm tra quyền ghi thư mục uploads/maintenance.';
@@ -59,12 +73,41 @@ class MaintenanceAdminController extends Controller {
             }
         }
 
+        if (!empty($_FILES['video']['tmp_name']) && is_uploaded_file($_FILES['video']['tmp_name'])) {
+            $uploadDir = __DIR__ . '/../../public/uploads/maintenance';
+            if (!is_dir($uploadDir) && !@mkdir($uploadDir, 0777, true)) {
+                $_SESSION['flash_error'] = 'Không tạo được thư mục lưu video. Vui lòng kiểm tra quyền ghi public/uploads/maintenance.';
+                $this->redirect('/admin.php/maintenance');
+            }
+            $ext = pathinfo($_FILES['video']['name'], PATHINFO_EXTENSION);
+            $safe = preg_replace('/[^a-zA-Z0-9_-]/', '_', pathinfo($_FILES['video']['name'], PATHINFO_FILENAME));
+            $filename = $safe . '_' . time() . ($ext ? '.' . $ext : '');
+            $dest = $uploadDir . '/' . $filename;
+            if (is_dir($uploadDir) && is_writable($uploadDir) && move_uploaded_file($_FILES['video']['tmp_name'], $dest)) {
+                $this->deleteIfLocal($imagePath); // video mới => bỏ ảnh cũ
+                $imagePath = '';
+                $videoPath = 'public/uploads/maintenance/' . $filename;
+            } else {
+                $_SESSION['flash_error'] = 'Tải video thất bại. Vui lòng thử lại và kiểm tra quyền ghi thư mục uploads/maintenance.';
+                $this->redirect('/admin.php/maintenance');
+            }
+        }
+
+        // Khi tắt bảo trì: xóa media tạm
+        if (!$enabled) {
+            $this->deleteIfLocal($imagePath);
+            $this->deleteIfLocal($videoPath);
+            $imagePath = '';
+            $videoPath = '';
+        }
+
         $save = [
             'enabled' => $enabled,
             'title' => $title,
             'subtitle' => $subtitle,
             'message' => $message,
-            'image' => $imagePath
+            'image' => $imagePath,
+            'video' => $videoPath
         ];
         $this->save($save);
         $_SESSION['flash_success'] = $enabled ? 'Đã bật chế độ bảo trì.' : 'Đã lưu nội dung và tắt bảo trì.';

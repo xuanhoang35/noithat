@@ -19,7 +19,9 @@ class PageController extends Controller {
         $data = [
             'title' => 'Chúng tôi đang bảo trì',
             'subtitle' => 'Sẽ trở lại sớm nhất',
-            'message' => 'Xin lỗi vì sự bất tiện.'
+            'message' => 'Xin lỗi vì sự bất tiện.',
+            'image' => '',
+            'video' => ''
         ];
         if (file_exists($configFile)) {
             $json = file_get_contents($configFile);

@@ -1,6 +1,7 @@
 <?php ob_start(); ?>
 <?php
     $img = asset_url(!empty($image) ? $image : 'public/assets/img/placeholder.svg');
+    $videoSrc = !empty($video) ? asset_url($video) : '';
     $title = $title ?? 'Chúng tôi đang bảo trì';
     $subtitle = $subtitle ?? 'Sẽ trở lại sớm nhất';
     $message = $message ?? 'Xin lỗi vì sự bất tiện.';
@@ -32,8 +33,12 @@
                 <a href="mailto:huyendothi.79@gmail.com" class="px-4 py-2 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-100">Email: huyendothi.79@gmail.com</a>
             </div>
         </div>
-        <div class="rounded-2xl overflow-hidden shadow-2xl border border-slate-800">
-            <img src="<?php echo $img; ?>" alt="Maintenance" class="w-full h-full object-cover" onerror="this.src='<?php echo asset_url('public/assets/img/placeholder.svg'); ?>';">
+        <div class="rounded-2xl overflow-hidden shadow-2xl border border-slate-800 bg-black/60">
+            <?php if ($videoSrc): ?>
+                <video src="<?php echo $videoSrc; ?>" class="w-full h-full object-cover" autoplay muted loop playsinline controls></video>
+            <?php else: ?>
+                <img src="<?php echo $img; ?>" alt="Maintenance" class="w-full h-full object-cover" onerror="this.src='<?php echo asset_url('public/assets/img/placeholder.svg'); ?>';">
+            <?php endif; ?>
         </div>
     </div>
 </body>

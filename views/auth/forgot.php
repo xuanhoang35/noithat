@@ -3,7 +3,7 @@
 <div class="max-w-lg mx-auto">
     <div class="glass-panel rounded-3xl shadow-xl p-6 space-y-4">
         <div class="text-center space-y-1">
-            <p class="section-title text-slate-500 justify-center">Đặt lại mật khẩu</p>
+            <p class="text-sm uppercase tracking-[0.2em] text-slate-400">Đặt lại mật khẩu</p>
             <h1 class="text-2xl font-bold">Quên mật khẩu</h1>
             <p class="text-sm text-slate-500">Nhập email và số điện thoại đã đăng ký để gửi yêu cầu cấp mật khẩu mới.</p>
         </div>
