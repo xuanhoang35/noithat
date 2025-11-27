@@ -28,4 +28,10 @@ class PageController extends Controller {
         }
         $this->view('maintenance', $data);
     }
+
+    public function blocked() {
+        $message = $_SESSION['blocked_message'] ?? 'Phiên làm việc đã kết thúc. Bạn sẽ được đăng xuất.';
+        unset($_SESSION['blocked_message']);
+        $this->view('auth/blocked', ['message' => $message]);
+    }
 }

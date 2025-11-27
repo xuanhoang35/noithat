@@ -1,18 +1,130 @@
-/* Minimal styles for shared layout/admin pages */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
 :root {
     color-scheme: light;
-    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Space Grotesk', 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    --brand: #2563eb;
+    --brand-dark: #1d4ed8;
+    --ink: #0f172a;
+    --muted: #94a3b8;
+    --surface: #ffffff;
 }
 
 body {
-    background-color: #f1f5f9;
-    color: #0f172a;
+    background: radial-gradient(circle at 20% 20%, rgba(37, 99, 235, 0.12), transparent 26%), radial-gradient(circle at 80% 0%, rgba(14, 165, 233, 0.12), transparent 25%), #f5f7fb;
+    color: var(--ink);
+    letter-spacing: -0.01em;
 }
 
 a {
     text-decoration: none;
 }
 
-[data-flash-message], [data-order-notice] {
+[data-flash-message],
+[data-order-notice] {
     transition: opacity .4s ease;
+}
+
+.glass-panel {
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow: 0 18px 60px -35px rgba(15, 23, 42, 0.4);
+}
+
+.pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+.spotlight {
+    position: relative;
+    overflow: hidden;
+}
+
+.spotlight::after {
+    content: '';
+    position: absolute;
+    inset: -60%;
+    background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.5), transparent 45%);
+    transform: translate3d(-40px, -20px, 0) rotate(20deg);
+    pointer-events: none;
+}
+
+.floating {
+    transform: translateY(0);
+    transition: transform .35s ease, box-shadow .35s ease;
+}
+
+.floating:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 50px -24px rgba(37, 99, 235, 0.55);
+}
+
+.fade-border {
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(249, 250, 251, 0.9));
+}
+
+.section-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.section-title::before {
+    content: '';
+    width: 28px;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(37, 99, 235, 0.6), rgba(14, 165, 233, 0.9));
+}
+
+.btn-soft {
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(14, 165, 233, 0.14));
+    color: var(--brand);
+    border: 1px solid rgba(37, 99, 235, 0.2);
+}
+
+.btn-soft:hover {
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.16), rgba(14, 165, 233, 0.2));
+}
+
+.hero-grid {
+    background: linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.95));
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-grid::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.25), transparent 25%), radial-gradient(circle at 80% 0%, rgba(59, 130, 246, 0.2), transparent 22%), linear-gradient(120deg, rgba(59, 130, 246, 0.08), rgba(14, 165, 233, 0.06));
+}
+
+.hero-grid::after {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 24px;
+    pointer-events: none;
+}
+
+.tile-grid {
+    background-image:
+        linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+    background-size: 56px 56px, 56px 56px;
 }

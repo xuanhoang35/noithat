@@ -1,6 +1,6 @@
 <?php ob_start(); ?>
 <?php $hideFooter = true; ?>
-<div class="max-w-md mx-auto">
+<div class="max-w-lg mx-auto space-y-4">
     <?php
         $msg = $success ?? ($_SESSION['welcome_message'] ?? '');
         $target = $redirect ?? base_url('');
@@ -12,16 +12,21 @@
         <script>setTimeout(function(){ window.location.href='<?php echo $target; ?>'; }, 1000);</script>
         <?php unset($_SESSION['welcome_message']); ?>
     <?php endif; ?>
-    <div class="bg-white rounded-xl shadow-sm p-4">
-        <h1 class="text-xl font-semibold text-center mb-3">Đăng nhập</h1>
-        <?php if (!empty($error)) echo '<div class="p-3 mb-2 bg-red-50 text-red-600 rounded">'.$error.'</div>'; ?>
-        <form method="post" action="<?php echo base_url('login'); ?>" class="grid gap-2">
-            <input class="px-3 py-2 border rounded" name="email" placeholder="Email" required>
-            <input class="px-3 py-2 border rounded" type="password" name="password" placeholder="Mật khẩu" required>
-            <button class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Đăng nhập</button>
+    <div class="glass-panel rounded-3xl shadow-xl p-6 space-y-4">
+        <div class="text-center space-y-1">
+            <p class="section-title text-slate-500 justify-center">Chào mừng trở lại</p>
+            <h1 class="text-2xl font-bold">Đăng nhập</h1>
+            <p class="text-sm text-slate-500">Tiếp tục mua sắm và theo dõi đơn hàng của bạn.</p>
+        </div>
+        <?php if (!empty($error)) echo '<div class="p-3 mb-2 bg-red-50 text-red-600 rounded text-center">'.$error.'</div>'; ?>
+        <form method="post" action="<?php echo base_url('login'); ?>" class="grid gap-3">
+            <input class="px-3 py-3 border rounded-xl" name="email" placeholder="Email" required>
+            <input class="px-3 py-3 border rounded-xl" type="password" name="password" placeholder="Mật khẩu" required>
+            <button class="px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 shadow font-semibold">Đăng nhập</button>
         </form>
-        <div class="text-right text-sm mt-2">
+        <div class="flex justify-between text-sm text-slate-600">
             <a class="text-blue-600 hover:underline" href="<?php echo base_url('forgot'); ?>">Quên mật khẩu?</a>
+            <a class="text-slate-700 hover:underline" href="<?php echo base_url('register'); ?>">Chưa có tài khoản?</a>
         </div>
     </div>
 </div>

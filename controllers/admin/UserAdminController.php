@@ -23,7 +23,14 @@ class UserAdminController extends Controller {
             'resets' => $resets,
         ]);
     }
-    public function toggleActive($id){ $this->userModel->toggleActive((int)$id); $this->redirect('/admin.php/users'); }
+    public function toggleActive($id){
+        $this->userModel->toggleActive((int)$id);
+        $user = $this->userModel->findById((int)$id);
+        if ($user && (int)($user['is_active'] ?? 1) !== 1) {
+            $this->userModel->setOnline((int)$id, false);
+        }
+        $this->redirect('/admin.php/users');
+    }
     public function resetPassword($id){
         $newPassword = trim($_POST['new_password'] ?? '');
         if ($newPassword !== '') {

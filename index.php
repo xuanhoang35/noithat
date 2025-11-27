@@ -27,9 +27,9 @@ if (Auth::check()) {
         $userModel = new User();
         $fresh = $userModel->findById((int)$sessionUser['id']);
         if (!$fresh || (int)($fresh['is_active'] ?? 1) !== 1) {
-            $_SESSION['flash_error'] = 'Hết phiên đăng nhập, vui lòng đăng nhập lại.';
-            Auth::logout();
-            header('Location: ' . base_url());
+            $userModel->setOnline((int)$sessionUser['id'], false);
+            $_SESSION['blocked_message'] = 'Tài khoản đã bị khóa. Bạn sẽ được đăng xuất.';
+            header('Location: ' . base_url('blocked'));
             exit;
         }
     }
@@ -45,7 +45,7 @@ $maintenanceEnabled = !empty($maintenanceCfg['enabled']);
 $uri = $_SERVER['REQUEST_URI'] ?? '';
 if ($maintenanceEnabled && !Auth::isAdmin()) {
     $path = parse_url($uri, PHP_URL_PATH) ?: '/';
-    $allowed = ['/login','/register','/forgot','/forgot/wait','/forgot/status','/forgot/resend','/logout','/maintenance'];
+    $allowed = ['/login','/register','/forgot','/forgot/wait','/forgot/status','/forgot/resend','/logout','/maintenance','/blocked'];
     $isAllowed = false;
     foreach ($allowed as $allow) {
         if (str_starts_with($path, $allow)) { $isAllowed = true; break; }
@@ -95,3 +95,4 @@ $router->get('/notify/poll', 'NotifyController@poll');
 $request = new Request($baseUrl);
 $router->dispatch($request);
 $router->get('/maintenance', 'PageController@maintenancePage');
+$router->get('/blocked', 'PageController@blocked');

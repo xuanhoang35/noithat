@@ -56,7 +56,7 @@ window.addEventListener('unhandledrejection', function(e) {
     <link rel="stylesheet" href="<?php echo base_url('public/assets/css/style.css'); ?>">
 </head>
 <!-- Shield chống lỗi extension (chrome-extension://...) -->
-<body class="bg-slate-50 min-h-screen flex flex-col">
+<body class="relative min-h-screen flex flex-col text-slate-900">
 <?php
 $chatHasUnread = false;
 $orderHasUnread = false;
@@ -78,48 +78,56 @@ $defaultAvatarPath = 'public/Profile/user-iconprofile.png';
 $defaultAvatarUrl = asset_url($defaultAvatarPath);
 $hideFooter = $hideFooter ?? false;
 ?>
-<header class="fixed top-0 left-0 right-0 z-30 bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white shadow-lg">
-    <div class="max-w-6xl mx-auto px-4 py-1 flex flex-col gap-1">
-        <div class="text-sm text-white/80 overflow-hidden">
-            <?php if (!empty($_SESSION['welcome_message'])): ?>
-                <div class="whitespace-nowrap animate-scroll-text">
-                    <?php echo htmlspecialchars($_SESSION['welcome_message']); unset($_SESSION['welcome_message']); ?>
-                </div>
-            <?php elseif (Auth::check()): ?>
-                <div class="whitespace-nowrap ticker-dynamic" data-ticker-cycle="Khám phá Nội Thất Store – hơn 2.000 sản phẩm nội thất & thiết bị gia dụng cao cấp, thiết kế độc đáo, vật liệu bền bỉ, giao nhanh – lắp đặt tận nơi, tư vấn 24/7, đổi trả linh hoạt, bảo hành minh bạch và ưu đãi thành viên hấp dẫn để nâng tầm không gian sống của bạn.|Mua hàng đi, đọc gì mà đọc lắm thế!" data-ticker-speed="20|8">
-                    Khám phá Nội Thất Store – hơn 2.000 sản phẩm nội thất & thiết bị gia dụng cao cấp, thiết kế độc đáo, vật liệu bền bỉ, giao nhanh – lắp đặt tận nơi, tư vấn 24/7, đổi trả linh hoạt, bảo hành minh bạch và ưu đãi thành viên hấp dẫn để nâng tầm không gian sống của bạn.
-                </div>
-            <?php else: ?>
-                <div class="whitespace-nowrap animate-scroll-text">
-                    Chào mừng quý khách đến với Nội Thất Store — Chúc quý khách lựa chọn được sản phẩm ưng ý và nâng tầm không gian sống!
-                </div>
-            <?php endif; ?>
-        </div>
-        <div class="flex items-center gap-4">
-            <a href="<?php echo base_url(); ?>" class="text-xl font-semibold tracking-tight">Noithat Store</a>
-            <nav class="flex-1 flex flex-wrap gap-4 text-sm">
-            <a class="hover:underline" href="<?php echo base_url(); ?>">Trang chủ</a>
-            <a class="hover:underline" href="<?php echo base_url('products'); ?>">Sản phẩm</a>
-            <a class="hover:underline" href="<?php echo base_url('services'); ?>">Dịch vụ</a>
-            <a class="hover:underline" href="<?php echo base_url('about'); ?>">Về chúng tôi</a>
-            <a class="hover:underline flex items-center gap-1 relative" href="<?php echo base_url('cart'); ?>">
-                <i class="fas fa-shopping-cart"></i>
-                <span class="hidden sm:inline">Giỏ hàng</span>
-                <?php if ($cartCount > 0): ?>
-                    <span class="absolute -top-2 -right-3 bg-red-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-semibold"><?php echo $cartCount; ?></span>
+<header class="fixed top-0 left-0 right-0 z-30 text-white">
+    <div class="absolute inset-0 bg-gradient-to-r from-slate-900 via-blue-900 to-blue-700"></div>
+    <div class="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_20%_20%,rgba(59,130,246,0.5),transparent_25%),radial-gradient(circle_at_80%_0%,rgba(14,165,233,0.45),transparent_25%)]"></div>
+    <div class="max-w-7xl mx-auto px-4 py-2 relative space-y-2">
+        <div class="flex items-center justify-between text-xs text-white/80">
+            <div class="flex items-center gap-3 overflow-hidden">
+                <span class="pill bg-white/10 text-white">Mở cửa 8:00 - 22:00</span>
+                <?php if (!empty($_SESSION['welcome_message'])): ?>
+                    <div class="whitespace-nowrap animate-scroll-text text-white">
+                        <?php echo htmlspecialchars($_SESSION['welcome_message']); unset($_SESSION['welcome_message']); ?>
+                    </div>
+                <?php elseif (Auth::check()): ?>
+                    <div class="whitespace-nowrap ticker-dynamic text-white" data-ticker-cycle="Khám phá Nội Thất Store – hơn 2.000 sản phẩm nội thất & thiết bị gia dụng cao cấp, thiết kế độc đáo, vật liệu bền bỉ, giao nhanh – lắp đặt tận nơi, tư vấn 24/7, đổi trả linh hoạt, bảo hành minh bạch và ưu đãi thành viên hấp dẫn để nâng tầm không gian sống của bạn.|Mua hàng đi, đọc gì mà đọc lắm thế!" data-ticker-speed="20|8">
+                        Khám phá Nội Thất Store – hơn 2.000 sản phẩm nội thất & thiết bị gia dụng cao cấp, thiết kế độc đáo, vật liệu bền bỉ, giao nhanh – lắp đặt tận nơi, tư vấn 24/7, đổi trả linh hoạt, bảo hành minh bạch và ưu đãi thành viên hấp dẫn để nâng tầm không gian sống của bạn.
+                    </div>
+                <?php else: ?>
+                    <div class="whitespace-nowrap animate-scroll-text text-white">
+                        Chào mừng quý khách đến với Nội Thất Store — Chúc quý khách lựa chọn được sản phẩm ưng ý và nâng tầm không gian sống!
+                    </div>
                 <?php endif; ?>
-            </a>
-            <?php if (Auth::check()): ?>
-                <a class="hover:underline relative inline-flex items-center gap-1" href="<?php echo base_url('orders'); ?>">
-                    Đơn hàng
-                    <span data-order-indicator class="inline-flex w-2 h-2 rounded-full bg-red-500 <?php echo $orderHasUnread ? '' : 'hidden'; ?>"></span>
-                </a>
-                <?php if (Auth::isAdmin()): ?><a class="hover:underline" href="<?php echo base_url('admin.php'); ?>">Admin</a><?php endif; ?>
-            <?php endif; ?>
-            </nav>
-            <div class="hidden lg:block flex-shrink-0 text-sm text-white/80">
-                Hotline: 0974.734.668
             </div>
+            <div class="hidden md:flex items-center gap-3">
+                <span class="px-3 py-1 rounded-full bg-white/10">Hotline: <strong>0974.734.668</strong></span>
+                <span class="text-white/70">Hỗ trợ nhanh 24/7</span>
+            </div>
+        </div>
+        <div class="glass-panel rounded-2xl px-4 py-3 flex items-center gap-4 shadow-xl">
+            <a href="<?php echo base_url(); ?>" class="text-2xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-blue-100 to-blue-300">
+                Noithat Store
+            </a>
+            <nav class="flex-1 flex flex-wrap items-center gap-2 text-sm font-semibold">
+                <a class="px-3 py-2 rounded-lg hover:bg-white/10 <?php echo ($_SERVER['REQUEST_URI'] ?? '/') === '/' ? 'bg-white/10' : ''; ?>" href="<?php echo base_url(); ?>">Trang chủ</a>
+                <a class="px-3 py-2 rounded-lg hover:bg-white/10" href="<?php echo base_url('products'); ?>">Sản phẩm</a>
+                <a class="px-3 py-2 rounded-lg hover:bg-white/10" href="<?php echo base_url('services'); ?>">Dịch vụ</a>
+                <a class="px-3 py-2 rounded-lg hover:bg-white/10" href="<?php echo base_url('about'); ?>">Về chúng tôi</a>
+                <a class="px-3 py-2 rounded-lg hover:bg-white/10 flex items-center gap-2 relative" href="<?php echo base_url('cart'); ?>">
+                    <span class="inline-flex w-8 h-8 rounded-full bg-white/10 items-center justify-center text-sm font-semibold">GH</span>
+                    <span class="hidden sm:inline">Giỏ hàng</span>
+                    <?php if ($cartCount > 0): ?>
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[11px] min-w-[22px] h-[22px] rounded-full flex items-center justify-center font-bold shadow"><?php echo $cartCount; ?></span>
+                    <?php endif; ?>
+                </a>
+                <?php if (Auth::check()): ?>
+                    <a class="px-3 py-2 rounded-lg hover:bg-white/10 relative inline-flex items-center gap-2" href="<?php echo base_url('orders'); ?>">
+                        <span>Đơn hàng</span>
+                        <span data-order-indicator class="inline-flex w-2 h-2 rounded-full bg-red-400 <?php echo $orderHasUnread ? '' : 'hidden'; ?>"></span>
+                    </a>
+                    <?php if (Auth::isAdmin()): ?><a class="px-3 py-2 rounded-lg hover:bg-white/10" href="<?php echo base_url('admin.php'); ?>">Admin</a><?php endif; ?>
+                <?php endif; ?>
+            </nav>
             <div class="flex items-center gap-2">
             <?php if (Auth::check()): ?>
                 <?php
@@ -127,9 +135,9 @@ $hideFooter = $hideFooter ?? false;
                     $avatarSource = !empty($sessionUser['avatar']) ? $sessionUser['avatar'] : $defaultAvatarPath;
                     $avatar = asset_url($avatarSource);
                 ?>
-                <a class="px-3 py-2 text-sm bg-white/15 rounded-full hover:bg-white/25 flex items-center gap-2" href="<?php echo base_url('profile'); ?>">
-                    <img src="<?php echo $avatar; ?>" alt="Avatar" class="w-7 h-7 rounded-full object-cover border border-white/20" onerror="this.src='<?php echo $defaultAvatarUrl; ?>';">
-                    <span>Hi, <?php echo $sessionUser['name']; ?></span>
+                <a class="px-3 py-2 text-sm bg-white/10 rounded-full hover:bg-white/20 flex items-center gap-2" href="<?php echo base_url('profile'); ?>">
+                    <img src="<?php echo $avatar; ?>" alt="Avatar" class="w-8 h-8 rounded-full object-cover border border-white/30" onerror="this.src='<?php echo $defaultAvatarUrl; ?>';">
+                    <span class="hidden sm:inline">Hi, <?php echo $sessionUser['name']; ?></span>
                 </a>
                 <a class="px-3 py-2 text-sm bg-white text-blue-700 rounded-full hover:bg-slate-100" href="<?php echo base_url('logout'); ?>">Đăng xuất</a>
             <?php else: ?>
@@ -157,8 +165,9 @@ foreach ($flashStyles as $flashKey => $class) {
     }
 }
 ?>
-<main class="flex-1 pt-[120px] md:pt-[110px] pb-8">
-    <div class="max-w-6xl mx-auto px-4">
+<main class="flex-1 pt-[132px] md:pt-[124px] pb-10 relative">
+    <div class="absolute inset-x-0 top-0 h-64 tile-grid opacity-70 pointer-events-none"></div>
+    <div class="max-w-7xl mx-auto px-4 relative z-10">
         <?php foreach ($flashBag as $flash): ?>
             <div data-flash-message class="mb-4 rounded-xl px-4 py-3 text-sm transition-opacity duration-500 <?php echo $flash['class']; ?>">
                 <?php echo htmlspecialchars($flash['message'], ENT_QUOTES, 'UTF-8'); ?>
@@ -168,8 +177,9 @@ foreach ($flashStyles as $flashKey => $class) {
     </div>
 </main>
 <?php if (!$hideFooter): ?>
-<footer class="mt-auto bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-slate-100">
-    <div class="max-w-6xl mx-auto px-4 py-6 grid md:grid-cols-4 gap-6 text-sm">
+<footer class="mt-auto bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-slate-100 relative overflow-hidden">
+    <div class="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_20%_20%,rgba(59,130,246,0.35),transparent_30%),radial-gradient(circle_at_80%_10%,rgba(14,165,233,0.35),transparent_30%)]"></div>
+    <div class="max-w-7xl mx-auto px-4 py-6 grid md:grid-cols-4 gap-6 text-sm relative z-10">
         <div class="space-y-2">
             <div class="text-lg font-semibold">Noithat Store</div>
             <p class="text-slate-300">Nội thất & thiết bị gia dụng cao cấp, giao nhanh, lắp đặt tận nơi.</p>
@@ -232,8 +242,8 @@ foreach ($flashStyles as $flashKey => $class) {
             </div>
         </div>
     </div>
-    <div class="border-t border-slate-800">
-        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between text-xs text-slate-300">
+    <div class="border-t border-slate-800 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between text-xs text-slate-300">
             <span>© 2025 Noithat Store. All rights reserved.</span>
             <span>Thiết kế & vận hành bởi Noithat Store Team</span>
         </div>
