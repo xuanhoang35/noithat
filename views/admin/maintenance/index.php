@@ -30,6 +30,8 @@
 
     <div class="grid lg:grid-cols-3 gap-4">
         <form class="lg:col-span-2 space-y-3" method="post" action="<?php echo base_url('admin.php/maintenance'); ?>" enctype="multipart/form-data">
+            <input type="hidden" name="uploaded_image" id="uploaded_image">
+            <input type="hidden" name="uploaded_video" id="uploaded_video">
             <div>
                 <label class="text-sm text-slate-600">Tiêu đề</label>
                 <input name="title" class="w-full px-3 py-2 border rounded" value="<?php echo htmlspecialchars($title); ?>">
@@ -70,6 +72,13 @@
                 </label>
                 <span class="text-sm text-red-600 font-semibold">Gạt để đóng/mở trang web (áp dụng ngay)</span>
             </div>
+            <div class="flex items-center gap-3">
+                <button type="submit" id="maintenance-submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Lưu nội dung</button>
+                <div id="maintenance-status" class="text-sm text-slate-500"></div>
+            </div>
+            <div id="maintenance-progress-wrap" class="w-full h-2 bg-slate-100 rounded hidden">
+                <div id="maintenance-progress" class="h-2 bg-blue-600 rounded" style="width:0%"></div>
+            </div>
         </form>
         <div class="lg:col-span-1">
             <div class="border rounded-2xl overflow-hidden shadow-sm">
@@ -104,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function(){
     if (!form) return;
     const toggle = document.getElementById('maintenance-toggle');
     if (toggle) {
-        toggle.addEventListener('change', () => form.submit());
+        toggle.addEventListener('change', () => submitForm());
     }
     const imgInput = document.getElementById('maintenance-image');
     const videoInput = document.getElementById('maintenance-video');
@@ -113,6 +122,12 @@ document.addEventListener('DOMContentLoaded', function(){
     const imgName = document.getElementById('maintenance-image-name');
     const vidName = document.getElementById('maintenance-video-name');
     const disableCls = ['opacity-50','cursor-not-allowed'];
+    const progressWrap = document.getElementById('maintenance-progress-wrap');
+    const progressBar = document.getElementById('maintenance-progress');
+    const statusEl = document.getElementById('maintenance-status');
+    const submitBtn = document.getElementById('maintenance-submit');
+    const uploadedImageInput = document.getElementById('uploaded_image');
+    const uploadedVideoInput = document.getElementById('uploaded_video');
     const updateState = () => {
         const hasImg = imgInput && imgInput.files && imgInput.files.length > 0;
         const hasVid = videoInput && videoInput.files && videoInput.files.length > 0;
@@ -142,6 +157,70 @@ document.addEventListener('DOMContentLoaded', function(){
     if (imgClear) imgClear.addEventListener('click', () => { imgInput.value=''; updateState(); });
     if (vidClear) vidClear.addEventListener('click', () => { videoInput.value=''; updateState(); });
     updateState();
+
+    const uploadFile = async (file, type) => {
+        const chunkSize = 2 * 1024 * 1024; // 2MB/chunk
+        const totalChunks = Math.ceil(file.size / chunkSize);
+        const uploadId = `${file.name}-${file.size}-${file.lastModified}`;
+        for (let i = 0; i < totalChunks; i++) {
+            const start = i * chunkSize;
+            const end = Math.min(file.size, start + chunkSize);
+            const blob = file.slice(start, end);
+            const fd = new FormData();
+            fd.append('type', type);
+            fd.append('upload_id', uploadId);
+            fd.append('chunk_index', i);
+            fd.append('total_chunks', totalChunks);
+            fd.append('file_name', file.name);
+            fd.append('chunk', blob, file.name);
+            const res = await fetch(form.action + '/upload', { method: 'POST', body: fd });
+            const data = await res.json();
+            if (!res.ok || data.error) throw new Error(data.error || 'Upload lỗi');
+            if (progressBar) {
+                const pct = Math.round(((i + 1) / totalChunks) * 100);
+                progressBar.style.width = pct + '%';
+            }
+            if (data.done) return data.path;
+        }
+        throw new Error('Upload chưa hoàn tất');
+    };
+
+    const submitForm = async () => {
+        if (!form) return;
+        if (statusEl) statusEl.textContent = 'Đang tải...';
+        if (progressWrap) { progressWrap.classList.remove('hidden'); if (progressBar) progressBar.style.width = '0%'; }
+        if (submitBtn) submitBtn.disabled = true;
+        try {
+            const fd = new FormData(form);
+            let uploadedPath = '';
+            if (videoInput && videoInput.files.length) {
+                uploadedPath = await uploadFile(videoInput.files[0], 'video');
+                if (uploadedVideoInput) uploadedVideoInput.value = uploadedPath;
+                if (uploadedImageInput) uploadedImageInput.value = '';
+            } else if (imgInput && imgInput.files.length) {
+                uploadedPath = await uploadFile(imgInput.files[0], 'image');
+                if (uploadedImageInput) uploadedImageInput.value = uploadedPath;
+                if (uploadedVideoInput) uploadedVideoInput.value = '';
+            }
+            // không gửi file thực qua submit nữa
+            if (imgInput) imgInput.disabled = true;
+            if (videoInput) videoInput.disabled = true;
+            const res = await fetch(form.action, { method:'POST', body: fd });
+            if (!res.ok) throw new Error('Lưu cấu hình thất bại');
+            if (statusEl) statusEl.textContent = 'Tải thành công. Đang tải lại...';
+            setTimeout(() => window.location.reload(), 500);
+        } catch (err) {
+            if (statusEl) statusEl.textContent = err.message || 'Có lỗi xảy ra';
+        } finally {
+            if (submitBtn) submitBtn.disabled = false;
+            if (progressWrap) progressWrap.classList.add('hidden');
+            if (progressBar) progressBar.style.width = '0%';
+        }
+    };
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        submitForm();
+    });
 });
 </script>
 <?php $content = ob_get_clean(); include __DIR__ . '/../layouts/main.php'; ?>

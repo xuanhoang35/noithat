@@ -73,6 +73,22 @@ class MaintenanceAdminController extends Controller {
             }
         }
 
+        // Sử dụng đường dẫn đã upload trước (chunk) nếu có
+        if (!empty($_POST['uploaded_image'])) {
+            $imagePath = trim($_POST['uploaded_image']);
+            if ($imagePath) {
+                $this->deleteIfLocal($videoPath);
+                $videoPath = '';
+            }
+        }
+        if (!empty($_POST['uploaded_video'])) {
+            $videoPath = trim($_POST['uploaded_video']);
+            if ($videoPath) {
+                $this->deleteIfLocal($imagePath);
+                $imagePath = '';
+            }
+        }
+
         if (!empty($_FILES['video']['tmp_name']) && is_uploaded_file($_FILES['video']['tmp_name'])) {
             $uploadDir = __DIR__ . '/../../public/uploads/maintenance';
             if (!is_dir($uploadDir) && !@mkdir($uploadDir, 0777, true)) {
@@ -112,5 +128,83 @@ class MaintenanceAdminController extends Controller {
         $this->save($save);
         $_SESSION['flash_success'] = $enabled ? 'Đã bật chế độ bảo trì.' : 'Đã lưu nội dung và tắt bảo trì.';
         $this->redirect('/admin.php/maintenance');
+    }
+
+    // Upload chunk để nhanh/stable, không nén
+    public function uploadMedia() {
+        header('Content-Type: application/json');
+        $type = $_POST['type'] ?? '';
+        if (!in_array($type, ['image','video'], true)) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Loại tệp không hợp lệ.']);
+            return;
+        }
+        $uploadId = preg_replace('/[^a-zA-Z0-9._-]/','_', $_POST['upload_id'] ?? '');
+        $chunkIndex = (int)($_POST['chunk_index'] ?? 0);
+        $totalChunks = max(1, (int)($_POST['total_chunks'] ?? 1));
+        $fileName = $_POST['file_name'] ?? 'file';
+        if (!$uploadId || empty($_FILES['chunk']['tmp_name'])) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Thiếu dữ liệu chunk.']);
+            return;
+        }
+        $tmpBase = __DIR__ . '/../../public/uploads/maintenance/tmp';
+        if (!is_dir($tmpBase) && !@mkdir($tmpBase, 0777, true)) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Không tạo được thư mục tạm.']);
+            return;
+        }
+        $sessionDir = $tmpBase . '/' . $uploadId;
+        if (!is_dir($sessionDir) && !@mkdir($sessionDir, 0777, true)) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Không tạo được thư mục chunk.']);
+            return;
+        }
+        $chunkPath = $sessionDir . '/chunk_' . $chunkIndex;
+        if (!move_uploaded_file($_FILES['chunk']['tmp_name'], $chunkPath)) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Lưu chunk thất bại.']);
+            return;
+        }
+        // Nếu chưa phải chunk cuối
+        if ($chunkIndex < $totalChunks - 1) {
+            echo json_encode(['done' => false, 'received' => $chunkIndex]);
+            return;
+        }
+        // Ghép file
+        $safe = preg_replace('/[^a-zA-Z0-9_-]/', '_', pathinfo($fileName, PATHINFO_FILENAME));
+        $ext = pathinfo($fileName, PATHINFO_EXTENSION);
+        $finalName = $safe . '_' . time() . ($ext ? '.' . $ext : '');
+        $destDir = __DIR__ . '/../../public/uploads/maintenance';
+        if (!is_dir($destDir) && !@mkdir($destDir, 0777, true)) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Không tạo được thư mục đích.']);
+            return;
+        }
+        $finalPath = $destDir . '/' . $finalName;
+        $out = fopen($finalPath, 'wb');
+        if (!$out) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Không ghi được file đích.']);
+            return;
+        }
+        for ($i = 0; $i < $totalChunks; $i++) {
+            $part = $sessionDir . '/chunk_' . $i;
+            if (!file_exists($part)) {
+                fclose($out);
+                http_response_code(500);
+                echo json_encode(['error' => 'Thiếu chunk ' . $i]);
+                return;
+            }
+            $in = fopen($part, 'rb');
+            stream_copy_to_stream($in, $out);
+            fclose($in);
+        }
+        fclose($out);
+        // dọn dẹp
+        foreach (glob($sessionDir . '/*') as $f) { @unlink($f); }
+        @rmdir($sessionDir);
+        $publicPath = 'public/uploads/maintenance/' . $finalName;
+        echo json_encode(['done' => true, 'path' => $publicPath, 'type' => $type]);
     }
 }
