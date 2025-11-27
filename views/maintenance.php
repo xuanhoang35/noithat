@@ -1,7 +1,10 @@
 <?php ob_start(); ?>
 <?php
     $img = asset_url(!empty($image) ? $image : 'public/assets/img/placeholder.svg');
-    $videoSrc = !empty($video) ? asset_url($video) : '';
+    $videoSrc = '';
+    if (!empty($video)) {
+        $videoSrc = preg_match('#^https?://#', $video) ? $video : asset_url($video);
+    }
     $title = $title ?? 'Chúng tôi đang bảo trì';
     $subtitle = $subtitle ?? 'Sẽ trở lại sớm nhất';
     $message = $message ?? 'Xin lỗi vì sự bất tiện.';

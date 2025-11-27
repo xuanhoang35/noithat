@@ -8,7 +8,10 @@
     $image = $c['image'] ?? '';
     $video = $c['video'] ?? '';
     $previewImage = $image ? asset_url($image) : asset_url('public/assets/img/placeholder.svg');
-    $previewVideo = $video ? asset_url($video) : '';
+    $previewVideo = '';
+    if (!empty($video)) {
+        $previewVideo = preg_match('#^https?://#', $video) ? $video : asset_url($video);
+    }
 ?>
 <div class="bg-white rounded-2xl shadow-sm p-5 space-y-4">
     <div class="flex items-center justify-between">
@@ -30,8 +33,6 @@
 
     <div class="grid lg:grid-cols-3 gap-4">
         <form class="lg:col-span-2 space-y-3" method="post" action="<?php echo base_url('admin.php/maintenance'); ?>" enctype="multipart/form-data">
-            <input type="hidden" name="uploaded_image" id="uploaded_image">
-            <input type="hidden" name="uploaded_video" id="uploaded_video">
             <div>
                 <label class="text-sm text-slate-600">Tiêu đề</label>
                 <input name="title" class="w-full px-3 py-2 border rounded" value="<?php echo htmlspecialchars($title); ?>">
@@ -44,25 +45,19 @@
                 <label class="text-sm text-slate-600">Thông điệp</label>
                 <textarea name="message" rows="3" class="w-full px-3 py-2 border rounded"><?php echo htmlspecialchars($message); ?></textarea>
             </div>
-            <div class="grid md:grid-cols-2 gap-3">
-                <div>
-                    <label class="text-sm text-slate-600">Chọn ảnh</label>
-                    <div class="flex items-center gap-2 mt-1">
-                        <input type="file" name="image" accept="image/*" class="w-full text-sm" id="maintenance-image">
-                        <button type="button" id="maintenance-image-clear" class="px-2 py-1 text-xs bg-slate-100 text-slate-700 rounded hover:bg-slate-200 hidden">X</button>
-                    </div>
-                    <p class="text-xs text-slate-500 mt-1">Chọn ảnh sẽ xóa video hiện tại.</p>
-                    <div id="maintenance-image-name" class="text-xs text-blue-600 mt-1 hidden"></div>
+            <div>
+                <label class="text-sm text-slate-600">Ảnh nền (tùy chọn)</label>
+                <div class="flex items-center gap-2 mt-1">
+                    <input type="file" name="image" accept="image/*" class="w-full text-sm" id="maintenance-image">
+                    <button type="button" id="maintenance-image-clear" class="px-2 py-1 text-xs bg-slate-100 text-slate-700 rounded hover:bg-slate-200 hidden">X</button>
                 </div>
-                <div>
-                    <label class="text-sm text-slate-600">Chọn video</label>
-                    <div class="flex items-center gap-2 mt-1">
-                        <input type="file" name="video" accept="video/*" class="w-full text-sm" id="maintenance-video">
-                        <button type="button" id="maintenance-video-clear" class="px-2 py-1 text-xs bg-slate-100 text-slate-700 rounded hover:bg-slate-200 hidden">X</button>
-                    </div>
-                    <p class="text-xs text-slate-500 mt-1">Chọn video sẽ xóa ảnh hiện tại.</p>
-                    <div id="maintenance-video-name" class="text-xs text-blue-600 mt-1 hidden"></div>
-                </div>
+                <p class="text-xs text-slate-500 mt-1">Chọn ảnh sẽ bỏ URL video và video hiện tại.</p>
+                <div id="maintenance-image-name" class="text-xs text-blue-600 mt-1 hidden"></div>
+            </div>
+            <div>
+                <label class="text-sm text-slate-600">Video URL (Google Drive/YouTube/CDN)</label>
+                <input name="video_url" class="w-full px-3 py-2 border rounded" placeholder="https://..." value="<?php echo htmlspecialchars(preg_match('#^https?://#', $video) ? $video : ''); ?>">
+                <p class="text-xs text-slate-500 mt-1">Dán URL video để phát trực tiếp (ưu tiên dùng URL, bỏ upload tệp để nhanh hơn).</p>
             </div>
             <div class="flex items-center gap-3">
                 <label class="relative inline-flex items-center cursor-pointer">
@@ -74,10 +69,6 @@
             </div>
             <div class="flex items-center gap-3">
                 <button type="submit" id="maintenance-submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Lưu nội dung</button>
-                <div id="maintenance-status" class="text-sm text-slate-500"></div>
-            </div>
-            <div id="maintenance-progress-wrap" class="w-full h-2 bg-slate-100 rounded hidden">
-                <div id="maintenance-progress" class="h-2 bg-blue-600 rounded" style="width:0%"></div>
             </div>
         </form>
         <div class="lg:col-span-1">
@@ -112,120 +103,31 @@ document.addEventListener('DOMContentLoaded', function(){
     const form = document.querySelector('form[action$="maintenance"]');
     if (!form) return;
     const toggle = document.getElementById('maintenance-toggle');
-    if (toggle) {
-        toggle.addEventListener('change', () => submitForm());
-    }
-    const imgInput = document.getElementById('maintenance-image');
-    const videoInput = document.getElementById('maintenance-video');
-    const imgClear = document.getElementById('maintenance-image-clear');
-    const vidClear = document.getElementById('maintenance-video-clear');
-    const imgName = document.getElementById('maintenance-image-name');
-    const vidName = document.getElementById('maintenance-video-name');
-    const disableCls = ['opacity-50','cursor-not-allowed'];
-    const progressWrap = document.getElementById('maintenance-progress-wrap');
-    const progressBar = document.getElementById('maintenance-progress');
-    const statusEl = document.getElementById('maintenance-status');
     const submitBtn = document.getElementById('maintenance-submit');
-    const uploadedImageInput = document.getElementById('uploaded_image');
-    const uploadedVideoInput = document.getElementById('uploaded_video');
+    const imgInput = document.getElementById('maintenance-image');
+    const imgClear = document.getElementById('maintenance-image-clear');
+    const imgName = document.getElementById('maintenance-image-name');
+    const videoUrlInput = document.querySelector('input[name="video_url"]');
+
     const updateState = () => {
         const hasImg = imgInput && imgInput.files && imgInput.files.length > 0;
-        const hasVid = videoInput && videoInput.files && videoInput.files.length > 0;
-        if (imgInput) {
-            if (hasVid) { imgInput.disabled = true; imgInput.classList.add(...disableCls); }
-            else { imgInput.disabled = false; imgInput.classList.remove(...disableCls); }
-        }
-        if (videoInput) {
-            if (hasImg) { videoInput.disabled = true; videoInput.classList.add(...disableCls); }
-            else { videoInput.disabled = false; videoInput.classList.remove(...disableCls); }
-        }
         if (imgName) {
             if (hasImg) { imgName.textContent = imgInput.files[0].name; imgName.classList.remove('hidden'); }
             else { imgName.textContent = ''; imgName.classList.add('hidden'); }
         }
-        if (vidName) {
-            if (hasVid) { vidName.textContent = videoInput.files[0].name; vidName.classList.remove('hidden'); }
-            else { vidName.textContent = ''; vidName.classList.add('hidden'); }
-        }
         if (imgClear) imgClear.classList.toggle('hidden', !hasImg);
-        if (vidClear) vidClear.classList.toggle('hidden', !hasVid);
+        if (videoUrlInput && hasImg) videoUrlInput.value = '';
     };
-    if (imgInput && videoInput) {
-        imgInput.addEventListener('change', () => { if (imgInput.files.length) videoInput.value=''; updateState(); });
-        videoInput.addEventListener('change', () => { if (videoInput.files.length) imgInput.value=''; updateState(); });
-    }
-    if (imgClear) imgClear.addEventListener('click', () => { imgInput.value=''; updateState(); });
-    if (vidClear) vidClear.addEventListener('click', () => { videoInput.value=''; updateState(); });
+
+    if (imgInput) imgInput.addEventListener('change', updateState);
+    if (imgClear) imgClear.addEventListener('click', () => { if (imgInput) imgInput.value=''; updateState(); });
+    if (videoUrlInput) videoUrlInput.addEventListener('input', () => { if (videoUrlInput.value.trim() !== '' && imgInput) { imgInput.value=''; updateState(); } });
     updateState();
 
-    const uploadFile = async (file, type) => {
-        const maxSize = 50 * 1024 * 1024;
-        if (file.size > maxSize) throw new Error('File vượt quá 50MB.');
-        // Dùng chunk lớn nhất có thể (tối đa bằng file size hoặc 50MB) để giảm request
-        const chunkSize = Math.min(file.size, maxSize); // file <=50MB nên thường chỉ 1 chunk
-        const totalChunks = Math.ceil(file.size / chunkSize);
-        const uploadId = `${file.name}-${file.size}-${file.lastModified}`;
-        for (let i = 0; i < totalChunks; i++) {
-            const start = i * chunkSize;
-            const end = Math.min(file.size, start + chunkSize);
-            const blob = file.slice(start, end);
-            const fd = new FormData();
-            fd.append('type', type);
-            fd.append('upload_id', uploadId);
-            fd.append('chunk_index', i);
-            fd.append('total_chunks', totalChunks);
-            fd.append('file_name', file.name);
-            fd.append('file_size', file.size);
-            fd.append('chunk', blob, file.name);
-            const res = await fetch(form.action + '/upload', { method: 'POST', body: fd });
-            let data = {};
-            try { data = await res.json(); } catch (e) {}
-            if (!res.ok || data.error) throw new Error(data.error || `Upload lỗi (chunk ${i + 1}/${totalChunks})`);
-            if (progressBar) {
-                const pct = Math.round(((i + 1) / totalChunks) * 100);
-                progressBar.style.width = pct + '%';
-            }
-            if (data.done) return data.path;
-        }
-        throw new Error('Upload chưa hoàn tất');
-    };
-
-    const submitForm = async () => {
-        if (!form) return;
-        if (statusEl) statusEl.textContent = 'Đang tải...';
-        if (progressWrap) { progressWrap.classList.remove('hidden'); if (progressBar) progressBar.style.width = '0%'; }
-        if (submitBtn) submitBtn.disabled = true;
-        try {
-            const fd = new FormData(form);
-            let uploadedPath = '';
-            if (videoInput && videoInput.files.length) {
-                uploadedPath = await uploadFile(videoInput.files[0], 'video');
-                if (uploadedVideoInput) uploadedVideoInput.value = uploadedPath;
-                if (uploadedImageInput) uploadedImageInput.value = '';
-            } else if (imgInput && imgInput.files.length) {
-                uploadedPath = await uploadFile(imgInput.files[0], 'image');
-                if (uploadedImageInput) uploadedImageInput.value = uploadedPath;
-                if (uploadedVideoInput) uploadedVideoInput.value = '';
-            }
-            // không gửi file thực qua submit nữa
-            if (imgInput) imgInput.disabled = true;
-            if (videoInput) videoInput.disabled = true;
-            const res = await fetch(form.action, { method:'POST', body: fd });
-            if (!res.ok) throw new Error('Lưu cấu hình thất bại');
-            if (statusEl) statusEl.textContent = 'Tải thành công. Đang tải lại...';
-            setTimeout(() => window.location.reload(), 500);
-        } catch (err) {
-            if (statusEl) statusEl.textContent = err.message || 'Có lỗi xảy ra';
-        } finally {
-            if (submitBtn) submitBtn.disabled = false;
-            if (progressWrap) progressWrap.classList.add('hidden');
-            if (progressBar) progressBar.style.width = '0%';
-        }
-    };
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        submitForm();
-    });
+    if (toggle) {
+        toggle.addEventListener('change', () => form.submit());
+    }
+    form.addEventListener('submit', () => { if (submitBtn) submitBtn.disabled = true; });
 });
 </script>
 <?php $content = ob_get_clean(); include __DIR__ . '/../layouts/main.php'; ?>

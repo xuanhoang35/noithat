@@ -53,6 +53,10 @@ class MaintenanceAdminController extends Controller {
         $enabled = isset($_POST['enabled']) && $_POST['enabled'] === '1';
         $imagePath = $data['image'] ?? '';
         $videoPath = $data['video'] ?? '';
+        $videoUrl = trim($_POST['video_url'] ?? '');
+        if ($videoUrl && !preg_match('#^https?://#', $videoUrl)) {
+            $videoUrl = '';
+        }
 
         if (!empty($_FILES['image']['tmp_name']) && is_uploaded_file($_FILES['image']['tmp_name'])) {
             if ($_FILES['image']['size'] > $maxSize) {
@@ -118,12 +122,21 @@ class MaintenanceAdminController extends Controller {
             }
         }
 
+        // Ưu tiên video URL (Google Drive, CDN...), bỏ file cục bộ nếu nhập
+        if (!empty($videoUrl)) {
+            $this->deleteIfLocal($imagePath);
+            $this->deleteIfLocal($videoPath);
+            $imagePath = '';
+            $videoPath = $videoUrl; // lưu trực tiếp URL
+        }
+
         // Khi tắt bảo trì: xóa media tạm
         if (!$enabled) {
             $this->deleteIfLocal($imagePath);
             $this->deleteIfLocal($videoPath);
             $imagePath = '';
             $videoPath = '';
+            $videoUrl = '';
         }
 
         $save = [
@@ -132,95 +145,10 @@ class MaintenanceAdminController extends Controller {
             'subtitle' => $subtitle,
             'message' => $message,
             'image' => $imagePath,
-            'video' => $videoPath
+            'video' => $videoPath ?: $videoUrl
         ];
         $this->save($save);
         $_SESSION['flash_success'] = $enabled ? 'Đã bật chế độ bảo trì.' : 'Đã lưu nội dung và tắt bảo trì.';
         $this->redirect('/admin.php/maintenance');
-    }
-
-    // Upload chunk để nhanh/stable, không nén
-    public function uploadMedia() {
-        header('Content-Type: application/json');
-        $type = $_POST['type'] ?? '';
-        if (!in_array($type, ['image','video'], true)) {
-            http_response_code(400);
-            echo json_encode(['error' => 'Loại tệp không hợp lệ.']);
-            return;
-        }
-        $maxSize = 50 * 1024 * 1024; // 50MB
-        $uploadId = preg_replace('/[^a-zA-Z0-9._-]/','_', $_POST['upload_id'] ?? '');
-        $chunkIndex = (int)($_POST['chunk_index'] ?? 0);
-        $totalChunks = max(1, (int)($_POST['total_chunks'] ?? 1));
-        $fileName = $_POST['file_name'] ?? 'file';
-        $fileSize = (int)($_POST['file_size'] ?? 0);
-        if (!$uploadId || empty($_FILES['chunk']['tmp_name'])) {
-            http_response_code(400);
-            echo json_encode(['error' => 'Thiếu dữ liệu chunk.']);
-            return;
-        }
-        if ($fileSize > $maxSize) {
-            http_response_code(400);
-            echo json_encode(['error' => 'File vượt quá 50MB.']);
-            return;
-        }
-        $tmpBase = __DIR__ . '/../../public/uploads/maintenance/tmp';
-        if (!is_dir($tmpBase) && !@mkdir($tmpBase, 0777, true)) {
-            http_response_code(500);
-            echo json_encode(['error' => 'Không tạo được thư mục tạm.']);
-            return;
-        }
-        $sessionDir = $tmpBase . '/' . $uploadId;
-        if (!is_dir($sessionDir) && !@mkdir($sessionDir, 0777, true)) {
-            http_response_code(500);
-            echo json_encode(['error' => 'Không tạo được thư mục chunk.']);
-            return;
-        }
-        $chunkPath = $sessionDir . '/chunk_' . $chunkIndex;
-        if (!move_uploaded_file($_FILES['chunk']['tmp_name'], $chunkPath)) {
-            http_response_code(500);
-            echo json_encode(['error' => 'Lưu chunk thất bại.']);
-            return;
-        }
-        // Nếu chưa phải chunk cuối
-        if ($chunkIndex < $totalChunks - 1) {
-            echo json_encode(['done' => false, 'received' => $chunkIndex]);
-            return;
-        }
-        // Ghép file
-        $safe = preg_replace('/[^a-zA-Z0-9_-]/', '_', pathinfo($fileName, PATHINFO_FILENAME));
-        $ext = pathinfo($fileName, PATHINFO_EXTENSION);
-        $finalName = $safe . '_' . time() . ($ext ? '.' . $ext : '');
-        $destDir = __DIR__ . '/../../public/uploads/maintenance';
-        if (!is_dir($destDir) && !@mkdir($destDir, 0777, true)) {
-            http_response_code(500);
-            echo json_encode(['error' => 'Không tạo được thư mục đích.']);
-            return;
-        }
-        $finalPath = $destDir . '/' . $finalName;
-        $out = fopen($finalPath, 'wb');
-        if (!$out) {
-            http_response_code(500);
-            echo json_encode(['error' => 'Không ghi được file đích.']);
-            return;
-        }
-        for ($i = 0; $i < $totalChunks; $i++) {
-            $part = $sessionDir . '/chunk_' . $i;
-            if (!file_exists($part)) {
-                fclose($out);
-                http_response_code(500);
-                echo json_encode(['error' => 'Thiếu chunk ' . $i]);
-                return;
-            }
-            $in = fopen($part, 'rb');
-            stream_copy_to_stream($in, $out);
-            fclose($in);
-        }
-        fclose($out);
-        // dọn dẹp
-        foreach (glob($sessionDir . '/*') as $f) { @unlink($f); }
-        @rmdir($sessionDir);
-        $publicPath = 'public/uploads/maintenance/' . $finalName;
-        echo json_encode(['done' => true, 'path' => $publicPath, 'type' => $type]);
     }
 }
