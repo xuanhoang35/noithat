@@ -159,7 +159,10 @@ document.addEventListener('DOMContentLoaded', function(){
     updateState();
 
     const uploadFile = async (file, type) => {
-        const chunkSize = 2 * 1024 * 1024; // 2MB/chunk
+        const maxSize = 50 * 1024 * 1024;
+        if (file.size > maxSize) throw new Error('File vượt quá 50MB.');
+        // Dùng chunk lớn nhất có thể (tối đa bằng file size hoặc 50MB) để giảm request
+        const chunkSize = Math.min(file.size, maxSize); // file <=50MB nên thường chỉ 1 chunk
         const totalChunks = Math.ceil(file.size / chunkSize);
         const uploadId = `${file.name}-${file.size}-${file.lastModified}`;
         for (let i = 0; i < totalChunks; i++) {
@@ -172,10 +175,12 @@ document.addEventListener('DOMContentLoaded', function(){
             fd.append('chunk_index', i);
             fd.append('total_chunks', totalChunks);
             fd.append('file_name', file.name);
+            fd.append('file_size', file.size);
             fd.append('chunk', blob, file.name);
             const res = await fetch(form.action + '/upload', { method: 'POST', body: fd });
-            const data = await res.json();
-            if (!res.ok || data.error) throw new Error(data.error || 'Upload lỗi');
+            let data = {};
+            try { data = await res.json(); } catch (e) {}
+            if (!res.ok || data.error) throw new Error(data.error || `Upload lỗi (chunk ${i + 1}/${totalChunks})`);
             if (progressBar) {
                 const pct = Math.round(((i + 1) / totalChunks) * 100);
                 progressBar.style.width = pct + '%';

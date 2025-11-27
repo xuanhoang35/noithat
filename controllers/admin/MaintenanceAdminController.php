@@ -45,6 +45,7 @@ class MaintenanceAdminController extends Controller {
     }
 
     public function update() {
+        $maxSize = 50 * 1024 * 1024; // 50MB
         $data = $this->load();
         $title = trim($_POST['title'] ?? $data['title']);
         $subtitle = trim($_POST['subtitle'] ?? $data['subtitle']);
@@ -54,6 +55,10 @@ class MaintenanceAdminController extends Controller {
         $videoPath = $data['video'] ?? '';
 
         if (!empty($_FILES['image']['tmp_name']) && is_uploaded_file($_FILES['image']['tmp_name'])) {
+            if ($_FILES['image']['size'] > $maxSize) {
+                $_SESSION['flash_error'] = 'Ảnh vượt quá 50MB. Vui lòng chọn file nhỏ hơn.';
+                $this->redirect('/admin.php/maintenance');
+            }
             $uploadDir = __DIR__ . '/../../public/uploads/maintenance';
             if (!is_dir($uploadDir) && !@mkdir($uploadDir, 0777, true)) {
                 $_SESSION['flash_error'] = 'Không tạo được thư mục lưu ảnh. Vui lòng kiểm tra quyền ghi public/uploads/maintenance.';
@@ -90,6 +95,10 @@ class MaintenanceAdminController extends Controller {
         }
 
         if (!empty($_FILES['video']['tmp_name']) && is_uploaded_file($_FILES['video']['tmp_name'])) {
+            if ($_FILES['video']['size'] > $maxSize) {
+                $_SESSION['flash_error'] = 'Video vượt quá 50MB. Vui lòng chọn file nhỏ hơn.';
+                $this->redirect('/admin.php/maintenance');
+            }
             $uploadDir = __DIR__ . '/../../public/uploads/maintenance';
             if (!is_dir($uploadDir) && !@mkdir($uploadDir, 0777, true)) {
                 $_SESSION['flash_error'] = 'Không tạo được thư mục lưu video. Vui lòng kiểm tra quyền ghi public/uploads/maintenance.';
@@ -139,13 +148,20 @@ class MaintenanceAdminController extends Controller {
             echo json_encode(['error' => 'Loại tệp không hợp lệ.']);
             return;
         }
+        $maxSize = 50 * 1024 * 1024; // 50MB
         $uploadId = preg_replace('/[^a-zA-Z0-9._-]/','_', $_POST['upload_id'] ?? '');
         $chunkIndex = (int)($_POST['chunk_index'] ?? 0);
         $totalChunks = max(1, (int)($_POST['total_chunks'] ?? 1));
         $fileName = $_POST['file_name'] ?? 'file';
+        $fileSize = (int)($_POST['file_size'] ?? 0);
         if (!$uploadId || empty($_FILES['chunk']['tmp_name'])) {
             http_response_code(400);
             echo json_encode(['error' => 'Thiếu dữ liệu chunk.']);
+            return;
+        }
+        if ($fileSize > $maxSize) {
+            http_response_code(400);
+            echo json_encode(['error' => 'File vượt quá 50MB.']);
             return;
         }
         $tmpBase = __DIR__ . '/../../public/uploads/maintenance/tmp';
