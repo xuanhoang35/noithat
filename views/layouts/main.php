@@ -33,7 +33,7 @@ window.addEventListener('unhandledrejection', function(e) {
         .animate-scroll-text {
             display:inline-block;
             white-space:nowrap;
-            animation: scroll-text 40s linear infinite;
+            animation: scroll-text 14s linear infinite;
         }
         .ticker-dynamic {
             display:inline-block;
@@ -81,9 +81,9 @@ $hideFooter = $hideFooter ?? false;
 <header class="fixed top-0 left-0 right-0 z-30 text-white">
     <div class="absolute inset-0 bg-gradient-to-r from-slate-900 via-blue-900 to-blue-700"></div>
     <div class="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_20%_20%,rgba(59,130,246,0.5),transparent_25%),radial-gradient(circle_at_80%_0%,rgba(14,165,233,0.45),transparent_25%)]"></div>
-    <div class="max-w-7xl mx-auto px-4 py-2 relative space-y-2">
+    <div class="max-w-7xl mx-auto px-4 py-1 relative space-y-1.5">
         <div class="flex items-center justify-between text-xs text-white/80">
-            <div class="flex items-center gap-3 overflow-hidden">
+            <div class="flex items-center gap-3 overflow-hidden flex-1 min-h-[20px]">
                 <?php if (!empty($_SESSION['welcome_message'])): ?>
                     <div class="whitespace-nowrap animate-scroll-text text-white">
                         <?php echo htmlspecialchars($_SESSION['welcome_message']); unset($_SESSION['welcome_message']); ?>
@@ -98,12 +98,12 @@ $hideFooter = $hideFooter ?? false;
                     </div>
                 <?php endif; ?>
             </div>
-            <div class="hidden md:flex items-center gap-3">
+            <div class="hidden md:flex items-center gap-3 flex-shrink-0">
                 <span class="px-3 py-1 rounded-full bg-white/10">Hotline: <strong>0974.734.668</strong></span>
                 <span class="text-white/70">Hỗ trợ nhanh 24/7</span>
             </div>
         </div>
-        <div class="glass-panel rounded-2xl px-4 py-3 flex items-center gap-4 shadow-xl">
+        <div class="glass-panel rounded-2xl px-4 py-2.5 flex items-center gap-4 shadow-xl">
             <a href="<?php echo base_url(); ?>" class="text-2xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-blue-100 to-blue-300">
                 Noithat Store
             </a>
@@ -319,8 +319,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const messages = (el.getAttribute('data-ticker-cycle') || '').split('|').map(s => s.trim()).filter(Boolean);
         if (messages.length <= 1 || !container) return;
         const speedsRaw = (el.getAttribute('data-ticker-speed') || '').split('|').map(s => parseFloat(s)).filter(n => !isNaN(n));
-        const getSpeed = idx => (speedsRaw[idx] || speedsRaw[0] || 20) * 1000;
-        const gap = 40;
+        const getSpeed = idx => (speedsRaw[idx] || speedsRaw[0] || 12) * 1000;
+        const gap = 12;
         let idx = 0;
         let current;
         const play = () => {
@@ -331,9 +331,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const start = container.offsetWidth + gap;
                 const end = -el.scrollWidth - gap;
                 let speed = getSpeed(idx);
-                if (idx === 1) {
-                    speed = Math.max(400, speed / 3);
-                }
                 current = el.animate([
                     { transform: `translateX(${start}px)` },
                     { transform: `translateX(${end}px)` }

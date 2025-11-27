@@ -50,7 +50,7 @@
         <div class="lg:col-span-2 glass-panel rounded-3xl shadow-lg overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="min-w-full text-sm">
-                    <tr class="bg-slate-100 text-left text-slate-700">
+                    <tr class="bg-blue-600 text-left text-white">
                         <th class="p-3">Sản phẩm</th>
                         <th class="p-3">SL</th>
                         <th class="p-3">Tồn</th>
