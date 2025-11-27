@@ -77,6 +77,13 @@ if (Auth::check()) {
 $defaultAvatarPath = 'public/Profile/user-iconprofile.png';
 $defaultAvatarUrl = asset_url($defaultAvatarPath);
 $hideFooter = $hideFooter ?? false;
+$currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+$isActive = function ($path) use ($currentPath) {
+    if ($path === '/') {
+        return $currentPath === '/' ? 'bg-white/15 text-white font-semibold' : '';
+    }
+    return strpos($currentPath, $path) === 0 ? 'bg-white/15 text-white font-semibold' : '';
+};
 ?>
 <header class="fixed top-0 left-0 right-0 z-30 text-white">
     <div class="absolute inset-0 bg-gradient-to-r from-slate-900 via-blue-900 to-blue-700"></div>
@@ -89,7 +96,7 @@ $hideFooter = $hideFooter ?? false;
                         <?php echo htmlspecialchars($_SESSION['welcome_message']); unset($_SESSION['welcome_message']); ?>
                     </div>
                 <?php elseif (Auth::check()): ?>
-                    <div class="whitespace-nowrap ticker-dynamic text-white" data-ticker-cycle="Khám phá Nội Thất Store – hơn 2.000 sản phẩm nội thất & thiết bị gia dụng cao cấp, thiết kế độc đáo, vật liệu bền bỉ, giao nhanh – lắp đặt tận nơi, tư vấn 24/7, đổi trả linh hoạt, bảo hành minh bạch và ưu đãi thành viên hấp dẫn để nâng tầm không gian sống của bạn.|Mua hàng đi, đọc gì mà đọc lắm thế!" data-ticker-speed="20|8">
+                    <div class="whitespace-nowrap ticker-dynamic text-white" data-ticker-cycle="Khám phá Nội Thất Store – hơn 2.000 sản phẩm nội thất & thiết bị gia dụng cao cấp, thiết kế độc đáo, vật liệu bền bỉ, giao nhanh – lắp đặt tận nơi, tư vấn 24/7, đổi trả linh hoạt, bảo hành minh bạch và ưu đãi thành viên hấp dẫn để nâng tầm không gian sống của bạn.|Mua hàng đi, đọc gì mà đọc lắm thế!" data-ticker-speed="8|3.2">
                         Khám phá Nội Thất Store – hơn 2.000 sản phẩm nội thất & thiết bị gia dụng cao cấp, thiết kế độc đáo, vật liệu bền bỉ, giao nhanh – lắp đặt tận nơi, tư vấn 24/7, đổi trả linh hoạt, bảo hành minh bạch và ưu đãi thành viên hấp dẫn để nâng tầm không gian sống của bạn.
                     </div>
                 <?php else: ?>
@@ -108,11 +115,11 @@ $hideFooter = $hideFooter ?? false;
                 Noithat Store
             </a>
             <nav class="flex-1 flex flex-wrap items-center gap-2 text-sm font-semibold">
-                <a class="px-3 py-2 rounded-lg hover:bg-white/10 <?php echo ($_SERVER['REQUEST_URI'] ?? '/') === '/' ? 'bg-white/10' : ''; ?>" href="<?php echo base_url(); ?>">Trang chủ</a>
-                <a class="px-3 py-2 rounded-lg hover:bg-white/10" href="<?php echo base_url('products'); ?>">Sản phẩm</a>
-                <a class="px-3 py-2 rounded-lg hover:bg-white/10" href="<?php echo base_url('services'); ?>">Dịch vụ</a>
-                <a class="px-3 py-2 rounded-lg hover:bg-white/10" href="<?php echo base_url('about'); ?>">Về chúng tôi</a>
-                <a class="px-3 py-2 rounded-lg hover:bg-white/10 flex items-center gap-2 relative" href="<?php echo base_url('cart'); ?>">
+                <a class="px-3 py-2 rounded-lg hover:bg-white/10 <?php echo $isActive('/') ?: ''; ?>" href="<?php echo base_url(); ?>">Trang chủ</a>
+                <a class="px-3 py-2 rounded-lg hover:bg-white/10 <?php echo $isActive('/products'); ?>" href="<?php echo base_url('products'); ?>">Sản phẩm</a>
+                <a class="px-3 py-2 rounded-lg hover:bg-white/10 <?php echo $isActive('/services'); ?>" href="<?php echo base_url('services'); ?>">Dịch vụ</a>
+                <a class="px-3 py-2 rounded-lg hover:bg-white/10 <?php echo $isActive('/about'); ?>" href="<?php echo base_url('about'); ?>">Về chúng tôi</a>
+                <a class="px-3 py-2 rounded-lg hover:bg-white/10 flex items-center gap-2 relative <?php echo $isActive('/cart'); ?>" href="<?php echo base_url('cart'); ?>">
                     <span class="inline-flex w-8 h-8 rounded-full bg-white/10 items-center justify-center text-sm font-semibold">GH</span>
                     <span class="hidden sm:inline">Giỏ hàng</span>
                     <?php if ($cartCount > 0): ?>
@@ -120,7 +127,7 @@ $hideFooter = $hideFooter ?? false;
                     <?php endif; ?>
                 </a>
                 <?php if (Auth::check()): ?>
-                    <a class="px-3 py-2 rounded-lg hover:bg-white/10 relative inline-flex items-center gap-2" href="<?php echo base_url('orders'); ?>">
+                    <a class="px-3 py-2 rounded-lg hover:bg-white/10 relative inline-flex items-center gap-2 <?php echo $isActive('/orders'); ?>" href="<?php echo base_url('orders'); ?>">
                         <span>Đơn hàng</span>
                         <span data-order-indicator class="inline-flex w-2 h-2 rounded-full bg-red-400 <?php echo $orderHasUnread ? '' : 'hidden'; ?>"></span>
                     </a>
@@ -330,6 +337,10 @@ document.addEventListener('DOMContentLoaded', () => {
             requestAnimationFrame(() => {
                 const start = container.offsetWidth + gap;
                 const end = -el.scrollWidth - gap;
+                el.style.transform = `translateX(${start}px)`;
+                el.style.willChange = 'transform';
+                // force reflow để tránh giật khung khi đổi text
+                void el.offsetWidth;
                 let speed = getSpeed(idx);
                 current = el.animate([
                     { transform: `translateX(${start}px)` },
@@ -341,7 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 current.onfinish = () => {
                     idx = (idx + 1) % messages.length;
-                    play();
+                    requestAnimationFrame(() => play());
                 };
             });
         };

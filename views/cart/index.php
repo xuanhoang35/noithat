@@ -1,13 +1,13 @@
 <?php ob_start(); ?>
 <div class="space-y-6">
-    <div class="glass-panel rounded-3xl p-5 shadow-xl flex items-center justify-between flex-wrap gap-3">
+    <div class="rounded-3xl p-5 shadow-xl flex items-center justify-between flex-wrap gap-3 bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white border border-blue-500/40">
         <div>
-            <p class="section-title text-slate-500">Giỏ hàng</p>
-            <h1 class="text-2xl font-bold text-slate-900">Sẵn sàng thanh toán</h1>
+            <p class="text-xs uppercase tracking-[0.2em] text-blue-100 font-semibold">Giỏ hàng</p>
+            <h1 class="text-2xl font-bold">Sẵn sàng thanh toán</h1>
         </div>
-        <div class="flex gap-2 text-xs text-slate-600">
-            <span class="px-3 py-2 rounded-full bg-white/70 border border-slate-200">Bước 1: Kiểm tra sản phẩm</span>
-            <span class="px-3 py-2 rounded-full bg-white/70 border border-slate-200">Bước 2: Nhập thông tin & thanh toán</span>
+        <div class="flex gap-2 text-xs text-white">
+            <span class="px-3 py-2 rounded-full bg-white/15 border border-white/25">Bước 1: Kiểm tra sản phẩm</span>
+            <span class="px-3 py-2 rounded-full bg-white/10 border border-white/20">Bước 2: Nhập thông tin & thanh toán</span>
         </div>
     </div>
 
