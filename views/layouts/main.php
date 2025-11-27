@@ -96,7 +96,7 @@ $isActive = function ($path) use ($currentPath) {
                         <?php echo htmlspecialchars($_SESSION['welcome_message']); unset($_SESSION['welcome_message']); ?>
                     </div>
                 <?php elseif (Auth::check()): ?>
-                    <div class="whitespace-nowrap ticker-dynamic text-white" data-ticker-cycle="Khám phá Nội Thất Store – hơn 2.000 sản phẩm nội thất & thiết bị gia dụng cao cấp, thiết kế độc đáo, vật liệu bền bỉ, giao nhanh – lắp đặt tận nơi, tư vấn 24/7, đổi trả linh hoạt, bảo hành minh bạch và ưu đãi thành viên hấp dẫn để nâng tầm không gian sống của bạn.|Mua hàng đi, đọc gì mà đọc lắm thế!" data-ticker-speed="20|5">
+                    <div class="whitespace-nowrap ticker-dynamic text-white" data-ticker-cycle="Khám phá Nội Thất Store – hơn 2.000 sản phẩm nội thất & thiết bị gia dụng cao cấp, thiết kế độc đáo, vật liệu bền bỉ, giao nhanh – lắp đặt tận nơi, tư vấn 24/7, đổi trả linh hoạt, bảo hành minh bạch và ưu đãi thành viên hấp dẫn để nâng tầm không gian sống của bạn.|Mua hàng đi, đọc gì mà đọc lắm thế!" data-ticker-speed="20|3">
                         Khám phá Nội Thất Store – hơn 2.000 sản phẩm nội thất & thiết bị gia dụng cao cấp, thiết kế độc đáo, vật liệu bền bỉ, giao nhanh – lắp đặt tận nơi, tư vấn 24/7, đổi trả linh hoạt, bảo hành minh bạch và ưu đãi thành viên hấp dẫn để nâng tầm không gian sống của bạn.
                     </div>
                 <?php else: ?>
