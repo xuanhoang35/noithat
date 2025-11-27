@@ -82,8 +82,12 @@ $hideFooter = $hideFooter ?? false;
     <div class="absolute inset-0 bg-gradient-to-r from-slate-900 via-blue-900 to-blue-700"></div>
     <div class="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_20%_20%,rgba(59,130,246,0.5),transparent_25%),radial-gradient(circle_at_80%_0%,rgba(14,165,233,0.45),transparent_25%)]"></div>
     <div class="max-w-7xl mx-auto px-4 py-1 relative space-y-1.5">
-        <div class="flex items-center justify-between text-xs text-white/80">
-            <div class="flex items-center gap-3 overflow-hidden flex-1 min-h-[20px]">
+        <div class="flex items-center gap-3 text-xs text-white/80">
+            <div class="hidden md:flex items-center gap-3 flex-shrink-0">
+                <span class="px-3 py-1 rounded-full bg-white/10">Hotline: <strong>0974.734.668</strong></span>
+                <span class="text-white/70">Hỗ trợ nhanh 24/7</span>
+            </div>
+            <div class="flex-1 min-h-[20px] overflow-hidden">
                 <?php if (!empty($_SESSION['welcome_message'])): ?>
                     <div class="whitespace-nowrap animate-scroll-text text-white">
                         <?php echo htmlspecialchars($_SESSION['welcome_message']); unset($_SESSION['welcome_message']); ?>
@@ -97,10 +101,6 @@ $hideFooter = $hideFooter ?? false;
                         Chào mừng quý khách đến với Nội Thất Store — Chúc quý khách lựa chọn được sản phẩm ưng ý và nâng tầm không gian sống!
                     </div>
                 <?php endif; ?>
-            </div>
-            <div class="hidden md:flex items-center gap-3 flex-shrink-0">
-                <span class="px-3 py-1 rounded-full bg-white/10">Hotline: <strong>0974.734.668</strong></span>
-                <span class="text-white/70">Hỗ trợ nhanh 24/7</span>
             </div>
         </div>
         <div class="glass-panel rounded-2xl px-4 py-2.5 flex items-center gap-4 shadow-xl">

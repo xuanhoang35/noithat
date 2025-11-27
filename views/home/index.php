@@ -10,31 +10,25 @@
     </div>
 <?php endif; ?>
 <div class="space-y-10">
-    <section class="hero-grid rounded-3xl p-8 md:p-10 text-white shadow-2xl spotlight">
-        <div class="relative grid md:grid-cols-[1.05fr,0.95fr] gap-8 items-center z-10">
-            <div class="space-y-4">
-                <p class="section-title text-blue-100">Nội thất & thiết bị gia dụng</p>
-                <h1 class="text-3xl md:text-4xl font-extrabold leading-tight tracking-tight">
-                    Nâng tầm không gian sống <span class="text-blue-200">tinh tế</span> & tiện nghi
-                </h1>
-                <p class="text-blue-100 text-sm md:text-base max-w-xl">Thiết kế đương đại, chất liệu bền bỉ, bảo hành minh bạch, giao nhanh – lắp đặt trọn gói để bạn an tâm tận hưởng.</p>
+    <section class="p-6 bg-gradient-to-r from-slate-900 via-slate-800 to-blue-700 text-white rounded-3xl shadow-2xl">
+        <div class="grid md:grid-cols-2 gap-6 items-center">
+            <div class="space-y-3">
+                <p class="text-blue-200 text-xs uppercase tracking-wider">Nội thất & thiết bị</p>
+                <h1 class="text-3xl md:text-4xl font-bold leading-tight">Nâng tầm không gian sống hiện đại</h1>
+                <p class="text-slate-200">Thiết kế tinh tế, chất liệu bền bỉ, giao nhanh và lắp đặt tận nơi.</p>
                 <div class="flex gap-3 flex-wrap">
-                    <a class="px-5 py-3 rounded-full bg-white text-slate-900 font-semibold hover:bg-blue-100 shadow-lg" href="<?php echo base_url('products'); ?>">Khám phá sản phẩm</a>
-                    <a class="px-5 py-3 rounded-full btn-soft text-white/90 border border-white/25 hover:bg-white/15" href="<?php echo base_url('services'); ?>">Đặt dịch vụ</a>
+                    <a class="px-5 py-3 bg-blue-500 text-white rounded-full hover:bg-blue-600 shadow" href="<?php echo base_url('products'); ?>">Khám phá ngay</a>
+                    <a class="px-5 py-3 bg-white/10 text-white rounded-full hover:bg-white/20" href="<?php echo base_url('cart'); ?>">Xem giỏ hàng</a>
                 </div>
-                <div class="grid grid-cols-3 gap-3 text-sm text-blue-100">
-                    <div class="p-3 rounded-2xl bg-white/10 border border-white/10">+2.000 sản phẩm</div>
-                    <div class="p-3 rounded-2xl bg-white/10 border border-white/10">Giao & lắp đặt 24-48h</div>
-                    <div class="p-3 rounded-2xl bg-white/10 border border-white/10">Bảo hành minh bạch</div>
+                <div class="flex gap-4 text-sm text-blue-100">
+                    <div class="bg-white/10 rounded-lg px-3 py-2">+2000 sản phẩm</div>
+                    <div class="bg-white/10 rounded-lg px-3 py-2">Bảo hành rõ ràng</div>
+                    <div class="bg-white/10 rounded-lg px-3 py-2">Giao & lắp đặt nhanh</div>
                 </div>
             </div>
-            <div class="relative">
-                <div class="glass-panel rounded-3xl overflow-hidden shadow-2xl border border-white/10">
-                    <img src="https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1200&q=80" class="w-full h-full object-cover" alt="Hero">
-                </div>
-                <div class="absolute -left-3 -bottom-4 bg-white text-slate-900 px-4 py-3 rounded-2xl shadow-lg border border-slate-100 floating">
-                    <p class="text-xs text-slate-500">Ưu đãi trong tuần</p>
-                    <p class="font-semibold">Giảm 15% sofa & thiết bị bếp</p>
+            <div class="text-center">
+                <div class="p-3 bg-white/10 rounded-3xl shadow-inner">
+                    <img src="https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=800&q=80" class="w-full rounded-2xl object-cover" alt="Hero">
                 </div>
             </div>
         </div>
