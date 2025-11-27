@@ -48,9 +48,9 @@
                 <a href="mailto:huyendothi.79@gmail.com" class="px-4 py-2 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-100">Email: huyendothi.79@gmail.com</a>
             </div>
         </div>
-        <div class="rounded-2xl overflow-hidden shadow-2xl border border-slate-800 bg-black/60 min-h-[280px] md:min-h-[320px]">
+        <div class="rounded-2xl overflow-hidden shadow-2xl border border-slate-800 bg-black/60 min-h-[280px] md:min-h-[320px] flex">
             <?php if ($videoEmbed): ?>
-                <iframe src="<?php echo htmlspecialchars($videoEmbed); ?>" class="w-full h-full" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                <iframe src="<?php echo htmlspecialchars($videoEmbed); ?>" class="w-full h-full" allow="autoplay; encrypted-media" allowfullscreen style="border:0;"></iframe>
             <?php elseif ($videoSrc): ?>
                 <video src="<?php echo $videoSrc; ?>" class="w-full h-full object-cover" autoplay loop playsinline controls></video>
             <?php else: ?>
