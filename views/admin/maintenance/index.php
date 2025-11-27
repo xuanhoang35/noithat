@@ -9,8 +9,23 @@
     $video = $c['video'] ?? '';
     $previewImage = $image ? asset_url($image) : asset_url('public/assets/img/placeholder.svg');
     $previewVideo = '';
+    $previewEmbed = '';
     if (!empty($video)) {
-        $previewVideo = preg_match('#^https?://#', $video) ? $video : asset_url($video);
+        $isUrl = preg_match('#^https?://#', $video);
+        if ($isUrl) {
+            // YouTube (loop bằng playlist)
+            if (preg_match('#(?:youtube\\.com/watch\\?v=|youtu\\.be/)([A-Za-z0-9_-]{6,})#', $video, $m)) {
+                $previewEmbed = 'https://www.youtube.com/embed/' . $m[1] . '?rel=0&autoplay=0&mute=1&loop=1&playlist=' . $m[1];
+            }
+            // Google Drive preview (không hỗ trợ loop chuẩn)
+            elseif (preg_match('#drive\\.google\\.com/file/d/([^/]+)/?#', $video, $m)) {
+                $previewEmbed = 'https://drive.google.com/file/d/' . $m[1] . '/preview';
+            } else {
+                $previewVideo = $video;
+            }
+        } else {
+            $previewVideo = asset_url($video);
+        }
     }
 ?>
 <div class="bg-white rounded-2xl shadow-sm p-5 space-y-4">
@@ -78,7 +93,11 @@
                     <p class="text-lg font-semibold">Trang bảo trì</p>
                 </div>
                 <div class="p-4 space-y-2 bg-slate-50">
-                    <?php if ($previewVideo): ?>
+                    <?php if ($previewEmbed): ?>
+                        <div class="w-full h-40 rounded-lg border border-slate-200 overflow-hidden">
+                            <iframe src="<?php echo htmlspecialchars($previewEmbed); ?>" class="w-full h-full" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+                        </div>
+                    <?php elseif ($previewVideo): ?>
                         <video src="<?php echo $previewVideo; ?>" class="w-full h-40 rounded-lg border border-slate-200 object-cover" controls muted loop></video>
                     <?php else: ?>
                         <img src="<?php echo $previewImage; ?>" alt="Preview" class="w-full h-40 object-cover rounded-lg border border-slate-200">

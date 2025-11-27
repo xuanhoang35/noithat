@@ -2,8 +2,20 @@
 <?php
     $img = asset_url(!empty($image) ? $image : 'public/assets/img/placeholder.svg');
     $videoSrc = '';
+    $videoEmbed = '';
     if (!empty($video)) {
-        $videoSrc = preg_match('#^https?://#', $video) ? $video : asset_url($video);
+        $isUrl = preg_match('#^https?://#', $video);
+        if ($isUrl) {
+            if (preg_match('#(?:youtube\\.com/watch\\?v=|youtu\\.be/)([A-Za-z0-9_-]{6,})#', $video, $m)) {
+                $videoEmbed = 'https://www.youtube.com/embed/' . $m[1] . '?rel=0&autoplay=1&mute=1&loop=1&playlist=' . $m[1];
+            } elseif (preg_match('#drive\\.google\\.com/file/d/([^/]+)/?#', $video, $m)) {
+                $videoEmbed = 'https://drive.google.com/file/d/' . $m[1] . '/preview';
+            } else {
+                $videoSrc = $video;
+            }
+        } else {
+            $videoSrc = asset_url($video);
+        }
     }
     $title = $title ?? 'Chúng tôi đang bảo trì';
     $subtitle = $subtitle ?? 'Sẽ trở lại sớm nhất';
@@ -37,7 +49,9 @@
             </div>
         </div>
         <div class="rounded-2xl overflow-hidden shadow-2xl border border-slate-800 bg-black/60">
-            <?php if ($videoSrc): ?>
+            <?php if ($videoEmbed): ?>
+                <iframe src="<?php echo htmlspecialchars($videoEmbed); ?>" class="w-full h-full" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            <?php elseif ($videoSrc): ?>
                 <video src="<?php echo $videoSrc; ?>" class="w-full h-full object-cover" autoplay muted loop playsinline controls></video>
             <?php else: ?>
                 <img src="<?php echo $img; ?>" alt="Maintenance" class="w-full h-full object-cover" onerror="this.src='<?php echo asset_url('public/assets/img/placeholder.svg'); ?>';">
