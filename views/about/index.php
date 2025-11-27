@@ -1,6 +1,6 @@
 <?php ob_start(); ?>
 <section class="bg-white rounded-2xl shadow-sm overflow-hidden mb-6">
-    <div class="about-hero__overlay p-8 grid md:grid-cols-2 gap-4 items-center" style="background: linear-gradient(120deg, rgba(255,255,255,0.82), rgba(255,255,255,0.78)), url('https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;">
+    <div class="about-hero__overlay p-8 grid md:grid-cols-2 gap-4 items-center" style="background: linear-gradient(120deg, rgba(255,255,255,0.74), rgba(255,255,255,0.68)), url('https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1400&q=90') center/cover no-repeat;">
         <div>
             <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">Về chúng tôi</span>
             <h1 class="text-3xl font-bold mt-3 mb-3 text-slate-800">Không gian sống hiện đại, tinh tế và tiện nghi</h1>
