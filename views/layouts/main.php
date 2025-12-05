@@ -63,8 +63,8 @@ window.addEventListener('unhandledrejection', function(e) {
             position: absolute;
             inset: 0;
             background-image: url('<?php echo asset_url('public/bank/background_2026.png'); ?>');
-            background-size: cover;
-            background-repeat: repeat-y;
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
             background-position: center top;
             background-attachment: scroll;
             background-color: #f5f7fb;
