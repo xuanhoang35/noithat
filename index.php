@@ -27,8 +27,9 @@ if (Auth::check()) {
         $userModel = new User();
         $fresh = $userModel->findById((int)$sessionUser['id']);
         if (!$fresh || (int)($fresh['is_active'] ?? 1) !== 1) {
-            $_SESSION['blocked_message'] = 'Hết phiên đăng nhập, vui lòng đăng nhập lại.';
-            header('Location: ' . base_url('blocked'));
+            $_SESSION['flash_error'] = 'Tài khoản đã bị khóa. Vui lòng đăng nhập lại.';
+            Auth::logout();
+            header('Location: ' . base_url('/'));
             exit;
         }
     }

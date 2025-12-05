@@ -42,8 +42,10 @@ class Auth {
             try {
                 $user = (new User())->findById($userId);
                 if (!$user || (int)($user['is_active'] ?? 1) !== 1) {
-                    $_SESSION['blocked_message'] = 'Hết phiên đăng nhập, vui lòng đăng nhập lại.';
-                    header('Location: ' . base_url('blocked'));
+                    $_SESSION['flash_error'] = 'Tài khoản đã bị khóa. Vui lòng đăng nhập lại.';
+                    self::logout();
+                    // Không redirect cứng, để JS poll xử lý nếu đang online; fallback về trang chủ nếu request cần auth
+                    header('Location: ' . ($base ?: '/'));
                     exit;
                 }
             } catch (\Throwable $e) {

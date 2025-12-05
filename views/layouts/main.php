@@ -397,7 +397,29 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(data => {
                 if (data.account_locked && !accountLockedRedirected) {
                     accountLockedRedirected = true;
-                    window.location.href = '<?php echo base_url('blocked'); ?>';
+                    const msg = 'Tài khoản đã bị khóa. Bạn sẽ được đăng xuất.';
+                    let banner = document.querySelector('[data-lockout-banner]');
+                    if (!banner) {
+                        banner = document.createElement('div');
+                        banner.setAttribute('data-lockout-banner','1');
+                        banner.className = 'fixed left-1/2 -translate-x-1/2 top-4 z-[9999] max-w-xl w-[90%] bg-red-600 text-white px-4 py-3 rounded-xl shadow-lg flex flex-col gap-1 text-sm';
+                        document.body.appendChild(banner);
+                    }
+                    banner.innerHTML = '<div class="font-semibold">Thông báo</div><div>'+msg+'</div><div data-lockout-countdown class="text-red-100 text-xs">Đăng xuất sau 3s...</div>';
+                    let countdown = 3;
+                    const tick = () => {
+                        const el = banner.querySelector('[data-lockout-countdown]');
+                        if (el) el.textContent = 'Đăng xuất sau ' + countdown + 's...';
+                        countdown -= 1;
+                        if (countdown < 0) {
+                            fetch('<?php echo base_url('logout'); ?>', { credentials: 'same-origin' }).finally(() => {
+                                window.location.href = '<?php echo base_url('/'); ?>';
+                            });
+                        } else {
+                            setTimeout(tick, 1000);
+                        }
+                    };
+                    setTimeout(tick, 0);
                     return;
                 }
                 if (orderIndicator) {

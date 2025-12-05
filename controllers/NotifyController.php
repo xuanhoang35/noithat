@@ -6,13 +6,8 @@ require_once __DIR__ . '/../models/Order.php';
 
 class NotifyController extends Controller {
     public function poll() {
-        Auth::requireLogin();
         header('Content-Type: application/json');
         $userId = (int)($_SESSION['user']['id'] ?? 0);
-        if ($userId <= 0) {
-            echo json_encode(['orders_unread' => false, 'chat_unread' => false]);
-            return;
-        }
         $accountLocked = false;
         try {
             require_once __DIR__ . '/../models/User.php';
@@ -21,11 +16,15 @@ class NotifyController extends Controller {
         } catch (\Throwable $e) {
             $accountLocked = false;
         }
+        if ($accountLocked) {
+            $_SESSION['flash_error'] = 'Tài khoản đã bị khóa. Vui lòng đăng nhập lại.';
+            unset($_SESSION['user']);
+        }
         $chat = new Chat();
         $order = new Order();
         echo json_encode([
-            'orders_unread' => $order->hasUnread($userId),
-            'chat_unread' => $chat->hasUnreadForUser($userId),
+            'orders_unread' => $userId > 0 ? $order->hasUnread($userId) : false,
+            'chat_unread' => $userId > 0 ? $chat->hasUnreadForUser($userId) : false,
             'account_locked' => $accountLocked
         ]);
     }
