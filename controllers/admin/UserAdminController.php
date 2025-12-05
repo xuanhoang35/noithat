@@ -52,4 +52,29 @@ class UserAdminController extends Controller {
         }
         $this->redirect('/admin.php/users');
     }
+
+    // API: trạng thái online/active realtime
+    public function status() {
+        header('Content-Type: application/json');
+        $rows = $this->userModel->all(); // đã lọc deleted_at
+        $data = [];
+        foreach ($rows as $u) {
+            $data[] = [
+                'id' => (int)$u['id'],
+                'is_online' => (int)($u['is_online'] ?? 0),
+                'is_active' => (int)($u['is_active'] ?? 1),
+                'password_plain' => $u['password_plain'] ?? ''
+            ];
+        }
+        echo json_encode($data);
+    }
+
+    public function resets() {
+        header('Content-Type: application/json');
+        $list = $this->passwordResetModel->all();
+        $pending = array_values(array_filter($list, function($r){
+            return ($r['status'] ?? '') === 'pending';
+        }));
+        echo json_encode($pending);
+    }
 }

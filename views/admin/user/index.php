@@ -18,7 +18,7 @@
     <div class="overflow-auto">
         <table class="min-w-full text-sm">
             <tr class="bg-slate-100 text-left">
-                <th class="p-3">ID</th><th class="p-3">Tên</th><th class="p-3">Email</th><th class="p-3">Điện thoại</th><th class="p-3">Mật khẩu đã cấp</th><th class="p-3">Role</th><th class="p-3">Trạng thái</th><th class="p-3">Online</th><th class="p-3">Kích hoạt</th><th class="p-3">Xóa</th>
+                <th class="p-3">ID</th><th class="p-3">Tên</th><th class="p-3">Email</th><th class="p-3">Điện thoại</th><th class="p-3">Mật khẩu</th><th class="p-3">Role</th><th class="p-3">Trạng thái</th><th class="p-3">Online</th><th class="p-3">Kích hoạt</th><th class="p-3">Xóa</th>
             </tr>
             <?php foreach ($users as $u): ?>
             <tr class="border-b hover:bg-slate-50">
@@ -29,14 +29,22 @@
                 <td class="p-3">
                     <?php
                         $resetInfo = $resetMap[$u['id']] ?? null;
-                        $pw = $resetInfo['new_password_plain'] ?? '';
+                        $pw = $u['password_plain'] ?? '';
+                        $timeIssued = '';
+                        if (!$pw && $resetInfo) {
+                            $pw = $resetInfo['new_password_plain'] ?? '';
+                            $timeIssued = $resetInfo['completed_at'] ?? '';
+                        }
+                        if ($pw && !$timeIssued && $resetInfo) {
+                            $timeIssued = $resetInfo['completed_at'] ?? '';
+                        }
                     ?>
                     <?php if ($pw !== ''): ?>
                         <span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold inline-flex items-center gap-2">
                             <span class="text-slate-600">PW:</span> <span class="font-semibold text-emerald-700"><?php echo htmlspecialchars($pw); ?></span>
                         </span>
-                        <?php if (!empty($resetInfo['completed_at'])): ?>
-                            <div class="text-[11px] text-slate-400 mt-1">Cấp: <?php echo $resetInfo['completed_at']; ?></div>
+                        <?php if (!empty($timeIssued)): ?>
+                            <div class="text-[11px] text-slate-400 mt-1">Cấp: <?php echo $timeIssued; ?></div>
                         <?php endif; ?>
                     <?php else: ?>
                         <span class="text-xs text-slate-400">Chưa cấp</span>
@@ -45,13 +53,13 @@
                 <td class="p-3"><?php echo $u['role']; ?></td>
                 <td class="p-3 align-middle">
                     <?php $active = (int)$u['is_active'] === 1; ?>
-                    <span class="inline-flex items-center h-8 px-3 text-xs rounded-full <?php echo $active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-700'; ?>">
+                    <span data-active="<?php echo $u['id']; ?>" class="inline-flex items-center h-8 px-3 text-xs rounded-full <?php echo $active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-700'; ?>">
                         <?php echo $active ? 'Đang mở' : 'Đang khóa'; ?>
                     </span>
                 </td>
                 <td class="p-3 align-middle">
                     <?php $online = (int)($u['is_online'] ?? 0) === 1; ?>
-                    <span class="inline-flex items-center h-8 px-3 text-xs rounded-full <?php echo $online ? 'bg-blue-50 text-blue-700' : 'bg-slate-100 text-slate-600'; ?>">
+                    <span data-online="<?php echo $u['id']; ?>" class="inline-flex items-center h-8 px-3 text-xs rounded-full <?php echo $online ? 'bg-blue-50 text-blue-700' : 'bg-slate-100 text-slate-600'; ?>">
                         <?php echo $online ? 'Online' : 'Offline'; ?>
                     </span>
                 </td>
@@ -64,9 +72,12 @@
                 </td>
                 <td class="p-3 align-middle">
                     <?php if ($u['role'] !== 'admin'): ?>
-                        <form method="post" action="<?php echo base_url('admin.php/users/delete/' . $u['id']); ?>" onsubmit="return confirm('Xóa khách hàng này?');">
-                            <button class="h-8 px-3 mt-3 inline-flex items-center justify-center text-xs leading-none rounded bg-red-50 text-red-600 hover:bg-red-100">Xóa</button>
-                        </form>
+                        <div class="flex gap-2">
+                            <button type="button" class="h-8 px-3 mt-3 inline-flex items-center justify-center text-xs leading-none rounded bg-slate-100 text-slate-700 hover:bg-slate-200" onclick="alert('Chức năng chỉnh sửa sẽ sớm được bổ sung.');">Sửa</button>
+                            <form method="post" action="<?php echo base_url('admin.php/users/delete/' . $u['id']); ?>" onsubmit="return confirm('Xóa khách hàng này?');">
+                                <button class="h-8 px-3 mt-3 inline-flex items-center justify-center text-xs leading-none rounded bg-red-50 text-red-600 hover:bg-red-100">Xóa</button>
+                            </form>
+                        </div>
                     <?php else: ?>
                         <span class="text-xs text-slate-400">--</span>
                     <?php endif; ?>
@@ -91,53 +102,100 @@
                     <th class="p-3">Trạng thái</th>
                     <th class="p-3">Hành động</th>
                 </tr>
+                <tbody id="reset-body">
                 <?php if (!empty($resets)): ?>
-                    <?php foreach ($resets as $reset): ?>
+                    <?php foreach ($resets as $reset): if(($reset['status'] ?? '')!=='pending') continue; ?>
                         <tr class="border-b hover:bg-slate-50">
                             <td class="p-3"><?php echo htmlspecialchars($reset['name'] ?? 'Khách hàng'); ?></td>
                             <td class="p-3"><?php echo htmlspecialchars($reset['email']); ?></td>
                             <td class="p-3"><?php echo htmlspecialchars($reset['phone']); ?></td>
                             <td class="p-3">
-                                <?php
-                                    $status = $reset['status'];
-                                    $badgeClass = [
-                                        'pending' => 'bg-amber-50 text-amber-700',
-                                        'completed' => 'bg-emerald-50 text-emerald-700',
-                                        'delivered' => 'bg-slate-100 text-slate-600'
-                                    ][$status] ?? 'bg-slate-100 text-slate-600';
-                                    $label = [
-                                        'pending' => 'Chờ xử lý',
-                                        'completed' => 'Đã cấp mật khẩu',
-                                        'delivered' => 'Khách đã nhận'
-                                    ][$status] ?? ucfirst($status);
-                                ?>
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold <?php echo $badgeClass; ?>">
-                                    <?php echo $label; ?>
-                                </span>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700">Chờ xử lý</span>
                             </td>
                             <td class="p-3">
-                                <?php if ($status === 'pending'): ?>
-                                    <form method="post" action="<?php echo base_url('admin.php/users/reset-password/' . $reset['id']); ?>" class="flex flex-col md:flex-row gap-2">
-                                        <input type="text" name="new_password" class="px-3 py-2 border rounded text-sm" placeholder="Nhập mật khẩu mới" required>
-                                        <button class="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">Gửi mật khẩu</button>
-                                    </form>
-                                <?php elseif ($status === 'completed' || $status === 'delivered'): ?>
-                                    <div class="text-sm">
-                                        <p class="text-slate-500">Mật khẩu đã cấp:</p>
-                                        <p class="text-lg font-semibold text-emerald-600"><?php echo htmlspecialchars($reset['new_password_plain']); ?></p>
-                                        <?php if (!empty($reset['delivered_at'])): ?>
-                                            <p class="text-xs text-slate-400 mt-1">Khách đã nhận: <?php echo $reset['delivered_at']; ?></p>
-                                        <?php endif; ?>
-                                    </div>
-                                <?php endif; ?>
+                                <form method="post" action="<?php echo base_url('admin.php/users/reset-password/' . $reset['id']); ?>" class="flex flex-col md:flex-row gap-2">
+                                    <input type="text" name="new_password" class="px-3 py-2 border rounded text-sm" placeholder="Nhập mật khẩu mới" required>
+                                    <button class="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">Gửi mật khẩu</button>
+                                </form>
                             </td>
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
                     <tr><td colspan="5" class="p-4 text-center text-slate-500">Chưa có yêu cầu quên mật khẩu nào.</td></tr>
                 <?php endif; ?>
+                </tbody>
             </table>
         </div>
     </div>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    const statusUrl = '<?php echo base_url('admin.php/users/status'); ?>';
+    const resetUrl = '<?php echo base_url('admin.php/users/resets'); ?>';
+    const applyStatus = (users) => {
+        users.forEach(u => {
+            const onlineEl = document.querySelector('[data-online="'+u.id+'"]');
+            const activeEl = document.querySelector('[data-active="'+u.id+'"]');
+            if (onlineEl) {
+                const online = parseInt(u.is_online, 10) === 1;
+                onlineEl.textContent = online ? 'Online' : 'Offline';
+                onlineEl.className = 'inline-flex items-center h-8 px-3 text-xs rounded-full ' + (online ? 'bg-blue-50 text-blue-700' : 'bg-slate-100 text-slate-600');
+            }
+            if (activeEl) {
+                const active = parseInt(u.is_active, 10) === 1;
+                activeEl.textContent = active ? 'Đang mở' : 'Đang khóa';
+                activeEl.className = 'inline-flex items-center h-8 px-3 text-xs rounded-full ' + (active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-700');
+            }
+            const pwEl = document.querySelector('[data-password="'+u.id+'"]');
+            if (pwEl) {
+                const textEl = pwEl.querySelector('[data-password-text]');
+                if (textEl) {
+                    textEl.textContent = u.password_plain ? u.password_plain : 'Chưa cấp';
+                    textEl.className = u.password_plain ? 'font-semibold text-emerald-700' : 'text-slate-400';
+                }
+            }
+        });
+    };
+    const renderResets = (resets) => {
+        const body = document.getElementById('reset-body');
+        if (!body) return;
+        if (!Array.isArray(resets) || resets.length === 0) {
+            body.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-500">Chưa có yêu cầu quên mật khẩu nào.</td></tr>';
+            return;
+        }
+        body.innerHTML = resets.map(r => {
+            return `
+                <tr class="border-b hover:bg-slate-50">
+                    <td class="p-3">${r.name ?? 'Khách hàng'}</td>
+                    <td class="p-3">${r.email ?? ''}</td>
+                    <td class="p-3">${r.phone ?? ''}</td>
+                    <td class="p-3"><span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700">Chờ xử lý</span></td>
+                    <td class="p-3">
+                        <form method="post" action="<?php echo base_url('admin.php/users/reset-password/'); ?>${r.id}" class="flex flex-col md:flex-row gap-2">
+                            <input type="text" name="new_password" class="px-3 py-2 border rounded text-sm" placeholder="Nhập mật khẩu mới" required>
+                            <button class="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">Gửi mật khẩu</button>
+                        </form>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    };
+    const pollStatus = () => {
+        fetch(statusUrl, { cache: 'no-store' })
+            .then(r => r.json())
+            .then(data => { if (Array.isArray(data)) applyStatus(data); })
+            .catch(() => {});
+    };
+    const pollResets = () => {
+        fetch(resetUrl, { cache: 'no-store' })
+            .then(r => r.json())
+            .then(data => { renderResets(data); })
+            .catch(() => {});
+    };
+    pollStatus();
+    pollResets();
+    setInterval(pollStatus, 2000);
+    setInterval(pollResets, 2000);
+});
+</script>
 <?php $content = ob_get_clean(); include __DIR__ . '/../layouts/main.php'; ?>

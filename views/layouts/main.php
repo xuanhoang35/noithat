@@ -265,8 +265,8 @@ foreach ($flashStyles as $flashKey => $class) {
         <div class="space-y-2">
             <div class="font-semibold text-slate-50">Kết nối</div>
             <div class="flex gap-2 text-xs text-slate-200">
-                <a href="https://www.facebook.com/xuan.hoang.815641" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded bg-blue-600 hover:bg-blue-500">Facebook</a>
-                <a href="https://zalo.me/0325645518" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded bg-emerald-600 hover:bg-emerald-500">Zalo</a>
+                <a href="https://www.facebook.com/DoHuyen2003/" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded bg-blue-600 hover:bg-blue-500">Facebook</a>
+                <a href="https://zalo.me/0974734668" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded bg-emerald-600 hover:bg-emerald-500">Zalo</a>
                 <a href="https://www.instagram.com/hnxams/" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded bg-pink-600 hover:bg-pink-500">Instagram</a>
             </div>
             <div class="mt-2">
@@ -399,7 +399,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(data => {
                 if (data.account_locked && !accountLockedRedirected) {
                     accountLockedRedirected = true;
-                    const msg = 'Tài khoản đã bị khóa. Bạn sẽ được đăng xuất.';
+                    const msg = 'Hết phiên đăng nhập, vui lòng đăng nhập lại để tiếp tục.';
                     let banner = document.querySelector('[data-lockout-banner]');
                     if (!banner) {
                         banner = document.createElement('div');

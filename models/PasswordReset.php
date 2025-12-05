@@ -48,8 +48,8 @@ class PasswordReset extends Model {
         }
         $this->db->beginTransaction();
         $hash = password_hash($newPassword, PASSWORD_DEFAULT);
-        $updateUser = $this->db->prepare('UPDATE users SET password=?, reset_status="completed", reset_password_plain=?, reset_completed_at=NOW() WHERE reset_token=?');
-        $updateUser->execute([$hash, $newPassword, $token]);
+        $updateUser = $this->db->prepare('UPDATE users SET password=?, password_plain=?, reset_status="completed", reset_password_plain=?, reset_completed_at=NOW() WHERE reset_token=?');
+        $updateUser->execute([$hash, $newPassword, $newPassword, $token]);
         $this->db->commit();
     }
 

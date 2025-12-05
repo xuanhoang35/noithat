@@ -22,6 +22,11 @@ class User extends Model {
         } catch (\Throwable $e) {
             // đã có
         }
+        try {
+            $this->db->exec("ALTER TABLE users ADD COLUMN password_plain VARCHAR(255) NULL");
+        } catch (\Throwable $e) {
+            // đã có
+        }
     }
     public function findByEmail(string $email): ?array {
         $this->ensureSchema();
@@ -32,8 +37,8 @@ class User extends Model {
     }
     public function create(string $name,string $email,string $phone,string $password): void {
         $this->ensureSchema();
-        $stmt=$this->db->prepare('INSERT INTO users(name,email,phone,password,role,is_active) VALUES(?,?,?,?,?,1)');
-        $stmt->execute([$name,$email,$phone,password_hash($password,PASSWORD_DEFAULT),'user']);
+        $stmt=$this->db->prepare('INSERT INTO users(name,email,phone,password,password_plain,role,is_active) VALUES(?,?,?,?,?,?,1)');
+        $stmt->execute([$name,$email,$phone,password_hash($password,PASSWORD_DEFAULT),$password,'user']);
     }
     public function all(string $keyword = ''): array {
         $this->ensureSchema();

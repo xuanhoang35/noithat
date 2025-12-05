@@ -20,9 +20,9 @@
                             <a href="<?php echo base_url('products'); ?>" class="text-blue-600 text-sm hover:underline">Xóa lọc</a>
                         <?php endif; ?>
                     </div>
-                    <div class="grid gap-3 lg:grid-cols-4 md:grid-cols-2">
+                    <div class="grid gap-3 lg:grid-cols-4 md:grid-cols-2 items-end">
                         <div class="grid gap-2">
-                            <select name="category" class="px-3 py-2 border rounded-lg focus:outline-none">
+                            <select name="category" class="px-3 py-2 border rounded-lg focus:outline-none h-[44px]">
                                 <option value="">Tất cả danh mục</option>
                                 <?php foreach ($categories as $cat): ?>
                                     <option value="<?php echo $cat['id']; ?>" <?php echo ((string)$categoryId === (string)$cat['id']) ? 'selected' : ''; ?>>
@@ -32,12 +32,12 @@
                             </select>
                             <input name="cat_q" value="<?php echo htmlspecialchars($categorySearch ?? ''); ?>" class="px-3 py-2 border rounded-lg focus:outline-none text-sm" placeholder="Lọc danh mục">
                         </div>
-                        <select name="price_sort" class="px-3 py-2 border rounded-lg focus:outline-none">
+                        <select name="price_sort" class="px-3 py-2 border rounded-lg focus:outline-none h-[44px]">
                             <option value="">Sắp xếp theo giá</option>
                             <option value="asc" <?php echo ($priceSort ?? '') === 'asc' ? 'selected' : ''; ?>>Giá thấp đến cao</option>
                             <option value="desc" <?php echo ($priceSort ?? '') === 'desc' ? 'selected' : ''; ?>>Giá cao đến thấp</option>
                         </select>
-                        <select name="price_range" id="price-range" class="px-3 py-2 border rounded-lg focus:outline-none">
+                        <select name="price_range" id="price-range" class="px-3 py-2 border rounded-lg focus:outline-none h-[44px]">
                             <option value="">Khoảng giá</option>
                             <option value="under-1" <?php echo ($priceRange ?? '') === 'under-1' ? 'selected' : ''; ?>>Dưới 1 triệu</option>
                             <option value="1-2" <?php echo ($priceRange ?? '') === '1-2' ? 'selected' : ''; ?>>1 - 2 triệu</option>

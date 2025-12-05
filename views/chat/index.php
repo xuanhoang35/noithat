@@ -21,11 +21,11 @@
             <form method="post" action="<?php echo base_url('chat'); ?>" class="flex gap-3 items-end" id="chat-form">
                 <div class="flex-1">
                     <label class="text-sm text-slate-600">Nội dung</label>
-                    <textarea name="content" class="w-full mt-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" rows="3" placeholder="Nhập câu hỏi hoặc yêu cầu tư vấn..." <?php echo ($thread['status'] ?? '') === 'closed' ? 'disabled' : 'required'; ?>></textarea>
+                    <textarea name="content" class="w-full mt-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" rows="3" placeholder="Nhập câu hỏi hoặc yêu cầu tư vấn..."></textarea>
                 </div>
                 <div class="flex flex-col gap-2 w-32">
-                    <button name="action" value="end" formnovalidate class="h-[44px] rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 text-sm">Kết thúc</button>
-                    <button name="action" value="send" class="h-[44px] rounded-lg bg-blue-600 text-white hover:bg-blue-700 font-medium" <?php echo ($thread['status'] ?? '') === 'closed' ? 'disabled' : ''; ?>>Gửi</button>
+                    <button type="submit" name="action" value="end" formnovalidate class="h-[44px] rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 text-sm">Kết thúc</button>
+                    <button type="submit" name="action" value="send" class="h-[44px] rounded-lg bg-blue-600 text-white hover:bg-blue-700 font-medium">Gửi</button>
                 </div>
             </form>
         </div>
@@ -44,6 +44,12 @@
                 form.submit();
             }
         });
+        const endBtn = form.querySelector('button[name="action"][value="end"]');
+        if (endBtn) {
+            endBtn.addEventListener('click', () => {
+                textarea.removeAttribute('required');
+            });
+        }
     }
     const threadId = list.getAttribute('data-thread');
     let lastId = 0;
