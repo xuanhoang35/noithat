@@ -16,7 +16,7 @@ class NotifyController extends Controller {
         } catch (\Throwable $e) {
             $accountLocked = false;
         }
-        if ($accountLocked) {
+        if ($accountLocked && $userId > 0) {
             $_SESSION['flash_error'] = 'Tài khoản đã bị khóa. Vui lòng đăng nhập lại.';
             unset($_SESSION['user']);
         }

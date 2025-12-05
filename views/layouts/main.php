@@ -310,6 +310,7 @@ foreach ($flashStyles as $flashKey => $class) {
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const flashes = document.querySelectorAll('[data-flash-message]');
+    const isLoggedIn = <?php echo Auth::check() ? 'true' : 'false'; ?>;
     if (flashes.length) {
         setTimeout(() => {
             flashes.forEach(el => {
@@ -392,6 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Poll thông báo user (đơn hàng, chat) mỗi 1s
     let accountLockedRedirected = false;
     const pollNotify = () => {
+        if (!isLoggedIn) return;
         fetch('<?php echo base_url('notify/poll'); ?>', { cache: 'no-store' })
             .then(r => r.json())
             .then(data => {
@@ -434,7 +436,9 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(() => {});
     };
     pollNotify();
-    setInterval(pollNotify, 1000);
+    if (isLoggedIn) {
+        setInterval(pollNotify, 1000);
+    }
 });
 </script>
 </body>
