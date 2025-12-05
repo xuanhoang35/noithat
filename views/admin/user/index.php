@@ -56,7 +56,7 @@
                         <?php endif; ?>
                     </div>
                 </td>
-                <td class="p-3 space-y-2" data-password="<?php echo $u['id']; ?>">
+                <td class="p-3 space-y-1" data-password="<?php echo $u['id']; ?>">
                     <?php
                         $resetInfo = $resetMap[$u['id']] ?? null;
                         $pw = $u['password_plain'] ?? '';
@@ -69,20 +69,19 @@
                             $timeIssued = $resetInfo['completed_at'] ?? '';
                         }
                     ?>
-                    <div>
+                    <?php if ($u['role'] !== 'admin'): ?>
+                        <input form="user-save-<?php echo $u['id']; ?>" name="password" type="text" class="w-full px-2 py-1 border rounded text-sm" value="<?php echo htmlspecialchars($pw); ?>" placeholder="Nhập mật khẩu mới">
+                        <?php if (!empty($timeIssued)): ?>
+                            <div class="text-[11px] text-slate-400">Cấp: <?php echo $timeIssued; ?></div>
+                        <?php endif; ?>
+                    <?php else: ?>
                         <?php if ($pw !== ''): ?>
-                            <span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold inline-flex items-center gap-2">
-                                <span class="text-slate-600">PW:</span> <span data-password-text class="font-semibold text-emerald-700"><?php echo htmlspecialchars($pw); ?></span>
+                            <span data-password-text class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold inline-flex items-center gap-2">
+                                <span class="text-slate-600">PW:</span> <span class="font-semibold text-emerald-700"><?php echo htmlspecialchars($pw); ?></span>
                             </span>
-                            <?php if (!empty($timeIssued)): ?>
-                                <div class="text-[11px] text-slate-400 mt-1">Cấp: <?php echo $timeIssued; ?></div>
-                            <?php endif; ?>
                         <?php else: ?>
                             <span data-password-text class="text-xs text-slate-400">Chưa cấp</span>
                         <?php endif; ?>
-                    </div>
-                    <?php if ($u['role'] !== 'admin'): ?>
-                        <input form="user-save-<?php echo $u['id']; ?>" name="password" type="text" class="w-full px-2 py-1 border rounded text-sm" placeholder="Nhập mật khẩu mới (tùy chọn)">
                     <?php endif; ?>
                 </td>
                 <td class="p-3 align-middle">
@@ -182,6 +181,10 @@ document.addEventListener('DOMContentLoaded', function(){
                 if (textEl) {
                     textEl.textContent = u.password_plain ? u.password_plain : 'Chưa cấp';
                     textEl.className = u.password_plain ? 'font-semibold text-emerald-700' : 'text-slate-400';
+                }
+                const inputEl = pwEl.querySelector('input[name="password"]');
+                if (inputEl && !document.activeElement.isSameNode(inputEl)) {
+                    inputEl.value = u.password_plain || '';
                 }
             }
         });

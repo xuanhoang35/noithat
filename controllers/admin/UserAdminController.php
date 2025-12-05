@@ -111,7 +111,7 @@ class UserAdminController extends Controller {
             'role' => $role,
             'is_active' => $isActive
         ];
-        if ($newPassword !== '') {
+        if ($newPassword !== '' && $newPassword !== ($user['password_plain'] ?? '')) {
             $payload['password'] = password_hash($newPassword, PASSWORD_DEFAULT);
             $payload['password_plain'] = $newPassword;
         }

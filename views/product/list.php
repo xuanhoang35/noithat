@@ -20,8 +20,8 @@
                             <a href="<?php echo base_url('products'); ?>" class="text-blue-600 text-sm hover:underline">Xóa lọc</a>
                         <?php endif; ?>
                     </div>
-                    <div class="grid gap-3 lg:grid-cols-4 md:grid-cols-2 items-end">
-                        <div class="grid gap-2">
+                    <div class="space-y-2">
+                        <div class="grid gap-3 md:grid-cols-3 items-end">
                             <select name="category" class="px-3 py-2 border rounded-lg focus:outline-none h-[44px]">
                                 <option value="">Tất cả danh mục</option>
                                 <?php foreach ($categories as $cat): ?>
@@ -30,24 +30,26 @@
                                     </option>
                                 <?php endforeach; ?>
                             </select>
-                            <input name="cat_q" value="<?php echo htmlspecialchars($categorySearch ?? ''); ?>" class="px-3 py-2 border rounded-lg focus:outline-none text-sm" placeholder="Lọc danh mục">
+                            <select name="price_sort" class="px-3 py-2 border rounded-lg focus:outline-none h-[44px]">
+                                <option value="">Sắp xếp theo giá</option>
+                                <option value="asc" <?php echo ($priceSort ?? '') === 'asc' ? 'selected' : ''; ?>>Giá thấp đến cao</option>
+                                <option value="desc" <?php echo ($priceSort ?? '') === 'desc' ? 'selected' : ''; ?>>Giá cao đến thấp</option>
+                            </select>
+                            <select name="price_range" id="price-range" class="px-3 py-2 border rounded-lg focus:outline-none h-[44px]">
+                                <option value="">Khoảng giá</option>
+                                <option value="under-1" <?php echo ($priceRange ?? '') === 'under-1' ? 'selected' : ''; ?>>Dưới 1 triệu</option>
+                                <option value="1-2" <?php echo ($priceRange ?? '') === '1-2' ? 'selected' : ''; ?>>1 - 2 triệu</option>
+                                <option value="2-4" <?php echo ($priceRange ?? '') === '2-4' ? 'selected' : ''; ?>>2 - 4 triệu</option>
+                                <option value="4-6" <?php echo ($priceRange ?? '') === '4-6' ? 'selected' : ''; ?>>4 - 6 triệu</option>
+                                <option value="custom" <?php echo ($priceRange ?? '') === 'custom' ? 'selected' : ''; ?>>Tùy chọn</option>
+                            </select>
                         </div>
-                        <select name="price_sort" class="px-3 py-2 border rounded-lg focus:outline-none h-[44px]">
-                            <option value="">Sắp xếp theo giá</option>
-                            <option value="asc" <?php echo ($priceSort ?? '') === 'asc' ? 'selected' : ''; ?>>Giá thấp đến cao</option>
-                            <option value="desc" <?php echo ($priceSort ?? '') === 'desc' ? 'selected' : ''; ?>>Giá cao đến thấp</option>
-                        </select>
-                        <select name="price_range" id="price-range" class="px-3 py-2 border rounded-lg focus:outline-none h-[44px]">
-                            <option value="">Khoảng giá</option>
-                            <option value="under-1" <?php echo ($priceRange ?? '') === 'under-1' ? 'selected' : ''; ?>>Dưới 1 triệu</option>
-                            <option value="1-2" <?php echo ($priceRange ?? '') === '1-2' ? 'selected' : ''; ?>>1 - 2 triệu</option>
-                            <option value="2-4" <?php echo ($priceRange ?? '') === '2-4' ? 'selected' : ''; ?>>2 - 4 triệu</option>
-                            <option value="4-6" <?php echo ($priceRange ?? '') === '4-6' ? 'selected' : ''; ?>>4 - 6 triệu</option>
-                            <option value="custom" <?php echo ($priceRange ?? '') === 'custom' ? 'selected' : ''; ?>>Tùy chọn</option>
-                        </select>
-                        <div id="custom-price-wrapper" class="grid grid-cols-2 gap-2 <?php echo ($priceRange ?? '') === 'custom' ? '' : 'hidden'; ?>">
-                            <input type="number" name="price_min" class="px-3 py-2 border rounded-lg focus:outline-none" placeholder="Giá min" value="<?php echo htmlspecialchars($priceMin ?? ''); ?>">
-                            <input type="number" name="price_max" class="px-3 py-2 border rounded-lg focus-outline-none" placeholder="Giá max" value="<?php echo htmlspecialchars($priceMax ?? ''); ?>">
+                        <div class="grid gap-3 md:grid-cols-3 items-end">
+                            <input name="cat_q" value="<?php echo htmlspecialchars($categorySearch ?? ''); ?>" class="px-3 py-2 border rounded-lg focus:outline-none text-sm h-[44px]" placeholder="Lọc danh mục">
+                            <div id="custom-price-wrapper" class="grid grid-cols-2 gap-2 md:col-span-2 <?php echo ($priceRange ?? '') === 'custom' ? '' : 'hidden'; ?>">
+                                <input type="number" name="price_min" class="px-3 py-2 border rounded-lg focus:outline-none" placeholder="Giá min" value="<?php echo htmlspecialchars($priceMin ?? ''); ?>">
+                                <input type="number" name="price_max" class="px-3 py-2 border rounded-lg focus:outline-none" placeholder="Giá max" value="<?php echo htmlspecialchars($priceMax ?? ''); ?>">
+                            </div>
                         </div>
                     </div>
                 </form>
