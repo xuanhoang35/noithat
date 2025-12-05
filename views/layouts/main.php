@@ -55,6 +55,23 @@ window.addEventListener('unhandledrejection', function(e) {
             display:inline-block;
             white-space:nowrap;
         }
+        .page-bg {
+            position: relative;
+        }
+        .page-bg::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: url('<?php echo asset_url('public/bank/background_2026.png'); ?>');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center top;
+            z-index: 0;
+        }
+        .page-bg > * {
+            position: relative;
+            z-index: 1;
+        }
     </style>
     <style>
         .chat-panel {
@@ -201,7 +218,7 @@ foreach ($flashStyles as $flashKey => $class) {
 }
 ?>
 <?php $mainTop = $hideHeader ? 'pt-6' : 'pt-[132px] md:pt-[124px]'; ?>
-<main class="flex-1 <?php echo $mainTop; ?> pb-10 relative">
+<main class="flex-1 <?php echo $mainTop; ?> pb-10 relative page-bg">
     <div class="absolute inset-x-0 top-0 h-64 tile-grid opacity-70 pointer-events-none"></div>
     <div class="max-w-7xl mx-auto px-4 relative z-10">
         <?php foreach ($flashBag as $flash): ?>
