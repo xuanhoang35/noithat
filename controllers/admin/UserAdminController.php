@@ -77,4 +77,42 @@ class UserAdminController extends Controller {
         }));
         echo json_encode($pending);
     }
+
+    public function edit($id) {
+        $user = $this->userModel->findById((int)$id);
+        if (!$user) { http_response_code(404); echo 'User not found'; return; }
+        $error = $_SESSION['flash_error'] ?? '';
+        unset($_SESSION['flash_error']);
+        $this->view('admin/user/edit', compact('user','error'));
+    }
+
+    public function update($id) {
+        $user = $this->userModel->findById((int)$id);
+        if (!$user) { http_response_code(404); echo 'User not found'; return; }
+        $name = trim($_POST['name'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $phone = trim($_POST['phone'] ?? '');
+        $address = trim($_POST['address'] ?? '');
+        $role = $_POST['role'] ?? $user['role'];
+        $isActive = isset($_POST['is_active']) && $_POST['is_active'] === '1' ? 1 : 0;
+        if ($name === '' || $email === '' || $phone === '') {
+            $_SESSION['flash_error'] = 'Vui lòng nhập đủ tên, email, số điện thoại.';
+            $this->redirect('/admin.php/users/edit/' . $id);
+        }
+        // check email dup
+        $existing = $this->userModel->findByEmail($email);
+        if ($existing && (int)$existing['id'] !== (int)$id) {
+            $_SESSION['flash_error'] = 'Email đã tồn tại trên hệ thống.';
+            $this->redirect('/admin.php/users/edit/' . $id);
+        }
+        $this->userModel->updateAdmin((int)$id, [
+            'name' => $name,
+            'email' => $email,
+            'phone' => $phone,
+            'address' => $address,
+            'role' => $role,
+            'is_active' => $isActive
+        ]);
+        $this->redirect('/admin.php/users');
+    }
 }

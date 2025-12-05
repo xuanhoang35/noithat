@@ -74,7 +74,7 @@
                     <div class="grid grid-cols-2 gap-2">
                         <a class="w-full h-10 flex items-center justify-center text-sm bg-amber-50 text-amber-700 rounded hover:bg-amber-100" href="<?php echo base_url('admin.php/products/edit/' . $p['id']); ?>">Sửa</a>
                         <form method="post" action="<?php echo base_url('admin.php/products/delete/' . $p['id']); ?>" onsubmit="return confirm('Xóa sản phẩm này?');" class="w-full">
-                            <button class="w-full h-10 flex items-center justify-center text-sm bg-red-50 text-red-600 rounded hover:bg-red-100">Xóa</button>
+                            <button class="w-full h-10 flex items-center justify-center text-sm bg-amber-50 text-amber-700 rounded hover:bg-amber-100">Xóa</button>
                         </form>
                     </div>
                 </td>

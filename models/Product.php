@@ -1,6 +1,16 @@
 <?php
 require_once __DIR__ . '/../core/Model.php';
 class Product extends Model {
+    private function reseedAutoIncrement(): void {
+        try {
+            $next = (int)$this->db->query('SELECT COALESCE(MAX(id), 0) + 1 FROM products')->fetchColumn();
+            $next = max(1, $next);
+            $this->db->exec('ALTER TABLE products AUTO_INCREMENT = ' . $next);
+        } catch (\Throwable $e) {
+            // ignore
+        }
+    }
+
     public function all($categoryId=null, string $keyword = '', string $priceSort = '', string $priceRange = '', ?int $priceMin = null, ?int $priceMax = null): array {
         $sql = 'SELECT * FROM products';
         $conditions = [];
@@ -79,6 +89,7 @@ class Product extends Model {
     public function delete(int $id): void {
         $stmt = $this->db->prepare('DELETE FROM products WHERE id=?');
         $stmt->execute([$id]);
+        $this->reseedAutoIncrement();
     }
 
     public function quickSearch(string $keyword, ?int $categoryId = null, int $limit = 8): array {

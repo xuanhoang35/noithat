@@ -35,6 +35,24 @@ class User extends Model {
         $row=$stmt->fetch();
         return $row ?: null;
     }
+
+    public function updateAdmin(int $id, array $data): void {
+        $this->ensureSchema();
+        $fields = ['name','email','phone','address','role','is_active'];
+        $set = [];
+        $params = [];
+        foreach ($fields as $f) {
+            if (array_key_exists($f, $data)) {
+                $set[] = "$f = ?";
+                $params[] = $data[$f];
+            }
+        }
+        if (empty($set)) return;
+        $params[] = $id;
+        $sql = 'UPDATE users SET ' . implode(',', $set) . ' WHERE id = ? AND deleted_at IS NULL';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+    }
     public function create(string $name,string $email,string $phone,string $password): void {
         $this->ensureSchema();
         $stmt=$this->db->prepare('INSERT INTO users(name,email,phone,password,password_plain,role,is_active) VALUES(?,?,?,?,?,?,1)');

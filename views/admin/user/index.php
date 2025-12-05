@@ -18,7 +18,7 @@
     <div class="overflow-auto">
         <table class="min-w-full text-sm">
             <tr class="bg-slate-100 text-left">
-                <th class="p-3">ID</th><th class="p-3">Tên</th><th class="p-3">Email</th><th class="p-3">Điện thoại</th><th class="p-3">Mật khẩu</th><th class="p-3">Role</th><th class="p-3">Trạng thái</th><th class="p-3">Online</th><th class="p-3">Kích hoạt</th><th class="p-3">Xóa</th>
+                <th class="p-3">ID</th><th class="p-3">Tên</th><th class="p-3">Email</th><th class="p-3">Điện thoại</th><th class="p-3">Mật khẩu</th><th class="p-3">Hành động</th>
             </tr>
             <?php foreach ($users as $u): ?>
             <tr class="border-b hover:bg-slate-50">
@@ -50,32 +50,12 @@
                         <span class="text-xs text-slate-400">Chưa cấp</span>
                     <?php endif; ?>
                 </td>
-                <td class="p-3"><?php echo $u['role']; ?></td>
-                <td class="p-3 align-middle">
-                    <?php $active = (int)$u['is_active'] === 1; ?>
-                    <span data-active="<?php echo $u['id']; ?>" class="inline-flex items-center h-8 px-3 text-xs rounded-full <?php echo $active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-700'; ?>">
-                        <?php echo $active ? 'Đang mở' : 'Đang khóa'; ?>
-                    </span>
-                </td>
-                <td class="p-3 align-middle">
-                    <?php $online = (int)($u['is_online'] ?? 0) === 1; ?>
-                    <span data-online="<?php echo $u['id']; ?>" class="inline-flex items-center h-8 px-3 text-xs rounded-full <?php echo $online ? 'bg-blue-50 text-blue-700' : 'bg-slate-100 text-slate-600'; ?>">
-                        <?php echo $online ? 'Online' : 'Offline'; ?>
-                    </span>
-                </td>
-                <td class="p-3 align-middle">
-                    <form method="post" action="<?php echo base_url('admin.php/users/toggle/' . $u['id']); ?>">
-                        <button class="h-8 px-3 mt-3 inline-flex items-center justify-center text-xs leading-none rounded bg-amber-50 text-amber-700 hover:bg-amber-100">
-                            <?php echo $active ? 'Khóa' : 'Kích hoạt'; ?>
-                        </button>
-                    </form>
-                </td>
                 <td class="p-3 align-middle">
                     <?php if ($u['role'] !== 'admin'): ?>
                         <div class="flex gap-2">
-                            <button type="button" class="h-8 px-3 mt-3 inline-flex items-center justify-center text-xs leading-none rounded bg-slate-100 text-slate-700 hover:bg-slate-200" onclick="alert('Chức năng chỉnh sửa sẽ sớm được bổ sung.');">Sửa</button>
+                            <a href="<?php echo base_url('admin.php/users/edit/' . $u['id']); ?>" class="h-8 px-3 mt-3 inline-flex items-center justify-center text-xs leading-none rounded bg-slate-100 text-slate-700 hover:bg-slate-200">Sửa</a>
                             <form method="post" action="<?php echo base_url('admin.php/users/delete/' . $u['id']); ?>" onsubmit="return confirm('Xóa khách hàng này?');">
-                                <button class="h-8 px-3 mt-3 inline-flex items-center justify-center text-xs leading-none rounded bg-red-50 text-red-600 hover:bg-red-100">Xóa</button>
+                                <button class="h-8 px-3 mt-3 inline-flex items-center justify-center text-xs leading-none rounded bg-amber-50 text-amber-700 hover:bg-amber-100">Xóa</button>
                             </form>
                         </div>
                     <?php else: ?>
@@ -88,10 +68,11 @@
     </div>
     <div class="mt-6 pt-4 border-t border-slate-100">
         <div class="flex flex-col gap-1 md:flex-row md:items-center md:justify-between mb-3">
-            <div>
+            <div class="flex items-center gap-2">
                 <h2 class="text-lg font-semibold">Quản lý mật khẩu khách hàng</h2>
-                <p class="text-slate-500 text-sm">Tiếp nhận yêu cầu quên mật khẩu và cấp mật khẩu mới.</p>
+                <span data-reset-badge class="hidden px-2 py-1 rounded-full bg-red-500 text-white text-xs font-semibold"></span>
             </div>
+            <p class="text-slate-500 text-sm">Tiếp nhận yêu cầu quên mật khẩu và cấp mật khẩu mới.</p>
         </div>
         <div class="overflow-auto">
             <table class="min-w-full text-sm">
@@ -159,6 +140,13 @@ document.addEventListener('DOMContentLoaded', function(){
     const renderResets = (resets) => {
         const body = document.getElementById('reset-body');
         if (!body) return;
+        if (window.__resetInputFocus) return; // tránh ghi đè khi đang nhập
+        const badge = document.querySelector('[data-reset-badge]');
+        if (badge) {
+            const count = Array.isArray(resets) ? resets.length : 0;
+            badge.textContent = count;
+            badge.classList.toggle('hidden', count === 0);
+        }
         if (!Array.isArray(resets) || resets.length === 0) {
             body.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-500">Chưa có yêu cầu quên mật khẩu nào.</td></tr>';
             return;
@@ -172,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function(){
                     <td class="p-3"><span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700">Chờ xử lý</span></td>
                     <td class="p-3">
                         <form method="post" action="<?php echo base_url('admin.php/users/reset-password/'); ?>${r.id}" class="flex flex-col md:flex-row gap-2">
-                            <input type="text" name="new_password" class="px-3 py-2 border rounded text-sm" placeholder="Nhập mật khẩu mới" required>
+                            <input type="text" name="new_password" class="px-3 py-2 border rounded text-sm" placeholder="Nhập mật khẩu mới" required onfocus="window.__resetInputFocus=true;" onblur="window.__resetInputFocus=false;">
                             <button class="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">Gửi mật khẩu</button>
                         </form>
                     </td>

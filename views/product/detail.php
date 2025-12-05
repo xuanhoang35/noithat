@@ -19,7 +19,13 @@
                 <p class="text-sm font-semibold <?php echo $stock > 0 ? 'text-emerald-600' : 'text-red-600'; ?>">
                     <?php echo $stock > 0 ? 'Còn ' . $stock . ' sản phẩm' : 'Hàng đang về'; ?>
                 </p>
-                <p class="text-slate-600 mt-2 leading-relaxed"><?php echo $product['description']; ?></p>
+                <p class="text-slate-600 mt-2 leading-relaxed">
+                    <?php if (!empty($product['description'])): ?>
+                        <?php echo nl2br(htmlspecialchars($product['description'])); ?>
+                    <?php else: ?>
+                        <span class="text-slate-400">Chưa có mô tả ngắn.</span>
+                    <?php endif; ?>
+                </p>
             </div>
             <div class="grid grid-cols-2 gap-3 text-sm text-slate-600">
                 <div class="p-3 rounded-2xl bg-white/70 border border-slate-100">Giao & lắp đặt 24-48h</div>
