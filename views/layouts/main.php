@@ -66,6 +66,10 @@ window.addEventListener('unhandledrejection', function(e) {
             background-size: cover;
             background-repeat: no-repeat;
             background-position: center top;
+            background-attachment: fixed;
+            background-color: #f5f7fb;
+            opacity: 0.22;
+            pointer-events: none;
             z-index: 0;
         }
         .page-bg > * {
