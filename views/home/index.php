@@ -86,7 +86,7 @@
             <?php foreach ($featured as $p): ?>
                 <?php $img = asset_url(!empty($p['image']) ? $p['image'] : 'public/assets/img/placeholder.svg'); ?>
                 <?php $stock = (int)($p['stock'] ?? 0); ?>
-                <div class="floating fade-border rounded-2xl shadow-sm transition p-3 flex flex-col bg-white/90">
+                <div class="floating fade-border rounded-2xl shadow-sm transition p-3 flex flex-col bg-white/90 h-full">
                     <div class="overflow-hidden rounded-xl mb-3 relative h-44">
                         <a href="<?php echo base_url('product/' . $p['id']); ?>">
                             <img src="<?php echo $img; ?>" alt="<?php echo htmlspecialchars($p['name']); ?>" class="w-full h-full object-cover hover:scale-105 transition duration-500">
