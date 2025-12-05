@@ -86,8 +86,8 @@
             <?php foreach ($featured as $p): ?>
                 <?php $img = asset_url(!empty($p['image']) ? $p['image'] : 'public/assets/img/placeholder.svg'); ?>
                 <?php $stock = (int)($p['stock'] ?? 0); ?>
-                <div class="floating fade-border rounded-2xl shadow-sm transition p-3 flex flex-col bg-white/90 h-full">
-                    <div class="overflow-hidden rounded-xl mb-3 relative h-44">
+                <div class="floating fade-border rounded-2xl shadow-sm transition p-3 flex flex-col gap-3 bg-white/90 h-full">
+                    <div class="overflow-hidden rounded-xl relative h-44">
                         <a href="<?php echo base_url('product/' . $p['id']); ?>">
                             <img src="<?php echo $img; ?>" alt="<?php echo htmlspecialchars($p['name']); ?>" class="w-full h-full object-cover hover:scale-105 transition duration-500">
                         </a>
@@ -95,14 +95,14 @@
                             <?php echo $stock > 0 ? 'Còn hàng' : 'Hết hàng'; ?>
                         </span>
                     </div>
-                    <div class="flex flex-col gap-1 flex-1 min-h-[100px]">
+                    <div class="flex flex-col gap-1">
                         <h6 class="text-sm font-semibold line-clamp-2 text-slate-900"><?php echo $p['name']; ?></h6>
                         <p class="text-blue-700 font-bold text-base"><?php echo number_format($p['price']); ?> đ</p>
                         <p class="text-[12px] font-semibold <?php echo $stock > 0 ? 'text-emerald-600' : 'text-red-600'; ?> mb-2">
                             <?php echo $stock > 0 ? 'Còn ' . $stock . ' sản phẩm' : 'Hàng đang về'; ?>
                         </p>
                     </div>
-                    <div class="grid grid-cols-2 gap-2 items-stretch pt-1">
+                    <div class="grid grid-cols-2 gap-2 items-stretch pt-0">
                         <a class="w-full text-center h-12 flex items-center justify-center text-sm border rounded-lg border-slate-200 hover:border-blue-500" href="<?php echo base_url('product/' . $p['id']); ?>">Xem</a>
                         <?php if ($stock <= 0): ?>
                             <a class="w-full h-12 inline-flex items-center justify-center text-sm bg-amber-500 text-white rounded-lg hover:bg-amber-600" href="tel:0974734668">Liên hệ</a>
