@@ -18,7 +18,7 @@
                     <button class="px-3 py-2 bg-slate-900 text-white rounded text-sm">Tìm</button>
                 </form>
             </div>
-            <ul class="divide-y">
+            <ul class="divide-y max-h-[540px] overflow-y-auto pr-1">
                 <?php $editId = isset($_GET['edit']) ? (int)$_GET['edit'] : 0; ?>
                 <?php foreach ($categories as $c): ?>
                     <li class="py-2 px-2 flex justify-between items-center">
