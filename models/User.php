@@ -1,6 +1,19 @@
 <?php
 require_once __DIR__ . '/../core/Model.php';
 class User extends Model {
+    private static bool $checkedPlain = false;
+    private static bool $hasPlain = false;
+
+    private function checkPlainColumn(): void {
+        if (self::$checkedPlain) return;
+        try {
+            $stmt = $this->db->query("SHOW COLUMNS FROM users LIKE 'password_plain'");
+            self::$hasPlain = (bool)$stmt->fetch();
+        } catch (\Throwable $e) {
+            self::$hasPlain = false;
+        }
+        self::$checkedPlain = true;
+    }
     private function ensureSchema(): void {
         try {
             $this->db->exec("ALTER TABLE users ADD COLUMN address VARCHAR(255) NULL");
@@ -55,8 +68,20 @@ class User extends Model {
     }
     public function create(string $name,string $email,string $phone,string $password): void {
         $this->ensureSchema();
-        $stmt=$this->db->prepare('INSERT INTO users(name,email,phone,password,password_plain,role,is_active) VALUES(?,?,?,?,?,?,1)');
-        $stmt->execute([$name,$email,$phone,password_hash($password,PASSWORD_DEFAULT),$password,'user']);
+        $this->checkPlainColumn();
+        $hash = password_hash($password, PASSWORD_DEFAULT);
+        if (self::$hasPlain) {
+            try {
+                $stmt=$this->db->prepare('INSERT INTO users(name,email,phone,password,password_plain,role,is_active) VALUES(?,?,?,?,?,?,1)');
+                $stmt->execute([$name,$email,$phone,$hash,$password,'user']);
+                return;
+            } catch (\Throwable $e) {
+                // fallback nếu thiếu cột
+                self::$hasPlain = false;
+            }
+        }
+        $stmt=$this->db->prepare('INSERT INTO users(name,email,phone,password,role,is_active) VALUES(?,?,?,?,?,1)');
+        $stmt->execute([$name,$email,$phone,$hash,'user']);
     }
     public function all(string $keyword = ''): array {
         $this->ensureSchema();
