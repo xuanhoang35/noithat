@@ -64,11 +64,11 @@ window.addEventListener('unhandledrejection', function(e) {
             inset: 0;
             background-image: url('<?php echo asset_url('public/bank/background_2026.png'); ?>');
             background-size: cover;
-            background-repeat: no-repeat;
+            background-repeat: repeat-y;
             background-position: center top;
-            background-attachment: fixed;
+            background-attachment: scroll;
             background-color: #f5f7fb;
-            opacity: 0.22;
+            opacity: 1;
             pointer-events: none;
             z-index: 0;
         }
