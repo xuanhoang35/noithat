@@ -65,7 +65,8 @@
             <tr class="border-b hover:bg-slate-50">
                 <td class="p-3"><?php echo $p['id']; ?></td>
                 <td class="p-3"><?php echo $p['name']; ?></td>
-                <td class="p-3"><?php echo $p['category_id']; ?></td>
+                <?php $catMap = isset($catMap) ? $catMap : array_column($categories, 'name', 'id'); ?>
+                <td class="p-3"><?php echo htmlspecialchars($catMap[$p['category_id']] ?? ''); ?></td>
                 <td class="p-3"><?php echo number_format($p['price']); ?></td>
                 <td class="p-3"><?php echo $p['stock']; ?></td>
                 <td class="p-3"><?php if (!empty($p['image'])): ?><img src="<?php echo asset_url($p['image']); ?>" alt="" class="w-14 h-14 object-cover rounded"><?php endif; ?></td>

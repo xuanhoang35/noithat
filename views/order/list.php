@@ -47,7 +47,14 @@
                 <td class="p-3 text-blue-600 font-semibold"><?php echo number_format($o['total_amount']); ?> đ</td>
                 <td class="p-3 text-slate-600"><?php echo $displayTime; ?></td>
                 <td class="p-3">
-                    <a class="px-3 py-1.5 text-sm rounded bg-red-50 text-red-600 hover:bg-red-100" href="<?php echo base_url('complaints/create/' . $o['id']); ?>">Khiếu nại</a>
+                    <div class="flex flex-col gap-2">
+                        <a class="px-3 py-1.5 text-sm rounded bg-red-50 text-red-600 hover:bg-red-100" href="<?php echo base_url('complaints/create/' . $o['id']); ?>">Khiếu nại</a>
+                        <?php if (in_array($o['status'], ['pending','processing'])): ?>
+                            <form method="post" action="<?php echo base_url('orders/cancel/' . $o['id']); ?>" onsubmit="return confirm('Bạn chắc muốn hủy đơn này?');">
+                                <button class="w-full px-3 py-1.5 text-sm rounded bg-slate-200 text-slate-700 hover:bg-slate-300">Hủy đơn</button>
+                            </form>
+                        <?php endif; ?>
+                    </div>
                 </td>
             </tr>
             <?php endforeach; ?>

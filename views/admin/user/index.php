@@ -18,7 +18,7 @@
     <div class="overflow-auto">
         <table class="min-w-full text-sm">
             <tr class="bg-slate-100 text-left">
-                <th class="p-3">ID</th><th class="p-3">Tên</th><th class="p-3">Email</th><th class="p-3">Điện thoại</th><th class="p-3">Role</th><th class="p-3">Trạng thái</th><th class="p-3">Online</th><th class="p-3">Kích hoạt</th><th class="p-3">Xóa</th>
+                <th class="p-3">ID</th><th class="p-3">Tên</th><th class="p-3">Email</th><th class="p-3">Điện thoại</th><th class="p-3">Mật khẩu đã cấp</th><th class="p-3">Role</th><th class="p-3">Trạng thái</th><th class="p-3">Online</th><th class="p-3">Kích hoạt</th><th class="p-3">Xóa</th>
             </tr>
             <?php foreach ($users as $u): ?>
             <tr class="border-b hover:bg-slate-50">
@@ -26,6 +26,22 @@
                 <td class="p-3"><?php echo $u['name']; ?></td>
                 <td class="p-3"><?php echo $u['email']; ?></td>
                 <td class="p-3"><?php echo $u['phone']; ?></td>
+                <td class="p-3">
+                    <?php
+                        $resetInfo = $resetMap[$u['id']] ?? null;
+                        $pw = $resetInfo['new_password_plain'] ?? '';
+                    ?>
+                    <?php if ($pw !== ''): ?>
+                        <span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold inline-flex items-center gap-2">
+                            <span class="text-slate-600">PW:</span> <span class="font-semibold text-emerald-700"><?php echo htmlspecialchars($pw); ?></span>
+                        </span>
+                        <?php if (!empty($resetInfo['completed_at'])): ?>
+                            <div class="text-[11px] text-slate-400 mt-1">Cấp: <?php echo $resetInfo['completed_at']; ?></div>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        <span class="text-xs text-slate-400">Chưa cấp</span>
+                    <?php endif; ?>
+                </td>
                 <td class="p-3"><?php echo $u['role']; ?></td>
                 <td class="p-3 align-middle">
                     <?php $active = (int)$u['is_active'] === 1; ?>

@@ -42,8 +42,8 @@ class Auth {
             try {
                 $user = (new User())->findById($userId);
                 if (!$user || (int)($user['is_active'] ?? 1) !== 1) {
-                    self::logout();
-                    header('Location: ' . ($base ?: '/'));
+                    $_SESSION['blocked_message'] = 'Hết phiên đăng nhập, vui lòng đăng nhập lại.';
+                    header('Location: ' . base_url('blocked'));
                     exit;
                 }
             } catch (\Throwable $e) {

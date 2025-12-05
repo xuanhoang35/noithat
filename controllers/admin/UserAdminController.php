@@ -16,11 +16,16 @@ class UserAdminController extends Controller {
         $search = trim($_GET['search'] ?? '');
         $users=$this->userModel->all($search);
         $resets = $this->passwordResetModel->all();
+        $resetMap = [];
+        foreach ($resets as $r) {
+            $resetMap[$r['user_id']] = $r;
+        }
         $this->view('admin/user/index',[
             'users' => $users,
             'search' => $search,
             'querySeen' => $_GET['seen'] ?? '',
             'resets' => $resets,
+            'resetMap' => $resetMap,
         ]);
     }
     public function toggleActive($id){

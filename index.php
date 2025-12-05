@@ -27,8 +27,8 @@ if (Auth::check()) {
         $userModel = new User();
         $fresh = $userModel->findById((int)$sessionUser['id']);
         if (!$fresh || (int)($fresh['is_active'] ?? 1) !== 1) {
-            Auth::logout();
-            header('Location: ' . base_url('/'));
+            $_SESSION['blocked_message'] = 'Hết phiên đăng nhập, vui lòng đăng nhập lại.';
+            header('Location: ' . base_url('blocked'));
             exit;
         }
     }
@@ -70,6 +70,7 @@ $router->post('/cart/apply-voucher', 'CartController@applyVoucher');
 $router->get('/cart', 'CartController@index');
 $router->post('/order/checkout', 'OrderController@checkout');
 $router->get('/orders', 'OrderController@myOrders');
+$router->post('/orders/cancel/{id}', 'OrderController@cancel');
 $router->get('/payment/{method}/{id}', 'PaymentController@show');
 $router->post('/payment/{method}/{id}', 'PaymentController@confirm');
 $router->get('/complaints/create/{orderId}', 'ComplaintController@createForm');

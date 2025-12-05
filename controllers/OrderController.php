@@ -117,4 +117,13 @@ class OrderController extends Controller {
         $orders=$this->orderModel->byUser($_SESSION['user']['id']);
         $this->view('order/list',compact('orders'));
     }
+
+    public function cancel($id) {
+        Auth::requireLogin();
+        $userId = (int)($_SESSION['user']['id'] ?? 0);
+        if ($userId <= 0) { $this->redirect('/login'); }
+        $ok = $this->orderModel->cancelByUser((int)$id, $userId);
+        $_SESSION['order_notice'] = $ok ? 'Đơn hàng đã được hủy và tồn kho đã khôi phục.' : 'Không thể hủy đơn hàng này.';
+        $this->redirect('/orders');
+    }
 }

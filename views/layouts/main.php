@@ -390,10 +390,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Poll thông báo user (đơn hàng, chat) mỗi 1s
+    let accountLockedRedirected = false;
     const pollNotify = () => {
         fetch('<?php echo base_url('notify/poll'); ?>', { cache: 'no-store' })
             .then(r => r.json())
             .then(data => {
+                if (data.account_locked && !accountLockedRedirected) {
+                    accountLockedRedirected = true;
+                    window.location.href = '<?php echo base_url('blocked'); ?>';
+                    return;
+                }
                 if (orderIndicator) {
                     if (data.orders_unread) orderIndicator.classList.remove('hidden');
                     else orderIndicator.classList.add('hidden');

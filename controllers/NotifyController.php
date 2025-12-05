@@ -13,11 +13,20 @@ class NotifyController extends Controller {
             echo json_encode(['orders_unread' => false, 'chat_unread' => false]);
             return;
         }
+        $accountLocked = false;
+        try {
+            require_once __DIR__ . '/../models/User.php';
+            $u = (new User())->findById($userId);
+            $accountLocked = !$u || (int)($u['is_active'] ?? 1) !== 1;
+        } catch (\Throwable $e) {
+            $accountLocked = false;
+        }
         $chat = new Chat();
         $order = new Order();
         echo json_encode([
             'orders_unread' => $order->hasUnread($userId),
-            'chat_unread' => $chat->hasUnreadForUser($userId)
+            'chat_unread' => $chat->hasUnreadForUser($userId),
+            'account_locked' => $accountLocked
         ]);
     }
 }

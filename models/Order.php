@@ -73,6 +73,12 @@ class Order extends Model {
         $row = $stmt->fetch();
         return $row ?: null;
     }
+    public function findById(int $orderId): ?array {
+        $stmt = $this->db->prepare('SELECT * FROM orders WHERE id=? LIMIT 1');
+        $stmt->execute([$orderId]);
+        $row = $stmt->fetch();
+        return $row ?: null;
+    }
     public function all(string $keyword = ''): array {
         $sql = 'SELECT * FROM orders';
         $params = [];
@@ -87,10 +93,31 @@ class Order extends Model {
         $stmt->execute($params);
         return $stmt->fetchAll();
     }
+    private function restoreStockFromItems(?string $itemsJson): void {
+        if (!$itemsJson) return;
+        $items = json_decode($itemsJson, true);
+        if (!is_array($items)) return;
+        $stmt = $this->db->prepare('UPDATE products SET stock = stock + ? WHERE id = ?');
+        foreach ($items as $it) {
+            $qty = (int)($it['qty'] ?? $it['quantity'] ?? 0);
+            $pid = (int)($it['product_id'] ?? 0);
+            if ($qty > 0 && $pid > 0) {
+                $stmt->execute([$qty, $pid]);
+            }
+        }
+    }
+
     public function updateStatus(int $id, string $status): void {
         $this->ensureColumns();
+        $order = $this->findById($id);
+        if (!$order) return;
+        $currentStatus = $order['status'] ?? 'pending';
+        if ($currentStatus === $status) return;
         $timeCol = ['processing' => 'confirmed_at', 'shipping' => 'shipping_at', 'completed' => 'completed_at', 'cancelled' => 'cancelled_at'];
         $col = $timeCol[$status] ?? null;
+        if ($status === 'cancelled' && $currentStatus !== 'cancelled') {
+            $this->restoreStockFromItems($order['items_json'] ?? null);
+        }
         if ($col) {
             $stmt = $this->db->prepare("UPDATE orders SET status=?, {$col}=NOW(), user_unread=1 WHERE id=?");
             $stmt->execute([$status, $id]);
@@ -111,5 +138,15 @@ class Order extends Model {
         $stmt = $this->db->prepare('SELECT 1 FROM orders WHERE user_id=? AND user_unread=1 LIMIT 1');
         $stmt->execute([$userId]);
         return (bool)$stmt->fetchColumn();
+    }
+
+    public function cancelByUser(int $orderId, int $userId): bool {
+        $order = $this->findByIdForUser($orderId, $userId);
+        if (!$order) return false;
+        if ($order['status'] === 'cancelled' || $order['status'] === 'completed') {
+            return false;
+        }
+        $this->updateStatus($orderId, 'cancelled');
+        return true;
     }
 }

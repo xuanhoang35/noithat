@@ -14,8 +14,12 @@ class ChatController extends Controller {
         $isEmbed = isset($_GET['embed']) && $_GET['embed'] == '1';
         $thread = $this->chatModel->getOrCreateThread((int)$userId, $forceNew);
         if (!$thread) { $this->redirect('/login'); return; }
-        if ($forceNew) {
+        // Nếu đã đóng, mở lại phiên và làm sạch lịch sử
+        if ($forceNew || ($thread['status'] ?? '') === 'closed') {
+            $this->chatModel->clearMessages((int)$userId);
+            $this->chatModel->updateStatus((int)$userId, 'open');
             $this->chatModel->addMessage((int)$userId, (int)$userId, false, 'Khách hàng bắt đầu cuộc trò chuyện mới.', 'open');
+            $thread = $this->chatModel->findThread((int)$userId);
         }
         $this->chatModel->markUserRead((int)$userId);
         $messages = $this->chatModel->messages((int)$userId);

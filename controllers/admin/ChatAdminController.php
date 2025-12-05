@@ -23,6 +23,10 @@ class ChatAdminController extends Controller {
     public function reply($id){
         $thread = $this->chatModel->findThread((int)$id);
         if (!$thread) { http_response_code(404); echo 'Thread not found'; return; }
+        if (($thread['status'] ?? '') === 'closed') {
+            $this->redirect("/admin.php/chats/show/$id");
+            return;
+        }
         $content = trim($_POST['content'] ?? '');
         $status = $_POST['status'] ?? $thread['status'];
         $adminId = $_SESSION['user']['id'] ?? $thread['id'];
