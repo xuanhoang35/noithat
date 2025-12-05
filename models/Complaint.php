@@ -7,21 +7,10 @@ class Complaint extends Model {
         } catch (\Throwable $e) {
             // cột đã tồn tại -> bỏ qua
         }
-    }
-    private function ensureReplySchema(): void {
         try {
-            $this->db->exec("CREATE TABLE IF NOT EXISTS complaint_replies (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                complaint_id INT NOT NULL,
-                user_id INT NOT NULL,
-                is_admin TINYINT(1) DEFAULT 0,
-                content TEXT,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (complaint_id) REFERENCES complaints(id),
-                FOREIGN KEY (user_id) REFERENCES users(id)
-            )");
+            $this->db->exec("ALTER TABLE complaints ADD COLUMN replies_json LONGTEXT NULL");
         } catch (\Throwable $e) {
-            // ignore
+            // đã có hoặc không cần
         }
     }
 
@@ -47,21 +36,41 @@ class Complaint extends Model {
     }
 
     public function addReply(int $complaintId, int $userId, bool $isAdmin, string $content): void {
-        $this->ensureReplySchema();
+        $this->ensureSchema();
         if ($userId <= 0) {
             $stmtFind = $this->db->prepare('SELECT user_id FROM complaints WHERE id=? LIMIT 1');
             $stmtFind->execute([$complaintId]);
             $fallback = $stmtFind->fetchColumn();
             $userId = $fallback ? (int)$fallback : $userId;
         }
-        $stmt = $this->db->prepare('INSERT INTO complaint_replies(complaint_id,user_id,is_admin,content) VALUES(?,?,?,?)');
-        $stmt->execute([$complaintId, $userId, $isAdmin ? 1 : 0, $content]);
+        $stmt = $this->db->prepare('SELECT replies_json FROM complaints WHERE id=? LIMIT 1');
+        $stmt->execute([$complaintId]);
+        $json = $stmt->fetchColumn();
+        $replies = [];
+        if ($json) {
+            $decoded = json_decode($json, true);
+            if (is_array($decoded)) {
+                $replies = $decoded;
+            }
+        }
+        $replies[] = [
+            'user_id' => $userId,
+            'is_admin' => $isAdmin ? 1 : 0,
+            'content' => $content,
+            'created_at' => date('Y-m-d H:i:s')
+        ];
+        $save = $this->db->prepare('UPDATE complaints SET replies_json=? WHERE id=?');
+        $save->execute([json_encode($replies, JSON_UNESCAPED_UNICODE), $complaintId]);
     }
 
     public function replies(int $complaintId): array {
-        $this->ensureReplySchema();
-        $stmt = $this->db->prepare('SELECT * FROM complaint_replies WHERE complaint_id=? ORDER BY created_at ASC');
+        $this->ensureSchema();
+        $stmt = $this->db->prepare('SELECT replies_json FROM complaints WHERE id=? LIMIT 1');
         $stmt->execute([$complaintId]);
-        return $stmt->fetchAll();
+        $json = $stmt->fetchColumn();
+        if (!$json) return [];
+        $decoded = json_decode($json, true);
+        if (!is_array($decoded)) return [];
+        return $decoded;
     }
 }

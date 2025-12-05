@@ -104,10 +104,10 @@
                     <?php foreach (($bookings ?? []) as $b): ?>
                         <tr class="border-b hover:bg-slate-50">
                             <td class="p-3 font-semibold text-slate-800"><?php echo htmlspecialchars($b['service_name']); ?></td>
-                            <td class="p-3 text-slate-700"><?php echo htmlspecialchars($b['name']); ?></td>
-                            <td class="p-3 text-slate-600"><?php echo htmlspecialchars($b['phone']); ?><?php if(!empty($b['email'])) echo '<br>'.htmlspecialchars($b['email']); ?></td>
+                            <td class="p-3 text-slate-700"><?php echo htmlspecialchars($b['customer_name']); ?></td>
+                            <td class="p-3 text-slate-600"><?php echo htmlspecialchars($b['customer_phone']); ?><?php if(!empty($b['customer_email'])) echo '<br>'.htmlspecialchars($b['customer_email']); ?></td>
                             <td class="p-3 text-slate-600"><?php echo date('d/m/Y H:i', strtotime($b['schedule_at'])); ?></td>
-                            <td class="p-3 text-slate-600"><?php echo htmlspecialchars($b['address']); ?></td>
+                            <td class="p-3 text-slate-600"><?php echo htmlspecialchars($b['customer_address']); ?></td>
                             <td class="p-3 text-slate-600"><?php echo htmlspecialchars($b['note']); ?></td>
                         </tr>
                     <?php endforeach; ?>

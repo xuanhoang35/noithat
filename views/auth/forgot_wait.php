@@ -29,7 +29,7 @@
     const passwordBox = document.getElementById('new-password-box');
     const passwordText = document.getElementById('new-password-text');
     const countdownWrap = document.getElementById('countdown-wrap');
-    const requestId = <?php echo (int)$requestId; ?>;
+    const requestId = <?php echo json_encode((string)$requestId); ?>;
     const resendLink = document.createElement('a');
     resendLink.href = '#';
     resendLink.className = 'text-blue-600 font-medium underline cursor-pointer hidden';

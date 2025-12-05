@@ -18,11 +18,31 @@ class Service extends Model {
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             );
         ");
+        try { $this->db->exec("ALTER TABLE services ADD COLUMN is_booking TINYINT(1) DEFAULT 0"); } catch (\Throwable $e) {}
+        try { $this->db->exec("ALTER TABLE services ADD COLUMN parent_service_id INT NULL"); } catch (\Throwable $e) {}
+        try { $this->db->exec("ALTER TABLE services ADD COLUMN customer_name VARCHAR(150) NULL"); } catch (\Throwable $e) {}
+        try { $this->db->exec("ALTER TABLE services ADD COLUMN customer_phone VARCHAR(30) NULL"); } catch (\Throwable $e) {}
+        try { $this->db->exec("ALTER TABLE services ADD COLUMN customer_email VARCHAR(150) NULL"); } catch (\Throwable $e) {}
+        try { $this->db->exec("ALTER TABLE services ADD COLUMN customer_address VARCHAR(255) NULL"); } catch (\Throwable $e) {}
+        try { $this->db->exec("ALTER TABLE services ADD COLUMN schedule_at DATETIME NULL"); } catch (\Throwable $e) {}
+        try { $this->db->exec("ALTER TABLE services ADD COLUMN note TEXT NULL"); } catch (\Throwable $e) {}
         $this->seedDefault();
     }
 
-    public function all(): array {
-        return $this->db->query('SELECT * FROM services ORDER BY id DESC')->fetchAll();
+    public function all(bool $onlyBase = true): array {
+        $sql = 'SELECT * FROM services';
+        $where = [];
+        $params = [];
+        if ($onlyBase) {
+            $where[] = 'is_booking = 0';
+        }
+        if ($where) {
+            $sql .= ' WHERE ' . implode(' AND ', $where);
+        }
+        $sql .= ' ORDER BY id DESC';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
     }
 
     public function create(string $name, string $description, string $sla, float $price): void {
@@ -38,12 +58,13 @@ class Service extends Model {
     }
 
     public function update(int $id, string $name, string $description, string $sla, float $price): void {
-        $stmt = $this->db->prepare('UPDATE services SET name=?, description=?, sla=?, price=? WHERE id=?');
+        $stmt = $this->db->prepare('UPDATE services SET name=?, description=?, sla=?, price=? WHERE id=? AND is_booking = 0');
         $stmt->execute([$name,$description,$sla,$price,$id]);
     }
 
     public function delete(int $id): void {
-        $stmt = $this->db->prepare('DELETE FROM services WHERE id=?');
+        $this->db->prepare('DELETE FROM services WHERE parent_service_id=?')->execute([$id]);
+        $stmt = $this->db->prepare('DELETE FROM services WHERE id=? AND is_booking = 0');
         $stmt->execute([$id]);
     }
 
@@ -56,7 +77,7 @@ class Service extends Model {
             ['Vệ sinh & bảo dưỡng định kỳ', 'Lau chùi, bảo dưỡng thiết bị gia dụng, nội thất; kiểm tra hao mòn để phòng hỏng hóc.', 'Đặt lịch trước', 0],
             ['Kiểm tra an toàn điện/nước', 'Rà soát hệ thống điện, nước cho thiết bị gia dụng; tư vấn nâng cấp và thay thế khi cần.', 'Trong 48h', 0],
         ];
-        $check = $this->db->prepare("SELECT COUNT(*) FROM services WHERE name=?");
+        $check = $this->db->prepare("SELECT COUNT(*) FROM services WHERE name=? AND is_booking = 0");
         $insert = $this->db->prepare('INSERT INTO services(name, description, sla, price) VALUES(?,?,?,?)');
         foreach ($seed as $s) {
             $check->execute([$s[0]]);

@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../../core/Controller.php';
 require_once __DIR__ . '/../../core/Auth.php';
 require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../models/Chat.php';
 
 class NotifyAdminController extends Controller {
     public function poll() {
@@ -12,13 +13,16 @@ class NotifyAdminController extends Controller {
         $tables = [
             'orders' => 'orders',
             'complaints' => 'complaints',
-            'services' => 'service_bookings',
+            'services' => 'services',
             'users' => 'users'
         ];
         $seen = $_SESSION['admin_seen'] ?? [];
         $maxCreated = function($table) use ($db) {
             try {
-                return $db->query("SELECT COALESCE(MAX(updated_at), MAX(created_at), MAX(schedule_at), MAX(completed_at), MAX(delivered_at)) FROM {$table}")->fetchColumn() ?: date('Y-m-d H:i:s');
+                if ($table === 'services') {
+                    return $db->query("SELECT COALESCE(MAX(schedule_at), MAX(created_at)) FROM services WHERE is_booking = 1")->fetchColumn() ?: date('Y-m-d H:i:s');
+                }
+                return $db->query("SELECT COALESCE(MAX(updated_at), MAX(created_at)) FROM {$table}")->fetchColumn() ?: date('Y-m-d H:i:s');
             } catch (\Throwable $e) {
                 return date('Y-m-d H:i:s');
             }
@@ -29,9 +33,15 @@ class NotifyAdminController extends Controller {
             }
             $ts = date('Y-m-d H:i:s', $seen[$key]);
             try {
-                $stmt = $db->prepare("SELECT COUNT(*) FROM {$table} WHERE created_at > ?");
-                $stmt->execute([$ts]);
-                $count = (int)$stmt->fetchColumn();
+                if ($table === 'services') {
+                    $stmt = $db->prepare("SELECT COUNT(*) FROM services WHERE is_booking = 1 AND created_at > ?");
+                    $stmt->execute([$ts]);
+                    $count = (int)$stmt->fetchColumn();
+                } else {
+                    $stmt = $db->prepare("SELECT COUNT(*) FROM {$table} WHERE created_at > ?");
+                    $stmt->execute([$ts]);
+                    $count = (int)$stmt->fetchColumn();
+                }
                 $latest = $maxCreated($table);
             } catch (\Throwable $e) {
                 $count = 0;
@@ -42,10 +52,11 @@ class NotifyAdminController extends Controller {
                 'latest' => $latest
             ];
         }
-        // chats: đếm số phiên có tin nhắn chưa đọc cho admin (tồn tại tới khi admin mở)
+        // chats: đếm hội thoại chưa đọc theo chat_messages
         try {
-            $chatUnread = (int)$db->query("SELECT COUNT(*) FROM chat_threads WHERE admin_unread=1")->fetchColumn();
-            $chatLatest = $db->query("SELECT COALESCE(MAX(updated_at), MAX(created_at)) FROM chat_threads")->fetchColumn();
+            $chatModel = new Chat();
+            $chatUnread = $chatModel->hasUnreadForAdmin();
+            $chatLatest = $db->query("SELECT COALESCE(MAX(updated_at), MAX(created_at)) FROM chat_messages")->fetchColumn();
         } catch (\Throwable $e) {
             $chatUnread = 0;
             $chatLatest = null;

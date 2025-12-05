@@ -10,8 +10,8 @@ class AdminController extends Controller {
         $counts = [
             'users' => (int)$db->query('SELECT COUNT(*) FROM users')->fetchColumn(),
             'orders' => (int)$db->query('SELECT COUNT(*) FROM orders')->fetchColumn(),
-            'service_bookings' => (int)$db->query('SELECT COUNT(*) FROM service_bookings')->fetchColumn(),
-            'chats' => (int)$db->query('SELECT COUNT(*) FROM chat_threads')->fetchColumn(),
+            'service_bookings' => (int)$db->query('SELECT COUNT(*) FROM services WHERE is_booking = 1')->fetchColumn(),
+            'chats' => (int)$db->query('SELECT COUNT(DISTINCT user_id) FROM chat_messages')->fetchColumn(),
             'complaints' => (int)$db->query('SELECT COUNT(*) FROM complaints')->fetchColumn(),
         ];
         $this->view('admin/index', compact('counts'));

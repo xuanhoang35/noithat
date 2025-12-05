@@ -43,7 +43,13 @@
     $maxCreated = function($table) {
         try {
             $db = Database::connection();
-            $ts = $db->query("SELECT COALESCE(MAX(created_at), NOW()) FROM {$table}")->fetchColumn();
+            if ($table === 'services') {
+                $ts = $db->query("SELECT COALESCE(MAX(created_at), NOW()) FROM services WHERE is_booking = 1")->fetchColumn();
+            } elseif ($table === 'chat_messages') {
+                $ts = $db->query("SELECT COALESCE(MAX(created_at), NOW()) FROM chat_messages")->fetchColumn();
+            } else {
+                $ts = $db->query("SELECT COALESCE(MAX(created_at), NOW()) FROM {$table}")->fetchColumn();
+            }
             return $ts ?: date('Y-m-d H:i:s');
         } catch (\Throwable $e) {
             return date('Y-m-d H:i:s');
@@ -54,8 +60,8 @@
         $seen[$k] = strtotime($maxCreated(match ($k) {
             'users' => 'users',
             'orders' => 'orders',
-            'services' => 'service_bookings',
-            'chats' => 'chat_threads',
+            'services' => 'services',
+            'chats' => 'chat_messages',
             'complaints' => 'complaints',
             default => 'users'
         }));
@@ -66,8 +72,8 @@
             $seen[$k] = strtotime($maxCreated(match ($k) {
                 'users' => 'users',
                 'orders' => 'orders',
-                'services' => 'service_bookings',
-                'chats' => 'chat_threads',
+                'services' => 'services',
+                'chats' => 'chat_messages',
                 'complaints' => 'complaints',
                 default => 'users'
             }));
@@ -79,6 +85,16 @@
             $db = Database::connection();
             $last = $seen[$seenKey] ?? time();
             $ts = date('Y-m-d H:i:s', $last);
+            if ($table === 'services') {
+                $stmt = $db->prepare("SELECT COUNT(*) FROM services WHERE is_booking = 1 AND created_at > ?");
+                $stmt->execute([$ts]);
+                return (int)$stmt->fetchColumn();
+            }
+            if ($table === 'chat_messages') {
+                $stmt = $db->prepare("SELECT COUNT(*) FROM chat_messages WHERE created_at > ?");
+                $stmt->execute([$ts]);
+                return (int)$stmt->fetchColumn();
+            }
             $stmt = $db->prepare("SELECT COUNT(*) FROM {$table} WHERE created_at > ?");
             $stmt->execute([$ts]);
             return (int)$stmt->fetchColumn();
@@ -87,8 +103,8 @@
     $sidebarCounts = [
         'users' => $getCount('users','users'),
         'orders' => $getCount('orders','orders'),
-        'services' => $getCount('service_bookings','services'),
-        'chats' => $getCount('chat_threads','chats'),
+        'services' => $getCount('services','services'),
+        'chats' => $getCount('chat_messages','chats'),
         'complaints' => $getCount('complaints','complaints'),
     ];
     $badge = function($num, $key) {

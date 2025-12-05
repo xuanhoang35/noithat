@@ -2,46 +2,76 @@
 require_once __DIR__ . '/../core/Model.php';
 
 class Slider extends Model {
-    private static bool $schemaEnsured = false;
+    private string $storage;
+    private static bool $storageEnsured = false;
 
-    private function ensureSchema(): void {
-        if (self::$schemaEnsured) return;
-        $this->db->exec("
-            CREATE TABLE IF NOT EXISTS slider_images (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                image VARCHAR(255) NOT NULL,
-                is_active TINYINT(1) DEFAULT 1,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-            )
-        ");
-        self::$schemaEnsured = true;
+    public function __construct() {
+        parent::__construct();
+        $this->storage = __DIR__ . '/../config/slider.json';
+        $this->ensureStorage();
+    }
+
+    private function ensureStorage(): void {
+        if (self::$storageEnsured) return;
+        if (!file_exists($this->storage)) {
+            @file_put_contents($this->storage, json_encode([]));
+        }
+        self::$storageEnsured = true;
+    }
+
+    private function load(): array {
+        $this->ensureStorage();
+        $json = @file_get_contents($this->storage);
+        $data = json_decode($json, true);
+        return is_array($data) ? $data : [];
+    }
+
+    private function save(array $items): void {
+        $this->ensureStorage();
+        file_put_contents($this->storage, json_encode($items, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
 
     public function all(bool $onlyActive = true): array {
-        $this->ensureSchema();
-        $sql = 'SELECT * FROM slider_images';
+        $items = $this->load();
         if ($onlyActive) {
-            $sql .= ' WHERE is_active = 1';
+            $items = array_filter($items, function($row){ return (int)($row['is_active'] ?? 1) === 1; });
         }
-        $sql .= ' ORDER BY created_at DESC, id DESC';
-        return $this->db->query($sql)->fetchAll();
+        usort($items, function($a, $b){
+            return strcmp($b['created_at'] ?? '', $a['created_at'] ?? '');
+        });
+        return array_values($items);
     }
 
     public function create(string $path): int {
-        $this->ensureSchema();
-        $stmt = $this->db->prepare('INSERT INTO slider_images(image,is_active) VALUES(?,1)');
-        $stmt->execute([$path]);
-        return (int)$this->db->lastInsertId();
+        $items = $this->load();
+        $nextId = 1;
+        foreach ($items as $row) {
+            $nextId = max($nextId, (int)$row['id'] + 1);
+        }
+        $items[] = [
+            'id' => $nextId,
+            'image' => $path,
+            'is_active' => 1,
+            'created_at' => date('Y-m-d H:i:s')
+        ];
+        $this->save($items);
+        return $nextId;
     }
 
     public function delete(int $id): void {
-        $this->ensureSchema();
-        $stmt = $this->db->prepare('SELECT image FROM slider_images WHERE id=? LIMIT 1');
-        $stmt->execute([$id]);
-        $img = $stmt->fetch();
-        $this->db->prepare('DELETE FROM slider_images WHERE id=?')->execute([$id]);
-        if ($img && !empty($img['image'])) {
-            $this->deleteLocalFile($img['image']);
+        $items = $this->load();
+        $remaining = [];
+        $deleted = null;
+        foreach ($items as $row) {
+            if ((int)$row['id'] === (int)$id) {
+                $deleted = $row;
+                continue;
+            }
+            $remaining[] = $row;
+        }
+        $this->save($remaining);
+        if ($deleted && !empty($deleted['image'])) {
+            $this->deleteLocalFile($deleted['image']);
         }
     }
 

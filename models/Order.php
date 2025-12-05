@@ -11,6 +11,9 @@ class Order extends Model {
         try {
             $this->db->exec("ALTER TABLE orders ADD COLUMN user_unread TINYINT(1) DEFAULT 0");
         } catch (\Throwable $e) {}
+        try {
+            $this->db->exec("ALTER TABLE orders ADD COLUMN items_json LONGTEXT NULL");
+        } catch (\Throwable $e) {}
         self::$extraColumnsEnsured = true;
     }
 
@@ -37,13 +40,19 @@ class Order extends Model {
             $total = max(0, $total - $discountTotal);
         }
         $code = 'OR' . date('YmdHis') . rand(100, 999);
-        $stmt = $this->db->prepare('INSERT INTO orders(user_id,code,total_amount,status,payment_method,customer_name,customer_phone,customer_email,customer_address,note,user_unread,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,1,NOW())');
-        $stmt->execute([$userId, $code, $total, 'pending', $paymentMethod, $customer['name'], $customer['phone'], $customer['email'], $customer['address'], $customer['note']]);
-        $orderId = (int)$this->db->lastInsertId();
-        $itemStmt = $this->db->prepare('INSERT INTO order_items(order_id,product_id,quantity,unit_price,total_price) VALUES(?,?,?,?,?)');
+        $items = [];
         foreach ($cart as $item) {
-            $itemStmt->execute([$orderId, $item['product']['id'], $item['qty'], $item['product']['price'], $item['qty'] * $item['product']['price']]);
+            $items[] = [
+                'product_id' => $item['product']['id'],
+                'name' => $item['product']['name'],
+                'price' => $item['product']['price'],
+                'qty' => $item['qty'],
+                'total' => $item['qty'] * $item['product']['price']
+            ];
         }
+        $stmt = $this->db->prepare('INSERT INTO orders(user_id,code,total_amount,status,payment_method,customer_name,customer_phone,customer_email,customer_address,note,user_unread,items_json,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,1,?,NOW())');
+        $stmt->execute([$userId, $code, $total, 'pending', $paymentMethod, $customer['name'], $customer['phone'], $customer['email'], $customer['address'], $customer['note'], json_encode($items, JSON_UNESCAPED_UNICODE)]);
+        $orderId = (int)$this->db->lastInsertId();
         $this->db->commit();
         return $orderId;
     }

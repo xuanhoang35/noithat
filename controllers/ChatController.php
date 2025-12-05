@@ -15,11 +15,10 @@ class ChatController extends Controller {
         $thread = $this->chatModel->getOrCreateThread((int)$userId, $forceNew);
         if (!$thread) { $this->redirect('/login'); return; }
         if ($forceNew) {
-            // thêm thông báo để admin thấy phiên mới
-            $this->chatModel->addMessage($thread['id'], (int)$userId, false, 'Khách hàng bắt đầu cuộc trò chuyện mới.');
+            $this->chatModel->addMessage((int)$userId, (int)$userId, false, 'Khách hàng bắt đầu cuộc trò chuyện mới.', 'open');
         }
-        $this->chatModel->markUserRead($thread['id']);
-        $messages = $this->chatModel->messages($thread['id']);
+        $this->chatModel->markUserRead((int)$userId);
+        $messages = $this->chatModel->messages((int)$userId);
         $view = $isEmbed ? 'chat/embed' : 'chat/index';
         $this->view($view, compact('thread','messages'));
     }
@@ -33,14 +32,14 @@ class ChatController extends Controller {
         $action = $_POST['action'] ?? 'send';
         $redirectTo = !empty($_POST['embed']) ? '/chat?embed=1' : '/chat';
         if ($action === 'end') {
-            // khách kết thúc: đóng phiên và thêm thông báo
-            $this->chatModel->clearMessages($thread['id']);
-            $this->chatModel->updateStatus($thread['id'], 'closed');
-            $this->chatModel->markUserRead($thread['id']);
+            $this->chatModel->clearMessages((int)$userId);
+            $this->chatModel->addMessage((int)$userId, (int)$userId, false, 'Khách đã kết thúc hội thoại.', 'closed');
+            $this->chatModel->updateStatus((int)$userId, 'closed');
+            $this->chatModel->markUserRead((int)$userId);
             $this->redirect($redirectTo); return;
         } elseif ($content !== '') {
-            $this->chatModel->addMessage($thread['id'], (int)$userId, false, $content);
-            $this->chatModel->updateStatus($thread['id'], 'open');
+            $this->chatModel->addMessage((int)$userId, (int)$userId, false, $content, 'open');
+            $this->chatModel->updateStatus((int)$userId, 'open');
         }
         $this->redirect($redirectTo);
     }

@@ -25,9 +25,9 @@ class ChatAdminController extends Controller {
         if (!$thread) { http_response_code(404); echo 'Thread not found'; return; }
         $content = trim($_POST['content'] ?? '');
         $status = $_POST['status'] ?? $thread['status'];
-        $adminId = $_SESSION['user']['id'] ?? $thread['user_id'];
+        $adminId = $_SESSION['user']['id'] ?? $thread['id'];
         if ($content !== '') {
-            $this->chatModel->addMessage((int)$id, (int)$adminId, true, $content);
+            $this->chatModel->addMessage((int)$id, (int)$adminId, true, $content, $status);
         }
         $this->chatModel->updateStatus((int)$id, $status);
         $this->redirect("/admin.php/chats/show/$id");
@@ -40,6 +40,7 @@ class ChatAdminController extends Controller {
         $lastId = (int)($_GET['last_id'] ?? 0);
         if ($threadId <= 0) { echo json_encode([]); return; }
         $messages = $this->chatModel->messagesSince($threadId, $lastId);
+        $this->chatModel->markAdminRead($threadId);
         echo json_encode($messages);
     }
 }

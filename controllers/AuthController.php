@@ -139,9 +139,9 @@ class AuthController extends Controller {
     }
 
     public function forgotWait($id = null) {
-        $id = (int)$id;
-        $saved = (int)($_SESSION['reset_request_id'] ?? 0);
-        if ($id <= 0 || $saved !== $id) {
+        $id = (string)$id;
+        $saved = (string)($_SESSION['reset_request_id'] ?? '');
+        if ($id === '' || $saved !== $id) {
             $this->redirect('/forgot');
             return;
         }
@@ -150,9 +150,9 @@ class AuthController extends Controller {
 
     public function forgotStatus($id) {
         header('Content-Type: application/json');
-        $id = (int)$id;
-        $saved = (int)($_SESSION['reset_request_id'] ?? 0);
-        if ($id <= 0 || $saved !== $id) {
+        $id = (string)$id;
+        $saved = (string)($_SESSION['reset_request_id'] ?? '');
+        if ($id === '' || $saved !== $id) {
             echo json_encode(['status' => 'invalid']);
             return;
         }
@@ -172,9 +172,9 @@ class AuthController extends Controller {
     }
 
     public function forgotResend($id) {
-        $id = (int)$id;
-        $saved = (int)($_SESSION['reset_request_id'] ?? 0);
-        if ($id <= 0 || $saved !== $id) {
+        $id = (string)$id;
+        $saved = (string)($_SESSION['reset_request_id'] ?? '');
+        if ($id === '' || $saved !== $id) {
             $this->redirect('/forgot');
             return;
         }
