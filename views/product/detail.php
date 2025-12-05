@@ -1,7 +1,7 @@
 <?php ob_start(); ?>
 <?php $img = asset_url(!empty($product['image']) ? $product['image'] : 'public/assets/img/placeholder.svg'); ?>
 <?php $stock = (int)($product['stock'] ?? 0); ?>
-<div class="space-y-6">
+<div class="space-y-10">
     <div class="grid lg:grid-cols-[1fr,1.05fr] gap-6 items-start">
         <div class="glass-panel rounded-3xl p-4 shadow-xl">
             <div class="relative overflow-hidden rounded-2xl min-h-[320px]">
@@ -43,7 +43,7 @@
             <?php endif; ?>
         </div>
     </div>
-    <div class="glass-panel rounded-3xl shadow-lg p-5 mt-6 lg:mt-10">
+    <div class="glass-panel rounded-3xl shadow-lg p-5 mt-10 lg:mt-14">
         <h3 class="text-lg font-semibold mb-3">Mô tả chi tiết</h3>
         <div class="prose prose-sm max-w-none text-slate-700">
             <?php echo nl2br(htmlspecialchars($product['description'] ?? '')); ?>
