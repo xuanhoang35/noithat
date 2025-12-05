@@ -3,6 +3,15 @@ require_once __DIR__ . '/../core/Model.php';
 class User extends Model {
     private static bool $checkedPlain = false;
     private static bool $hasPlain = false;
+    private function reseedAutoIncrement(): void {
+        try {
+            $next = (int)$this->db->query('SELECT COALESCE(MAX(id), 0) + 1 FROM users')->fetchColumn();
+            $next = max(1, $next);
+            $this->db->exec('ALTER TABLE users AUTO_INCREMENT = ' . $next);
+        } catch (\Throwable $e) {
+            // ignore
+        }
+    }
 
     private function checkPlainColumn(): void {
         if (self::$checkedPlain) return;
@@ -120,8 +129,9 @@ class User extends Model {
     public function delete(int $id): void {
         $this->ensureSchema();
         // Không cho phép xóa admin
-        $stmt = $this->db->prepare("UPDATE users SET deleted_at=NOW(), is_active=0 WHERE id=? AND role!='admin'");
+        $stmt = $this->db->prepare("DELETE FROM users WHERE id=? AND role!='admin'");
         $stmt->execute([$id]);
+        $this->reseedAutoIncrement();
     }
 
     public function setOnline(int $id, bool $online): void {
