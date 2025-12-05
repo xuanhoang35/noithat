@@ -105,7 +105,7 @@
                         <?php if ($stock <= 0): ?>
                             <a class="w-full h-11 inline-flex items-center justify-center text-sm bg-amber-500 text-white rounded-lg hover:bg-amber-600" href="tel:0974734668">Liên hệ</a>
                         <?php else: ?>
-                            <form method="post" action="<?php echo base_url('cart/add'); ?>" class="w-full flex items-end">
+                            <form method="post" action="<?php echo base_url('cart/add'); ?>" class="w-full">
                                 <input type="hidden" name="id" value="<?php echo $p['id']; ?>">
                                 <input type="hidden" name="redirect" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI'] ?? '/'); ?>">
                                 <button type="submit" class="w-full h-11 text-center text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">Thêm giỏ</button>

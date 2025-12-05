@@ -79,11 +79,8 @@ class UserAdminController extends Controller {
     }
 
     public function edit($id) {
-        $user = $this->userModel->findById((int)$id);
-        if (!$user) { http_response_code(404); echo 'User not found'; return; }
-        $error = $_SESSION['flash_error'] ?? '';
-        unset($_SESSION['flash_error']);
-        $this->view('admin/user/edit', compact('user','error'));
+        http_response_code(404);
+        echo 'Not supported';
     }
 
     public function update($id) {

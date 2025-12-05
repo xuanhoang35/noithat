@@ -34,7 +34,6 @@ $router->post('/users/reset-password/{id}', 'admin/UserAdminController@resetPass
 $router->post('/users/delete/{id}', 'admin/UserAdminController@delete');
 $router->get('/users/status', 'admin/UserAdminController@status');
 $router->get('/users/resets', 'admin/UserAdminController@resets');
-$router->get('/users/edit/{id}', 'admin/UserAdminController@edit');
 $router->post('/users/edit/{id}', 'admin/UserAdminController@update');
 $router->get('/complaints', 'admin/ComplaintAdminController@index');
 $router->post('/complaints/update-status/{id}', 'admin/ComplaintAdminController@updateStatus');

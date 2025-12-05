@@ -18,14 +18,23 @@
     <div class="overflow-auto">
         <table class="min-w-full text-sm">
             <tr class="bg-slate-100 text-left">
-                <th class="p-3">ID</th><th class="p-3">Tên</th><th class="p-3">Email</th><th class="p-3">Điện thoại</th><th class="p-3">Mật khẩu</th><th class="p-3">Hành động</th>
+                <th class="p-3">ID</th><th class="p-3">Tên</th><th class="p-3">Email</th><th class="p-3">Điện thoại</th><th class="p-3">Địa chỉ</th><th class="p-3">Mật khẩu</th><th class="p-3">Hành động</th>
             </tr>
             <?php foreach ($users as $u): ?>
             <tr class="border-b hover:bg-slate-50">
                 <td class="p-3"><?php echo $u['id']; ?></td>
-                <td class="p-3"><?php echo $u['name']; ?></td>
-                <td class="p-3"><?php echo $u['email']; ?></td>
-                <td class="p-3"><?php echo $u['phone']; ?></td>
+                <td class="p-3">
+                    <input form="user-save-<?php echo $u['id']; ?>" name="name" class="w-full px-2 py-1 border rounded text-sm" value="<?php echo htmlspecialchars($u['name']); ?>" required>
+                </td>
+                <td class="p-3">
+                    <input form="user-save-<?php echo $u['id']; ?>" name="email" type="email" class="w-full px-2 py-1 border rounded text-sm" value="<?php echo htmlspecialchars($u['email']); ?>" required>
+                </td>
+                <td class="p-3">
+                    <input form="user-save-<?php echo $u['id']; ?>" name="phone" class="w-full px-2 py-1 border rounded text-sm" value="<?php echo htmlspecialchars($u['phone']); ?>" required>
+                </td>
+                <td class="p-3">
+                    <input form="user-save-<?php echo $u['id']; ?>" name="address" class="w-full px-2 py-1 border rounded text-sm" value="<?php echo htmlspecialchars($u['address'] ?? ''); ?>" placeholder="(trống)">
+                </td>
                 <td class="p-3">
                     <?php
                         $resetInfo = $resetMap[$u['id']] ?? null;
@@ -53,7 +62,11 @@
                 <td class="p-3 align-middle">
                     <?php if ($u['role'] !== 'admin'): ?>
                         <div class="flex gap-2">
-                            <a href="<?php echo base_url('admin.php/users/edit/' . $u['id']); ?>" class="h-8 px-3 mt-3 inline-flex items-center justify-center text-xs leading-none rounded bg-slate-100 text-slate-700 hover:bg-slate-200">Sửa</a>
+                            <form id="user-save-<?php echo $u['id']; ?>" method="post" action="<?php echo base_url('admin.php/users/edit/' . $u['id']); ?>" class="hidden">
+                                <input type="hidden" name="role" value="<?php echo htmlspecialchars($u['role']); ?>">
+                                <input type="hidden" name="is_active" value="<?php echo (int)($u['is_active'] ?? 1); ?>">
+                            </form>
+                            <button type="submit" form="user-save-<?php echo $u['id']; ?>" class="h-8 px-3 mt-3 inline-flex items-center justify-center text-xs leading-none rounded bg-blue-50 text-blue-700 hover:bg-blue-100">Lưu</button>
                             <form method="post" action="<?php echo base_url('admin.php/users/delete/' . $u['id']); ?>" onsubmit="return confirm('Xóa khách hàng này?');">
                                 <button class="h-8 px-3 mt-3 inline-flex items-center justify-center text-xs leading-none rounded bg-amber-50 text-amber-700 hover:bg-amber-100">Xóa</button>
                             </form>
