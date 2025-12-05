@@ -18,7 +18,7 @@
     <div class="overflow-auto">
         <table class="min-w-full text-sm">
             <tr class="bg-slate-100 text-left">
-                <th class="p-3">ID</th><th class="p-3">Tên</th><th class="p-3">Email</th><th class="p-3">Điện thoại</th><th class="p-3">Địa chỉ</th><th class="p-3">Mật khẩu</th><th class="p-3">Hành động</th>
+                <th class="p-3">ID</th><th class="p-3">Tên</th><th class="p-3">Email</th><th class="p-3">Điện thoại</th><th class="p-3">Địa chỉ</th><th class="p-3">Online</th><th class="p-3">Trạng thái</th><th class="p-3">Mật khẩu</th><th class="p-3">Hành động</th>
             </tr>
             <?php foreach ($users as $u): ?>
             <tr class="border-b hover:bg-slate-50">
@@ -36,6 +36,27 @@
                     <input form="user-save-<?php echo $u['id']; ?>" name="address" class="w-full px-2 py-1 border rounded text-sm" value="<?php echo htmlspecialchars($u['address'] ?? ''); ?>" placeholder="(trống)">
                 </td>
                 <td class="p-3">
+                    <?php $online = (int)($u['is_online'] ?? 0) === 1; ?>
+                    <span data-online="<?php echo $u['id']; ?>" class="inline-flex items-center h-8 px-3 text-xs rounded-full <?php echo $online ? 'bg-blue-50 text-blue-700' : 'bg-slate-100 text-slate-600'; ?>">
+                        <?php echo $online ? 'Online' : 'Offline'; ?>
+                    </span>
+                </td>
+                <td class="p-3">
+                    <?php $active = (int)($u['is_active'] ?? 1) === 1; ?>
+                    <div class="flex items-center gap-2">
+                        <span data-active="<?php echo $u['id']; ?>" class="inline-flex items-center h-8 px-3 text-xs rounded-full <?php echo $active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-700'; ?>">
+                            <?php echo $active ? 'Đang mở' : 'Đang khóa'; ?>
+                        </span>
+                        <?php if ($u['role'] !== 'admin'): ?>
+                            <form method="post" action="<?php echo base_url('admin.php/users/toggle/' . $u['id']); ?>">
+                                <button type="submit" data-toggle="<?php echo $u['id']; ?>" class="h-8 px-3 inline-flex items-center justify-center text-xs leading-none rounded <?php echo $active ? 'bg-amber-50 text-amber-700 hover:bg-amber-100' : 'bg-blue-50 text-blue-700 hover:bg-blue-100'; ?>">
+                                    <?php echo $active ? 'Khóa' : 'Mở'; ?>
+                                </button>
+                            </form>
+                        <?php endif; ?>
+                    </div>
+                </td>
+                <td class="p-3 space-y-2" data-password="<?php echo $u['id']; ?>">
                     <?php
                         $resetInfo = $resetMap[$u['id']] ?? null;
                         $pw = $u['password_plain'] ?? '';
@@ -48,15 +69,20 @@
                             $timeIssued = $resetInfo['completed_at'] ?? '';
                         }
                     ?>
-                    <?php if ($pw !== ''): ?>
-                        <span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold inline-flex items-center gap-2">
-                            <span class="text-slate-600">PW:</span> <span class="font-semibold text-emerald-700"><?php echo htmlspecialchars($pw); ?></span>
-                        </span>
-                        <?php if (!empty($timeIssued)): ?>
-                            <div class="text-[11px] text-slate-400 mt-1">Cấp: <?php echo $timeIssued; ?></div>
+                    <div>
+                        <?php if ($pw !== ''): ?>
+                            <span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold inline-flex items-center gap-2">
+                                <span class="text-slate-600">PW:</span> <span data-password-text class="font-semibold text-emerald-700"><?php echo htmlspecialchars($pw); ?></span>
+                            </span>
+                            <?php if (!empty($timeIssued)): ?>
+                                <div class="text-[11px] text-slate-400 mt-1">Cấp: <?php echo $timeIssued; ?></div>
+                            <?php endif; ?>
+                        <?php else: ?>
+                            <span data-password-text class="text-xs text-slate-400">Chưa cấp</span>
                         <?php endif; ?>
-                    <?php else: ?>
-                        <span class="text-xs text-slate-400">Chưa cấp</span>
+                    </div>
+                    <?php if ($u['role'] !== 'admin'): ?>
+                        <input form="user-save-<?php echo $u['id']; ?>" name="password" type="text" class="w-full px-2 py-1 border rounded text-sm" placeholder="Nhập mật khẩu mới (tùy chọn)">
                     <?php endif; ?>
                 </td>
                 <td class="p-3 align-middle">
@@ -139,6 +165,16 @@ document.addEventListener('DOMContentLoaded', function(){
                 const active = parseInt(u.is_active, 10) === 1;
                 activeEl.textContent = active ? 'Đang mở' : 'Đang khóa';
                 activeEl.className = 'inline-flex items-center h-8 px-3 text-xs rounded-full ' + (active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-700');
+            }
+            const toggleBtn = document.querySelector('[data-toggle="'+u.id+'"]');
+            if (toggleBtn) {
+                const active = parseInt(u.is_active, 10) === 1;
+                toggleBtn.textContent = active ? 'Khóa' : 'Mở';
+                toggleBtn.className = 'h-8 px-3 inline-flex items-center justify-center text-xs leading-none rounded ' + (active ? 'bg-amber-50 text-amber-700 hover:bg-amber-100' : 'bg-blue-50 text-blue-700 hover:bg-blue-100');
+            }
+            const activeInput = document.querySelector('#user-save-'+u.id+' input[name=\"is_active\"]');
+            if (activeInput) {
+                activeInput.value = parseInt(u.is_active, 10) === 1 ? '1' : '0';
             }
             const pwEl = document.querySelector('[data-password="'+u.id+'"]');
             if (pwEl) {

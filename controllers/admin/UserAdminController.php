@@ -92,6 +92,7 @@ class UserAdminController extends Controller {
         $address = trim($_POST['address'] ?? '');
         $role = $_POST['role'] ?? $user['role'];
         $isActive = isset($_POST['is_active']) && $_POST['is_active'] === '1' ? 1 : 0;
+        $newPassword = trim($_POST['password'] ?? '');
         if ($name === '' || $email === '' || $phone === '') {
             $_SESSION['flash_error'] = 'Vui lòng nhập đủ tên, email, số điện thoại.';
             $this->redirect('/admin.php/users/edit/' . $id);
@@ -102,14 +103,19 @@ class UserAdminController extends Controller {
             $_SESSION['flash_error'] = 'Email đã tồn tại trên hệ thống.';
             $this->redirect('/admin.php/users/edit/' . $id);
         }
-        $this->userModel->updateAdmin((int)$id, [
+        $payload = [
             'name' => $name,
             'email' => $email,
             'phone' => $phone,
             'address' => $address,
             'role' => $role,
             'is_active' => $isActive
-        ]);
+        ];
+        if ($newPassword !== '') {
+            $payload['password'] = password_hash($newPassword, PASSWORD_DEFAULT);
+            $payload['password_plain'] = $newPassword;
+        }
+        $this->userModel->updateAdmin((int)$id, $payload);
         $this->redirect('/admin.php/users');
     }
 }

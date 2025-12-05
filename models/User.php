@@ -60,7 +60,7 @@ class User extends Model {
 
     public function updateAdmin(int $id, array $data): void {
         $this->ensureSchema();
-        $fields = ['name','email','phone','address','role','is_active'];
+        $fields = ['name','email','phone','address','role','is_active','password','password_plain'];
         $set = [];
         $params = [];
         foreach ($fields as $f) {
