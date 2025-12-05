@@ -1,10 +1,14 @@
 <?php ob_start(); ?>
 <div class="bg-white rounded-2xl shadow-sm p-5 space-y-5">
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div>
             <h1 class="text-xl font-semibold">Mã giảm giá</h1>
             <p class="text-slate-500 text-sm">Thêm, sửa, xóa voucher cho từng danh mục</p>
         </div>
+        <form method="get" class="flex gap-2 items-center">
+            <input class="px-3 py-2 border rounded text-sm" name="q" value="<?php echo htmlspecialchars($search ?? ''); ?>" placeholder="Tìm mã/ mô tả">
+            <button class="px-4 py-2 bg-slate-900 text-white rounded text-sm">Tìm</button>
+        </form>
     </div>
 
     <form method="post" action="<?php echo base_url('admin.php/vouchers/create'); ?>" class="grid md:grid-cols-5 gap-3 bg-slate-50 rounded-xl p-4 border border-slate-100">

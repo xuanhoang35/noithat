@@ -1,8 +1,14 @@
 <?php ob_start(); ?>
 <div class="bg-white rounded-2xl shadow-sm p-4">
-    <div class="flex justify-between items-center mb-3">
-        <h1 class="text-xl font-semibold">Đơn hàng</h1>
-        <span class="text-slate-500 text-sm">Theo dõi & cập nhật trạng thái</span>
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-3">
+        <div>
+            <h1 class="text-xl font-semibold">Đơn hàng</h1>
+            <span class="text-slate-500 text-sm">Theo dõi & cập nhật trạng thái</span>
+        </div>
+        <form method="get" class="flex gap-2 items-center">
+            <input class="px-3 py-2 border rounded text-sm" name="q" value="<?php echo htmlspecialchars($search ?? ''); ?>" placeholder="Mã đơn, tên, SĐT, email">
+            <button class="px-3 py-2 bg-slate-900 text-white rounded text-sm">Tìm</button>
+        </form>
     </div>
     <div class="overflow-auto">
         <table class="min-w-full text-sm">

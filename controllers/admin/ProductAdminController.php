@@ -8,13 +8,20 @@ class ProductAdminController extends Controller {
     private Product $productModel; private Category $categoryModel;
     public function __construct(){ Auth::requireAdmin(); $this->productModel=new Product(); $this->categoryModel=new Category(); }
     public function index(){
-        $products=$this->productModel->all();
+        $search = trim($_GET['q'] ?? '');
+        $categoryId = isset($_GET['category_id']) && $_GET['category_id'] !== '' ? (int)$_GET['category_id'] : null;
+        $products=$this->productModel->all($categoryId ?: null, $search);
         $categories=$this->categoryModel->all();
         // Nếu chưa có danh mục, buộc tạo trước
         if (empty($categories)) {
             $this->redirect('/admin.php/categories');
         }
-        $this->view('admin/product/index',compact('products','categories'));
+        $this->view('admin/product/index',[
+            'products'=>$products,
+            'categories'=>$categories,
+            'search'=>$search,
+            'categoryId'=>$categoryId
+        ]);
     }
     public function store(){
         $data=[

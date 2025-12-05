@@ -41,7 +41,21 @@
     </form>
 </div>
 <div class="bg-white rounded-2xl shadow-sm p-4">
-    <h2 class="text-lg font-semibold mb-3">Danh sách sản phẩm</h2>
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-3">
+        <h2 class="text-lg font-semibold">Danh sách sản phẩm</h2>
+        <form method="get" class="flex flex-wrap gap-2 items-center">
+            <input class="px-3 py-2 border rounded text-sm" name="q" value="<?php echo htmlspecialchars($search ?? ''); ?>" placeholder="Tìm tên/ID sản phẩm">
+            <select name="category_id" class="px-3 py-2 border rounded text-sm">
+                <option value="">Tất cả danh mục</option>
+                <?php foreach ($categories as $c): ?>
+                    <option value="<?php echo $c['id']; ?>" <?php echo ((string)($categoryId ?? '') === (string)$c['id']) ? 'selected' : ''; ?>>
+                        <?php echo $c['name']; ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            <button class="px-4 py-2 bg-slate-900 text-white rounded text-sm">Lọc</button>
+        </form>
+    </div>
     <div class="overflow-auto">
         <table class="min-w-full text-sm">
             <tr class="bg-slate-100 text-left">

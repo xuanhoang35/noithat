@@ -21,14 +21,17 @@
                         <?php endif; ?>
                     </div>
                     <div class="grid gap-3 lg:grid-cols-4 md:grid-cols-2">
-                        <select name="category" class="px-3 py-2 border rounded-lg focus:outline-none">
-                            <option value="">Tất cả danh mục</option>
-                            <?php foreach ($categories as $cat): ?>
-                                <option value="<?php echo $cat['id']; ?>" <?php echo ((string)$categoryId === (string)$cat['id']) ? 'selected' : ''; ?>>
-                                    <?php echo $cat['name']; ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
+                        <div class="grid gap-2">
+                            <select name="category" class="px-3 py-2 border rounded-lg focus:outline-none">
+                                <option value="">Tất cả danh mục</option>
+                                <?php foreach ($categories as $cat): ?>
+                                    <option value="<?php echo $cat['id']; ?>" <?php echo ((string)$categoryId === (string)$cat['id']) ? 'selected' : ''; ?>>
+                                        <?php echo $cat['name']; ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                            <input name="cat_q" value="<?php echo htmlspecialchars($categorySearch ?? ''); ?>" class="px-3 py-2 border rounded-lg focus:outline-none text-sm" placeholder="Lọc danh mục">
+                        </div>
                         <select name="price_sort" class="px-3 py-2 border rounded-lg focus:outline-none">
                             <option value="">Sắp xếp theo giá</option>
                             <option value="asc" <?php echo ($priceSort ?? '') === 'asc' ? 'selected' : ''; ?>>Giá thấp đến cao</option>

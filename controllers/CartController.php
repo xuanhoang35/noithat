@@ -79,6 +79,37 @@ class CartController extends Controller {
         $this->redirect('/cart');
     }
 
+    public function updateQty() {
+        $id = (int)($_POST['id'] ?? 0);
+        if ($id <= 0 || empty($_SESSION['cart'][$id])) {
+            $this->redirect('/cart');
+        }
+        $current = $_SESSION['cart'][$id];
+        $product = $this->productModel->find($id);
+        if (!$product) {
+            unset($_SESSION['cart'][$id]);
+            $this->redirect('/cart');
+        }
+        $available = max(0, (int)($product['stock'] ?? 0));
+        $targetQty = isset($_POST['qty']) ? (int)$_POST['qty'] : $current['qty'];
+        $delta = isset($_POST['delta']) ? (int)$_POST['delta'] : 0;
+        if ($delta !== 0) {
+            $targetQty = $current['qty'] + $delta;
+        }
+        $targetQty = max(1, $targetQty);
+        if ($available > 0) {
+            $targetQty = min($targetQty, $available);
+        }
+        $_SESSION['cart'][$id] = [
+            'product' => $product,
+            'qty' => $targetQty
+        ];
+        if (isset($_SESSION['cart_voucher'])) {
+            unset($_SESSION['cart_voucher'], $_SESSION['cart_success']);
+        }
+        $this->redirect('/cart');
+    }
+
     public function applyVoucher() {
         $code = strtoupper(trim($_POST['voucher_code'] ?? ''));
         $cart = $_SESSION['cart'] ?? [];

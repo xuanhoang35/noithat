@@ -25,8 +25,19 @@ class Voucher extends Model {
         try { $this->db->exec("ALTER TABLE vouchers ADD COLUMN used_count INT DEFAULT 0"); } catch (\Throwable $e) {}
     }
 
-    public function all(): array {
-        return $this->db->query('SELECT v.*, c.name AS category_name FROM vouchers v LEFT JOIN categories c ON v.category_id = c.id ORDER BY v.created_at DESC')->fetchAll();
+    public function all(string $keyword = ''): array {
+        $sql = 'SELECT v.*, c.name AS category_name FROM vouchers v LEFT JOIN categories c ON v.category_id = c.id';
+        $params = [];
+        $kw = trim($keyword);
+        if ($kw !== '') {
+            $sql .= ' WHERE v.code LIKE ? OR v.description LIKE ?';
+            $like = '%' . $kw . '%';
+            $params = [$like, $like];
+        }
+        $sql .= ' ORDER BY v.created_at DESC';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
     }
 
     public function create(array $data): void {

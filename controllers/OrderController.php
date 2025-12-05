@@ -94,14 +94,16 @@ class OrderController extends Controller {
                 }
             }
         }
-        $orderId=$this->orderModel->create($userId,$cart,$customer,$voucher,$paymentMethod);
+        $order=$this->orderModel->create($userId,$cart,$customer,$voucher,$paymentMethod);
+        $orderId = (int)$order['id'];
+        $orderCode = $order['code'];
         if ($voucher) {
             $this->voucherModel->incrementUsage($voucher['id']);
         }
         unset($_SESSION['cart'], $_SESSION['cart_voucher'], $_SESSION['cart_success']);
         if ($paymentMethod === 'cod') {
             $this->view('order/success',[
-                'orderId'=>$orderId,
+                'orderId'=>$orderCode,
                 'voucherMessage'=>$voucher ? 'Áp dụng mã giảm giá thành công' : null,
                 'paymentMethod' => $paymentMethod
             ]);

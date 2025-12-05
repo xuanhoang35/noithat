@@ -15,9 +15,10 @@ class VoucherAdminController extends Controller {
     }
 
     public function index() {
-        $vouchers = $this->voucherModel->all();
+        $search = trim($_GET['q'] ?? '');
+        $vouchers = $this->voucherModel->all($search);
         $categories = $this->categoryModel->all();
-        $this->view('admin/voucher/index', compact('vouchers', 'categories'));
+        $this->view('admin/voucher/index', compact('vouchers', 'categories', 'search'));
     }
 
     public function store() {

@@ -68,7 +68,14 @@
                                     <span class="block text-xs text-red-600 mt-1"><?php echo $warn; ?></span>
                                 <?php endif; ?>
                             </td>
-                            <td class="p-3"><?php echo $item['qty']; ?></td>
+                            <td class="p-3">
+                                <form method="post" action="<?php echo base_url('cart/update'); ?>" class="flex items-center gap-2">
+                                    <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+                                    <button name="delta" value="-1" class="w-8 h-8 rounded border border-slate-200 text-slate-700 hover:bg-slate-100" <?php echo $item['qty'] <= 1 ? 'disabled' : ''; ?>>-</button>
+                                    <input name="qty" type="number" min="1" max="<?php echo max(1, $available); ?>" value="<?php echo $item['qty']; ?>" class="w-14 px-2 py-1 border rounded text-center">
+                                    <button name="delta" value="1" class="w-8 h-8 rounded border border-slate-200 text-slate-700 hover:bg-slate-100" <?php echo ($available > 0 && $item['qty'] >= $available) ? 'disabled' : ''; ?>>+</button>
+                                </form>
+                            </td>
                             <td class="p-3">
                                 <span class="inline-flex px-2 py-1 rounded-full text-xs <?php echo $available > 0 ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-600'; ?>">
                                     <?php echo $available > 0 ? $available . ' còn' : 'Hết'; ?>

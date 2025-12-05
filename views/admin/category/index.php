@@ -11,7 +11,13 @@
     </div>
     <div class="lg:col-span-2">
         <div class="bg-white rounded-2xl shadow-sm p-4">
-            <h2 class="text-lg font-semibold mb-3">Danh mục</h2>
+            <div class="flex items-center justify-between gap-3 mb-3">
+                <h2 class="text-lg font-semibold">Danh mục</h2>
+                <form method="get" class="flex gap-2">
+                    <input class="px-3 py-2 border rounded text-sm" name="q" value="<?php echo htmlspecialchars($search ?? ''); ?>" placeholder="Tìm danh mục">
+                    <button class="px-3 py-2 bg-slate-900 text-white rounded text-sm">Tìm</button>
+                </form>
+            </div>
             <ul class="divide-y">
                 <?php $editId = isset($_GET['edit']) ? (int)$_GET['edit'] : 0; ?>
                 <?php foreach ($categories as $c): ?>

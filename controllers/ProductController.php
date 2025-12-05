@@ -15,6 +15,7 @@ class ProductController extends Controller {
     public function index() {
         $categoryId = $_GET['category'] ?? null;
         $keyword = trim($_GET['q'] ?? '');
+        $categorySearch = trim($_GET['cat_q'] ?? '');
         $priceSort = $_GET['price_sort'] ?? '';
         $priceRange = $_GET['price_range'] ?? '';
         $priceMin = null;
@@ -31,12 +32,13 @@ class ProductController extends Controller {
             }
         }
         $products = $this->productModel->all($categoryId, $keyword, $priceSort, $priceRange, $priceMin, $priceMax);
-        $categories = $this->categoryModel->all();
+        $categories = $this->categoryModel->all($categorySearch);
         $this->view('product/list', [
             'products' => $products,
             'categories' => $categories,
             'categoryId' => $categoryId,
             'keyword' => $keyword,
+            'categorySearch' => $categorySearch,
             'priceSort' => $priceSort,
             'priceRange' => $priceRange,
             'priceMin' => $priceMin,

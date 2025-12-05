@@ -30,10 +30,25 @@ class Auth {
     }
 
     public static function requireLogin(): void {
+        $base = self::basePath();
         if (!self::check()) {
-            $base = self::basePath();
             header('Location: ' . $base . '/login');
             exit;
+        }
+        // kiểm tra trạng thái tài khoản mỗi lần chặn
+        $userId = (int)($_SESSION['user']['id'] ?? 0);
+        if ($userId > 0) {
+            require_once __DIR__ . '/../models/User.php';
+            try {
+                $user = (new User())->findById($userId);
+                if (!$user || (int)($user['is_active'] ?? 1) !== 1) {
+                    self::logout();
+                    header('Location: ' . ($base ?: '/'));
+                    exit;
+                }
+            } catch (\Throwable $e) {
+                // nếu lỗi DB, vẫn cho tiếp tục để tránh vòng lặp
+            }
         }
     }
 

@@ -9,9 +9,10 @@ class PageController extends Controller {
 
     public function services() {
         $serviceModel = new Service();
-        $services = $serviceModel->all();
+        $search = trim($_GET['q'] ?? '');
+        $services = $serviceModel->all(true, $search);
         $success = isset($_GET['success']) && $_GET['success'] == '1';
-        $this->view('services/index', compact('services','success'));
+        $this->view('services/index', compact('services','success','search'));
     }
 
     public function maintenancePage() {

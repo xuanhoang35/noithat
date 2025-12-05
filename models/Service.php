@@ -29,12 +29,18 @@ class Service extends Model {
         $this->seedDefault();
     }
 
-    public function all(bool $onlyBase = true): array {
+    public function all(bool $onlyBase = true, string $keyword = ''): array {
         $sql = 'SELECT * FROM services';
         $where = [];
         $params = [];
         if ($onlyBase) {
             $where[] = 'is_booking = 0';
+        }
+        $kw = trim($keyword);
+        if ($kw !== '') {
+            $where[] = '(name LIKE ? OR description LIKE ?)';
+            $params[] = '%' . $kw . '%';
+            $params[] = '%' . $kw . '%';
         }
         if ($where) {
             $sql .= ' WHERE ' . implode(' AND ', $where);

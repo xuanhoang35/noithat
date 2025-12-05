@@ -17,7 +17,7 @@ class Order extends Model {
         self::$extraColumnsEnsured = true;
     }
 
-    public function create(int $userId, array $cart, array $customer, ?array $voucher = null, string $paymentMethod = 'cod'): int {
+    public function create(int $userId, array $cart, array $customer, ?array $voucher = null, string $paymentMethod = 'cod'): array {
         $this->ensureColumns();
         if ($userId <= 0) { throw new \InvalidArgumentException('User không hợp lệ'); }
         // đảm bảo user tồn tại trước khi tạo order
@@ -53,8 +53,13 @@ class Order extends Model {
         $stmt = $this->db->prepare('INSERT INTO orders(user_id,code,total_amount,status,payment_method,customer_name,customer_phone,customer_email,customer_address,note,user_unread,items_json,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,1,?,NOW())');
         $stmt->execute([$userId, $code, $total, 'pending', $paymentMethod, $customer['name'], $customer['phone'], $customer['email'], $customer['address'], $customer['note'], json_encode($items, JSON_UNESCAPED_UNICODE)]);
         $orderId = (int)$this->db->lastInsertId();
+        // Trừ tồn kho
+        $updateStock = $this->db->prepare('UPDATE products SET stock = GREATEST(stock - ?, 0) WHERE id = ?');
+        foreach ($items as $it) {
+            $updateStock->execute([(int)$it['qty'], (int)$it['product_id']]);
+        }
         $this->db->commit();
-        return $orderId;
+        return ['id' => $orderId, 'code' => $code];
     }
 
     public function byUser(int $userId): array {
@@ -68,8 +73,19 @@ class Order extends Model {
         $row = $stmt->fetch();
         return $row ?: null;
     }
-    public function all(): array {
-        return $this->db->query('SELECT * FROM orders ORDER BY created_at DESC')->fetchAll();
+    public function all(string $keyword = ''): array {
+        $sql = 'SELECT * FROM orders';
+        $params = [];
+        $kw = trim($keyword);
+        if ($kw !== '') {
+            $sql .= ' WHERE code LIKE ? OR customer_name LIKE ? OR customer_phone LIKE ? OR customer_email LIKE ?';
+            $like = '%' . $kw . '%';
+            $params = [$like, $like, $like, $like];
+        }
+        $sql .= ' ORDER BY created_at DESC';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
     }
     public function updateStatus(int $id, string $status): void {
         $this->ensureColumns();

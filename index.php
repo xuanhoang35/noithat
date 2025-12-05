@@ -20,16 +20,15 @@ $config = include __DIR__ . '/config/config.php';
 $baseUrl = $config['base_url'] ?? '';
 $router = new Router();
 
-// Kiểm tra phiên user đã bị khóa hoặc xóa
+// Kiểm tra phiên user đã bị khóa hoặc xóa -> đăng xuất & đưa về trang chủ (không hiển thị thông báo)
 if (Auth::check()) {
     $sessionUser = Auth::user();
     if (!empty($sessionUser['id'])) {
         $userModel = new User();
         $fresh = $userModel->findById((int)$sessionUser['id']);
         if (!$fresh || (int)($fresh['is_active'] ?? 1) !== 1) {
-            $userModel->setOnline((int)$sessionUser['id'], false);
-            $_SESSION['blocked_message'] = 'Tài khoản đã bị khóa. Bạn sẽ được đăng xuất.';
-            header('Location: ' . base_url('blocked'));
+            Auth::logout();
+            header('Location: ' . base_url('/'));
             exit;
         }
     }
@@ -66,6 +65,7 @@ $router->get('/services', 'PageController@services');
 $router->post('/services/book', 'ServiceController@book');
 $router->post('/cart/add', 'CartController@add');
 $router->post('/cart/remove', 'CartController@remove');
+$router->post('/cart/update', 'CartController@updateQty');
 $router->post('/cart/apply-voucher', 'CartController@applyVoucher');
 $router->get('/cart', 'CartController@index');
 $router->post('/order/checkout', 'OrderController@checkout');
