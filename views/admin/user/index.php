@@ -15,7 +15,7 @@
             </button>
         </form>
     </div>
-    <div class="overflow-auto max-h-[420px]">
+    <div class="overflow-auto max-h-[320px] overflow-y-auto">
         <table class="min-w-full text-sm">
             <tr class="bg-slate-100 text-left">
                 <th class="p-3">ID</th><th class="p-3">Tên</th><th class="p-3">Email</th><th class="p-3">Điện thoại</th><th class="p-3">Địa chỉ</th><th class="p-3">Online</th><th class="p-3">Trạng thái</th><th class="p-3">Mật khẩu</th><th class="p-3">Hành động</th>
@@ -109,7 +109,7 @@
             </div>
             <p class="text-slate-500 text-sm">Tiếp nhận yêu cầu quên mật khẩu và cấp mật khẩu mới.</p>
         </div>
-        <div class="overflow-auto max-h-[320px]">
+        <div class="overflow-auto max-h-[300px] overflow-y-auto">
             <table class="min-w-full text-sm">
                 <tr class="bg-slate-100 text-left">
                     <th class="p-3">Khách hàng</th>

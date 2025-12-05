@@ -33,16 +33,10 @@
             </div>
             <div class="border-t bg-white px-4 py-3">
                 <form method="post" action="<?php echo base_url('admin.php/chats/reply/' . $thread['id']); ?>" class="grid md:grid-cols-12 gap-3 items-end">
-                    <div class="md:col-span-8">
+                    <div class="md:col-span-10">
                         <label class="text-sm text-slate-600">Nội dung</label>
                         <textarea name="content" class="w-full mt-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-200" rows="3" placeholder="Nhập câu trả lời..." id="admin-chat-textarea" <?php echo $thread['status']==='closed' ? 'disabled' : ''; ?>></textarea>
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="text-sm text-slate-600">Trạng thái</label>
-                        <select name="status" class="w-full mt-1 px-3 py-2 border rounded-lg">
-                            <option value="open" <?php echo $thread['status']==='open' ? 'selected' : ''; ?>>Đang mở</option>
-                            <option value="closed" <?php echo $thread['status']==='closed' ? 'selected' : ''; ?>>Đã đóng</option>
-                        </select>
+                        <input type="hidden" name="status" value="<?php echo $thread['status']; ?>">
                     </div>
                     <div class="md:col-span-2 flex gap-2">
                         <button class="w-full h-[48px] rounded-lg bg-blue-600 text-white hover:bg-blue-700 font-medium" <?php echo $thread['status']==='closed' ? 'disabled' : ''; ?>>Gửi</button>

@@ -95,7 +95,7 @@
                             <?php echo $stock > 0 ? 'Còn hàng' : 'Hết hàng'; ?>
                         </span>
                     </div>
-                    <div class="flex flex-col gap-1 flex-1 min-h-[140px]">
+                    <div class="flex flex-col gap-1 flex-1 min-h-[170px]">
                         <h6 class="text-sm font-semibold line-clamp-2 text-slate-900"><?php echo $p['name']; ?></h6>
                         <p class="text-blue-700 font-bold text-base"><?php echo number_format($p['price']); ?> đ</p>
                         <p class="text-[12px] font-semibold <?php echo $stock > 0 ? 'text-emerald-600' : 'text-red-600'; ?> mb-1">
