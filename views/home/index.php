@@ -103,14 +103,14 @@
                         </p>
                     </div>
                     <div class="mt-auto grid grid-cols-2 gap-2 items-stretch pt-1">
-                        <a class="w-full text-center h-11 flex items-center justify-center text-sm border rounded-lg border-slate-200 hover:border-blue-500" href="<?php echo base_url('product/' . $p['id']); ?>">Xem</a>
+                        <a class="w-full text-center h-12 flex items-center justify-center text-sm border rounded-lg border-slate-200 hover:border-blue-500" href="<?php echo base_url('product/' . $p['id']); ?>">Xem</a>
                         <?php if ($stock <= 0): ?>
-                            <a class="w-full h-11 inline-flex items-center justify-center text-sm bg-amber-500 text-white rounded-lg hover:bg-amber-600" href="tel:0974734668">Liên hệ</a>
+                            <a class="w-full h-12 inline-flex items-center justify-center text-sm bg-amber-500 text-white rounded-lg hover:bg-amber-600" href="tel:0974734668">Liên hệ</a>
                         <?php else: ?>
                             <form method="post" action="<?php echo base_url('cart/add'); ?>" class="w-full flex">
                                 <input type="hidden" name="id" value="<?php echo $p['id']; ?>">
                                 <input type="hidden" name="redirect" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI'] ?? '/'); ?>">
-                                <button type="submit" class="w-full h-11 text-center text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center">Thêm giỏ</button>
+                                <button type="submit" class="w-full h-12 text-center text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center">Thêm giỏ</button>
                             </form>
                         <?php endif; ?>
                     </div>
