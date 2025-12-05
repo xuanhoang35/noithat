@@ -6,7 +6,7 @@
             <p class="text-slate-500 text-sm">Danh sách phiên chat giữa khách và admin</p>
         </div>
     </div>
-    <div class="overflow-x-auto" id="chat-thread-list">
+    <div class="overflow-x-auto max-h-[520px]" id="chat-thread-list">
         <table class="min-w-full text-sm">
             <thead>
                 <tr class="bg-slate-100 text-left">

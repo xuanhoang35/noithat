@@ -57,41 +57,43 @@
         </div>
     </section>
 
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 products">
-        <?php foreach ($products as $p): ?>
-            <?php $img = asset_url(!empty($p['image']) ? $p['image'] : 'public/assets/img/placeholder.svg'); ?>
-            <?php $stock = (int)($p['stock'] ?? 0); ?>
-            <div class="floating fade-border rounded-2xl shadow-sm transition p-3 flex flex-col bg-white/90">
-                <div class="overflow-hidden rounded-xl mb-3 relative h-44">
-                    <a href="<?php echo base_url('product/' . $p['id']); ?>">
-                        <img src="<?php echo $img; ?>" alt="<?php echo htmlspecialchars($p['name']); ?>" class="w-full h-full object-cover hover:scale-105 transition duration-500">
-                    </a>
-                    <span class="absolute top-2 left-2 px-3 py-1 rounded-full text-xs font-semibold <?php echo $stock > 0 ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-600'; ?>">
-                        <?php echo $stock > 0 ? 'Còn hàng' : 'Hết hàng'; ?>
-                    </span>
+    <div class="max-h-[1200px] overflow-auto pr-1">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 products">
+            <?php foreach ($products as $p): ?>
+                <?php $img = asset_url(!empty($p['image']) ? $p['image'] : 'public/assets/img/placeholder.svg'); ?>
+                <?php $stock = (int)($p['stock'] ?? 0); ?>
+                <div class="floating fade-border rounded-2xl shadow-sm transition p-3 flex flex-col bg-white/90">
+                    <div class="overflow-hidden rounded-xl mb-3 relative h-44">
+                        <a href="<?php echo base_url('product/' . $p['id']); ?>">
+                            <img src="<?php echo $img; ?>" alt="<?php echo htmlspecialchars($p['name']); ?>" class="w-full h-full object-cover hover:scale-105 transition duration-500">
+                        </a>
+                        <span class="absolute top-2 left-2 px-3 py-1 rounded-full text-xs font-semibold <?php echo $stock > 0 ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-600'; ?>">
+                            <?php echo $stock > 0 ? 'Còn hàng' : 'Hết hàng'; ?>
+                        </span>
+                    </div>
+                    <h6 class="text-sm font-semibold line-clamp-2 text-slate-900"><?php echo $p['name']; ?></h6>
+                    <p class="text-blue-700 font-bold mb-1 text-base"><?php echo number_format($p['price']); ?> đ</p>
+                    <p class="text-[12px] font-semibold mb-3 <?php echo $stock > 0 ? 'text-emerald-600' : 'text-red-600'; ?>">
+                        <?php echo $stock > 0 ? 'Còn ' . $stock . ' SP' : 'Hàng đang về'; ?>
+                    </p>
+                    <div class="mt-auto grid grid-cols-2 gap-2">
+                        <a class="h-11 w-full inline-flex items-center justify-center text-sm border rounded-lg border-slate-200 hover:border-blue-500" href="<?php echo base_url('product/' . $p['id']); ?>">Xem</a>
+                        <?php if ($stock <= 0): ?>
+                            <a class="h-11 w-full inline-flex items-center justify-center text-sm bg-amber-500 text-white rounded-lg hover:bg-amber-600" href="tel:0974734668">Liên hệ</a>
+                        <?php else: ?>
+                            <form method="post" action="<?php echo base_url('cart/add'); ?>" class="w-full">
+                                <input type="hidden" name="id" value="<?php echo $p['id']; ?>">
+                                <input type="hidden" name="redirect" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI'] ?? '/products'); ?>">
+                                <button class="h-11 w-full inline-flex items-center justify-center text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">Thêm giỏ</button>
+                            </form>
+                        <?php endif; ?>
+                    </div>
                 </div>
-                <h6 class="text-sm font-semibold line-clamp-2 text-slate-900"><?php echo $p['name']; ?></h6>
-                <p class="text-blue-700 font-bold mb-1 text-base"><?php echo number_format($p['price']); ?> đ</p>
-                <p class="text-[12px] font-semibold mb-3 <?php echo $stock > 0 ? 'text-emerald-600' : 'text-red-600'; ?>">
-                    <?php echo $stock > 0 ? 'Còn ' . $stock . ' SP' : 'Hàng đang về'; ?>
-                </p>
-                <div class="mt-auto grid grid-cols-2 gap-2">
-                    <a class="h-11 w-full inline-flex items-center justify-center text-sm border rounded-lg border-slate-200 hover:border-blue-500" href="<?php echo base_url('product/' . $p['id']); ?>">Xem</a>
-                    <?php if ($stock <= 0): ?>
-                        <a class="h-11 w-full inline-flex items-center justify-center text-sm bg-amber-500 text-white rounded-lg hover:bg-amber-600" href="tel:0974734668">Liên hệ</a>
-                    <?php else: ?>
-                        <form method="post" action="<?php echo base_url('cart/add'); ?>" class="w-full">
-                            <input type="hidden" name="id" value="<?php echo $p['id']; ?>">
-                            <input type="hidden" name="redirect" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI'] ?? '/products'); ?>">
-                            <button class="h-11 w-full inline-flex items-center justify-center text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">Thêm giỏ</button>
-                        </form>
-                    <?php endif; ?>
-                </div>
-            </div>
-        <?php endforeach; ?>
-        <?php if (empty($products)): ?>
-            <div class="col-span-full text-center text-slate-500 py-10">Không tìm thấy sản phẩm phù hợp.</div>
-        <?php endif; ?>
+            <?php endforeach; ?>
+            <?php if (empty($products)): ?>
+                <div class="col-span-full text-center text-slate-500 py-10">Không tìm thấy sản phẩm phù hợp.</div>
+            <?php endif; ?>
+        </div>
     </div>
 </div>
 <script>

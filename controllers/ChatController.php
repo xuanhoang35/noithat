@@ -37,7 +37,8 @@ class ChatController extends Controller {
         $redirectTo = !empty($_POST['embed']) ? '/chat?embed=1' : '/chat';
         if ($action === 'end') {
             $this->chatModel->clearMessages((int)$userId);
-            $this->chatModel->addMessage((int)$userId, (int)$userId, false, 'Khách đã kết thúc hội thoại.', 'closed');
+            // Ghi nhận cho admin biết khách đã kết thúc
+            $this->chatModel->addMessage((int)$userId, (int)$userId, true, 'Khách đã kết thúc hội thoại.', 'closed');
             $this->chatModel->updateStatus((int)$userId, 'closed');
             $this->chatModel->markUserRead((int)$userId);
             $this->redirect($redirectTo); return;

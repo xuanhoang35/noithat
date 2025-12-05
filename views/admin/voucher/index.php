@@ -27,7 +27,7 @@
         </div>
     </form>
 
-    <div class="overflow-x-auto">
+    <div class="overflow-x-auto max-h-[480px] overflow-y-auto">
         <table class="min-w-full text-sm">
             <thead>
                 <tr class="bg-slate-100 text-left">

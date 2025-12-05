@@ -88,7 +88,7 @@
                 <button class="px-4 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">Tìm</button>
             </form>
         </div>
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto max-h-[450px] overflow-y-auto">
             <table class="min-w-full text-sm">
                 <thead>
                     <tr class="bg-slate-100 text-left">

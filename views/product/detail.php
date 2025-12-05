@@ -43,7 +43,7 @@
             <?php endif; ?>
         </div>
     </div>
-    <div class="glass-panel rounded-3xl shadow-lg p-5">
+    <div class="glass-panel rounded-3xl shadow-lg p-5 mt-4 lg:mt-6">
         <h3 class="text-lg font-semibold mb-3">Mô tả chi tiết</h3>
         <div class="prose prose-sm max-w-none text-slate-700">
             <?php echo nl2br(htmlspecialchars($product['description'] ?? '')); ?>

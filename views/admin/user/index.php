@@ -15,7 +15,7 @@
             </button>
         </form>
     </div>
-    <div class="overflow-auto">
+    <div class="overflow-auto max-h-[420px]">
         <table class="min-w-full text-sm">
             <tr class="bg-slate-100 text-left">
                 <th class="p-3">ID</th><th class="p-3">Tên</th><th class="p-3">Email</th><th class="p-3">Điện thoại</th><th class="p-3">Địa chỉ</th><th class="p-3">Online</th><th class="p-3">Trạng thái</th><th class="p-3">Mật khẩu</th><th class="p-3">Hành động</th>
@@ -71,9 +71,6 @@
                     ?>
                     <?php if ($u['role'] !== 'admin'): ?>
                         <input form="user-save-<?php echo $u['id']; ?>" name="password" type="text" class="w-full px-2 py-1 border rounded text-sm" value="<?php echo htmlspecialchars($pw); ?>" placeholder="Nhập mật khẩu mới">
-                        <?php if (!empty($timeIssued)): ?>
-                            <div class="text-[11px] text-slate-400">Cấp: <?php echo $timeIssued; ?></div>
-                        <?php endif; ?>
                     <?php else: ?>
                         <?php if ($pw !== ''): ?>
                             <span data-password-text class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold inline-flex items-center gap-2">
@@ -112,7 +109,7 @@
             </div>
             <p class="text-slate-500 text-sm">Tiếp nhận yêu cầu quên mật khẩu và cấp mật khẩu mới.</p>
         </div>
-        <div class="overflow-auto">
+        <div class="overflow-auto max-h-[320px]">
             <table class="min-w-full text-sm">
                 <tr class="bg-slate-100 text-left">
                     <th class="p-3">Khách hàng</th>

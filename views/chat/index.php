@@ -3,7 +3,10 @@
     <div class="h-[520px] flex flex-col">
         <div class="flex-1 overflow-y-auto bg-slate-50 px-4 py-3 space-y-3" id="chat-list" data-thread="<?php echo (int)$thread['id']; ?>">
             <?php foreach ($messages as $m): ?>
-                <?php $isAdmin = (bool)$m['is_admin']; ?>
+                <?php
+                    $isAdmin = (bool)$m['is_admin'];
+                    if ($isAdmin && trim($m['content']) === 'Khách đã kết thúc hội thoại.') continue;
+                ?>
                 <div class="flex <?php echo $isAdmin ? 'justify-start' : 'justify-end'; ?>" data-msg-id="<?php echo $m['id']; ?>">
                     <div class="max-w-[70%] rounded-2xl px-4 py-3 shadow-sm <?php echo $isAdmin ? 'bg-white' : 'bg-blue-600 text-white'; ?>">
                         <div class="text-xs mb-1 <?php echo $isAdmin ? 'text-slate-500' : 'text-blue-50'; ?>">
@@ -61,6 +64,7 @@
         const empty = list.querySelector('[data-empty]');
         if (empty) empty.remove();
         items.forEach(m => {
+            if (m.is_admin && (m.content || '').trim() === 'Khách đã kết thúc hội thoại.') return;
             const wrap = document.createElement('div');
             wrap.className = 'flex ' + (m.is_admin ? 'justify-start' : 'justify-end');
             wrap.setAttribute('data-msg-id', m.id);
