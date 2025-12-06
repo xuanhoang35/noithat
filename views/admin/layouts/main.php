@@ -174,6 +174,29 @@
     </main>
 </div>
 <script>
+// Realtime badge cho yêu cầu mật khẩu (gộp vào Khách hàng)
+(function(){
+    const badgeUsers = document.querySelector('[data-badge="users"]');
+    if (!badgeUsers) return;
+    const pollResets = () => {
+        fetch('<?php echo base_url('admin.php/users/resets'); ?>', { cache: 'no-store', credentials: 'same-origin' })
+            .then(r => r.json())
+            .then(data => {
+                const count = Array.isArray(data) ? data.length : 0;
+                if (count > 0) {
+                    badgeUsers.textContent = count;
+                    badgeUsers.style.display = '';
+                } else {
+                    badgeUsers.style.display = 'none';
+                }
+            })
+            .catch(() => {});
+    };
+    pollResets();
+    setInterval(pollResets, 5000);
+})();
+</script>
+<script>
 (function(){
     const badges = {
         users: document.querySelector('[data-badge="users"]'),
