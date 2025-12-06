@@ -124,7 +124,7 @@
                         <tr class="border-b hover:bg-slate-50">
                             <td class="p-3"><?php echo htmlspecialchars($reset['name'] ?? 'Khách hàng'); ?></td>
                             <td class="p-3"><?php echo htmlspecialchars($reset['email']); ?></td>
-                            <td class="p-3"><?php echo htmlspecialchars($reset['phone']); ?></td>
+                            <td class="p-3"><?php echo htmlspecialchars($reset['phone'] ?? $reset['reset_phone'] ?? $reset['user_phone'] ?? ''); ?></td>
                             <td class="p-3">
                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700">Chờ xử lý</span>
                             </td>
@@ -214,7 +214,7 @@ document.addEventListener('DOMContentLoaded', function(){
                 <tr class="border-b hover:bg-slate-50">
                     <td class="p-3">${r.name ?? 'Khách hàng'}</td>
                     <td class="p-3">${r.email ?? ''}</td>
-                    <td class="p-3">${r.phone ?? ''}</td>
+                    <td class="p-3">${r.phone ?? r.reset_phone ?? r.user_phone ?? ''}</td>
                     <td class="p-3"><span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700">Chờ xử lý</span></td>
                     <td class="p-3">
                         <div class="flex flex-col md:flex-row gap-2">
