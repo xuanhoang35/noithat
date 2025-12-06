@@ -132,8 +132,8 @@
                             <input type="text" name="new_password" class="px-3 py-2 border rounded text-sm" placeholder="Nhập mật khẩu mới" required>
                             <div class="flex gap-2">
                                 <button class="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">Gửi mật khẩu</button>
-                                <form method="post" action="<?php echo base_url('admin.php/users/reset-reject/' . $reset['id']); ?>" class="contents">
-                                    <button class="px-4 py-2 text-sm bg-red-50 text-red-700 rounded hover:bg-red-100">Từ chối yêu cầu</button>
+                                <form method="post" action="<?php echo base_url('admin.php/users/reset-reject/' . $reset['id']); ?>">
+                                    <button type="submit" class="px-4 py-2 text-sm bg-red-50 text-red-700 rounded hover:bg-red-100">Từ chối yêu cầu</button>
                                 </form>
                             </div>
                         </form>
@@ -210,8 +210,8 @@ document.addEventListener('DOMContentLoaded', function(){
                             <input type="text" name="new_password" class="px-3 py-2 border rounded text-sm" placeholder="Nhập mật khẩu mới" required onfocus="window.__resetInputFocus=true;" onblur="window.__resetInputFocus=false;">
                             <div class="flex gap-2">
                                 <button class="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">Gửi mật khẩu</button>
-                                <form method="post" action="<?php echo base_url('admin.php/users/reset-reject/'); ?>${r.id}" class="contents">
-                                    <button class="px-4 py-2 text-sm bg-red-50 text-red-700 rounded hover:bg-red-100">Từ chối yêu cầu</button>
+                                <form method="post" action="<?php echo base_url('admin.php/users/reset-reject/'); ?>${r.id}">
+                                    <button type="submit" class="px-4 py-2 text-sm bg-red-50 text-red-700 rounded hover:bg-red-100">Từ chối yêu cầu</button>
                                 </form>
                             </div>
                         </form>
