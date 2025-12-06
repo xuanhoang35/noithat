@@ -113,6 +113,7 @@
         } catch (\Throwable $e) { return 0; }
     };
     $sidebarCounts = [
+        // Gộp thêm yêu cầu mật khẩu vào Khách hàng
         'users' => $getCount('users','users') + $getCount('resets','resets'),
         'orders' => $getCount('orders','orders'),
         'services' => $getCount('services','services'),
@@ -164,9 +165,6 @@
             </a>
             <a class="px-4 py-3 hover:bg-slate-100 flex items-center justify-between gap-2" href="<?php echo $adminUrl('complaints'); ?>?seen=complaints">
                 <span>Khiếu nại khách</span><?php echo $badge($sidebarCounts['complaints'] ?? 0, 'complaints'); ?>
-            </a>
-            <a class="px-4 py-3 hover:bg-slate-100 flex items-center justify-between gap-2" href="<?php echo $adminUrl('users'); ?>?seen=resets">
-                <span>Yêu cầu mật khẩu</span><?php echo $badge($sidebarCounts['resets'] ?? 0, 'resets'); ?>
             </a>
             <a class="px-4 py-3 hover:bg-slate-100" href="<?php echo $adminUrl('maintenance'); ?>">Bảo trì web</a>
         </div>
