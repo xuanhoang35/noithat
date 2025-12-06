@@ -145,4 +145,10 @@ class User extends Model {
         $stmt = $this->db->prepare('UPDATE users SET reset_token=NULL, reset_status=NULL, reset_password_plain=NULL, reset_requested_at=NULL, reset_completed_at=NULL, reset_delivered_at=NULL, reset_email=NULL, reset_phone=NULL WHERE id=?');
         $stmt->execute([$id]);
     }
+
+    public function clearResetMetaKeepPassword(int $id): void {
+        $this->ensureSchema();
+        $stmt = $this->db->prepare('UPDATE users SET reset_token=NULL, reset_status=NULL, reset_password_plain=NULL, reset_requested_at=NULL, reset_completed_at=NULL, reset_delivered_at=NULL, reset_email=NULL, reset_phone=NULL WHERE id=?');
+        $stmt->execute([$id]);
+    }
 }

@@ -127,13 +127,23 @@ $isActive = function ($path) use ($currentPath) {
     return strpos($currentPath, $path) === 0 ? 'bg-white/15 text-white font-semibold' : '';
 };
 $sessionUser = Auth::check() ? Auth::user() : null;
-// Thông báo khi yêu cầu cấp mật khẩu bị từ chối
-if ($sessionUser && (($sessionUser['reset_status'] ?? '') === 'delivered') && (($sessionUser['password_plain'] ?? '') === '__REJECTED__')) {
-    $_SESSION['flash_error'] = 'Yêu cầu cấp mật khẩu mới của bạn bị từ chối, vui lòng liên hệ với quản trị viên để được xử lý.';
+// Thông báo kết quả yêu cầu cấp mật khẩu
+if ($sessionUser && (($sessionUser['reset_status'] ?? '') === 'delivered')) {
     require_once __DIR__ . '/../../models/User.php';
-    (new User())->clearResetFlag((int)$sessionUser['id']);
-    $sessionUser['reset_status'] = null;
-    $sessionUser['password_plain'] = null;
+    $userModelLayout = new User();
+    if (($sessionUser['password_plain'] ?? '') === '__REJECTED__') {
+        $_SESSION['flash_error'] = 'Yêu cầu cấp mật khẩu của bạn bị từ chối, vui lòng liên hệ quản trị viên để được hỗ trợ.';
+        $userModelLayout->clearResetFlag((int)$sessionUser['id']);
+        $sessionUser['reset_status'] = null;
+        $sessionUser['password_plain'] = null;
+    } elseif (!empty($sessionUser['password_plain'])) {
+        $_SESSION['flash_success'] = 'Mật khẩu của quý khách là: ' . $sessionUser['password_plain'] . '. Vui lòng đăng nhập và đổi mật khẩu sau khi sử dụng.';
+        $userModelLayout->clearResetMetaKeepPassword((int)$sessionUser['id']);
+        $sessionUser['reset_status'] = null;
+        $sessionUser['reset_token'] = null;
+        $sessionUser['reset_password_plain'] = null;
+    }
+    $_SESSION['user'] = $sessionUser;
 }
 ?>
 <?php if (!$hideHeader): ?>
