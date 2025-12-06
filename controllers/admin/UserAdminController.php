@@ -3,6 +3,7 @@ require_once __DIR__ . '/../../core/Controller.php';
 require_once __DIR__ . '/../../core/Auth.php';
 require_once __DIR__ . '/../../models/User.php';
 require_once __DIR__ . '/../../models/PasswordReset.php';
+require_once __DIR__ . '/../../core/Database.php';
 
 class UserAdminController extends Controller {
     private User $userModel;
@@ -56,6 +57,26 @@ class UserAdminController extends Controller {
         $this->passwordResetModel->reject($token);
         $_SESSION['flash_info'] = 'Đã từ chối yêu cầu cấp mật khẩu.';
         $this->redirect('/admin.php/users');
+    }
+
+    // API: tổng thông báo khách hàng (user mới + yêu cầu reset mới) theo mốc đã xem
+    public function notify() {
+        header('Content-Type: application/json');
+        $seen = $_SESSION['admin_seen'] ?? [];
+        $lastUsers = isset($seen['users']) ? date('Y-m-d H:i:s', (int)$seen['users']) : date('Y-m-d H:i:s');
+        $lastResets = isset($seen['resets']) ? date('Y-m-d H:i:s', (int)$seen['resets']) : $lastUsers;
+        $db = Database::connection();
+        try {
+            $stmt = $db->prepare("SELECT COUNT(*) FROM users WHERE created_at > ?");
+            $stmt->execute([$lastUsers]);
+            $newUsers = (int)$stmt->fetchColumn();
+        } catch (\Throwable $e) { $newUsers = 0; }
+        try {
+            $stmt = $db->prepare("SELECT COUNT(*) FROM users WHERE reset_token IS NOT NULL AND reset_requested_at > ?");
+            $stmt->execute([$lastResets]);
+            $newResets = (int)$stmt->fetchColumn();
+        } catch (\Throwable $e) { $newResets = 0; }
+        echo json_encode(['users_total' => $newUsers + $newResets]);
     }
 
     public function delete($id) {

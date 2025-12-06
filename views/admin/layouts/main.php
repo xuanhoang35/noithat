@@ -178,16 +178,14 @@
 (function(){
     const badgeUsers = document.querySelector('[data-badge="users"]');
     if (!badgeUsers) return;
-    const baseCount = parseInt((badgeUsers.textContent || '').trim(), 10) || 0;
-    let lastReset = -1;
+    let lastTotal = -1;
     const pollResets = () => {
-        fetch('<?php echo base_url('admin.php/users/resets'); ?>', { cache: 'no-store', credentials: 'same-origin' })
+        fetch('<?php echo base_url('admin.php/users/notify'); ?>', { cache: 'no-store', credentials: 'same-origin' })
             .then(r => r.json())
             .then(data => {
-                const count = Array.isArray(data) ? data.length : 0;
-                if (count === lastReset) return;
-                lastReset = count;
-                const total = baseCount + count;
+                const total = parseInt(data.users_total ?? 0, 10);
+                if (total === lastTotal || isNaN(total)) return;
+                lastTotal = total;
                 if (total > 0) {
                     badgeUsers.textContent = total;
                     badgeUsers.classList.remove('hidden');
