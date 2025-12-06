@@ -8,7 +8,7 @@
         </div>
         <form method="get" class="flex gap-2 items-center">
             <input class="px-3 py-2 border rounded text-sm" name="q" value="<?php echo htmlspecialchars($search ?? ''); ?>" placeholder="Tìm mã/ mô tả">
-            <button class="px-4 py-2 bg-slate-900 text-white rounded text-sm">Tìm</button>
+            <button class="px-4 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">Tìm</button>
         </form>
     </div>
 

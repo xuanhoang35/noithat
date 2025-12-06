@@ -45,6 +45,9 @@
             $db = Database::connection();
             if ($table === 'services') {
                 $ts = $db->query("SELECT COALESCE(MAX(created_at), NOW()) FROM services WHERE is_booking = 1")->fetchColumn();
+            } elseif ($table === 'users') {
+                // Lấy mốc mới nhất giữa tạo khách hàng và yêu cầu reset mật khẩu
+                $ts = $db->query("SELECT GREATEST(COALESCE(MAX(created_at), '1970-01-01'), COALESCE(MAX(reset_requested_at), '1970-01-01')) FROM users")->fetchColumn();
             } elseif ($table === 'chat_messages') {
                 $ts = $db->query("SELECT COALESCE(MAX(created_at), NOW()) FROM chat_messages")->fetchColumn();
             } elseif ($table === 'vouchers') {
