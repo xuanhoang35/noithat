@@ -15,6 +15,10 @@
             <div id="new-password-text" class="text-2xl font-bold tracking-wide"></div>
             <p class="text-xs mt-2 text-emerald-600">Vui lòng đăng nhập và đổi mật khẩu sau khi sử dụng.</p>
         </div>
+        <div id="reject-box" class="hidden bg-red-50 border border-red-100 text-red-700 rounded-lg p-4 text-left">
+            <p class="font-semibold mb-1">Yêu cầu bị từ chối</p>
+            <p class="text-sm leading-relaxed">Yêu cầu cấp mật khẩu mới của bạn đã bị từ chối. Vui lòng liên hệ quản trị viên để được hỗ trợ nhanh nhất.</p>
+        </div>
     </div>
 </div>
 <script>
@@ -66,6 +70,16 @@
                     passwordBox.classList.remove('hidden');
                     passwordText.textContent = data.password || '(không xác định)';
                     extraSpan.textContent = 'Quản trị viên đã cấp mật khẩu mới. Vui lòng đăng nhập ngay.';
+                    resendLink.classList.add('hidden');
+                } else if (data.status === 'rejected') {
+                    clearInterval(countdownTimer);
+                    clearInterval(statusTimer);
+                    resolved = true;
+                    if (countdownWrap) countdownWrap.classList.add('hidden');
+                    passwordBox.classList.add('hidden');
+                    document.getElementById('reject-box').classList.remove('hidden');
+                    messageSpan.textContent = 'Yêu cầu cấp mật khẩu mới của bạn bị từ chối.';
+                    extraSpan.textContent = 'Vui lòng liên hệ quản trị viên để được hỗ trợ.';
                     resendLink.classList.add('hidden');
                 } else if (data.status === 'invalid' || data.status === 'missing') {
                     showResend('Phiên chờ đã hết hạn.');

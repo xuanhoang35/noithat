@@ -16,6 +16,12 @@ class UserAdminController extends Controller {
         $search = trim($_GET['search'] ?? '');
         $users=$this->userModel->all($search);
         $resets = $this->passwordResetModel->all();
+        $onlineCount = 0;
+        foreach ($users as $u) {
+            if (!empty($u['is_online'])) {
+                $onlineCount++;
+            }
+        }
         $resetMap = [];
         foreach ($resets as $r) {
             $resetMap[$r['user_id']] = $r;
@@ -26,6 +32,7 @@ class UserAdminController extends Controller {
             'querySeen' => $_GET['seen'] ?? '',
             'resets' => $resets,
             'resetMap' => $resetMap,
+            'onlineCount' => $onlineCount,
         ]);
     }
     public function toggleActive($id){

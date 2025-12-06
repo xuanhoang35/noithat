@@ -165,7 +165,11 @@ class AuthController extends Controller {
         if ($reset['status'] === 'completed' || $reset['status'] === 'delivered') {
             $passwordReset->markDelivered($id);
             unset($_SESSION['reset_request_id']);
-            echo json_encode(['status' => 'completed', 'password' => $reset['new_password_plain']]);
+            if (($reset['new_password_plain'] ?? '') === '__REJECTED__') {
+                echo json_encode(['status' => 'rejected']);
+            } else {
+                echo json_encode(['status' => 'completed', 'password' => $reset['new_password_plain']]);
+            }
             return;
         }
         echo json_encode(['status' => 'pending']);
