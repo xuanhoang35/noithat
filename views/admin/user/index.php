@@ -128,15 +128,15 @@
                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700">Chờ xử lý</span>
                             </td>
                             <td class="p-3">
-                        <form method="post" action="<?php echo base_url('admin.php/users/reset-password/' . $reset['id']); ?>" class="flex flex-col md:flex-row gap-2">
-                            <input type="text" name="new_password" class="px-3 py-2 border rounded text-sm" placeholder="Nhập mật khẩu mới" required>
-                            <div class="flex gap-2">
+                        <div class="flex flex-col md:flex-row gap-2">
+                            <form method="post" action="<?php echo base_url('admin.php/users/reset-password/' . $reset['id']); ?>" class="flex flex-col md:flex-row gap-2">
+                                <input type="text" name="new_password" class="px-3 py-2 border rounded text-sm" placeholder="Nhập mật khẩu mới" required>
                                 <button class="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">Gửi mật khẩu</button>
-                                <form method="post" action="<?php echo base_url('admin.php/users/reset-reject/' . $reset['id']); ?>">
-                                    <button type="submit" class="px-4 py-2 text-sm bg-red-50 text-red-700 rounded hover:bg-red-100">Từ chối yêu cầu</button>
-                                </form>
-                            </div>
-                        </form>
+                            </form>
+                            <form method="post" action="<?php echo base_url('admin.php/users/reset-reject/' . $reset['id']); ?>" class="flex">
+                                <button type="submit" class="px-4 py-2 text-sm bg-red-50 text-red-700 rounded hover:bg-red-100 w-full">Từ chối yêu cầu</button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -206,15 +206,15 @@ document.addEventListener('DOMContentLoaded', function(){
                     <td class="p-3">${r.phone ?? ''}</td>
                     <td class="p-3"><span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700">Chờ xử lý</span></td>
                     <td class="p-3">
-                        <form method="post" action="<?php echo base_url('admin.php/users/reset-password/'); ?>${r.id}" class="flex flex-col md:flex-row gap-2">
-                            <input type="text" name="new_password" class="px-3 py-2 border rounded text-sm" placeholder="Nhập mật khẩu mới" required onfocus="window.__resetInputFocus=true;" onblur="window.__resetInputFocus=false;">
-                            <div class="flex gap-2">
+                        <div class="flex flex-col md:flex-row gap-2">
+                            <form method="post" action="<?php echo base_url('admin.php/users/reset-password/'); ?>${r.id}" class="flex flex-col md:flex-row gap-2">
+                                <input type="text" name="new_password" class="px-3 py-2 border rounded text-sm" placeholder="Nhập mật khẩu mới" required onfocus="window.__resetInputFocus=true;" onblur="window.__resetInputFocus=false;">
                                 <button class="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">Gửi mật khẩu</button>
-                                <form method="post" action="<?php echo base_url('admin.php/users/reset-reject/'); ?>${r.id}">
-                                    <button type="submit" class="px-4 py-2 text-sm bg-red-50 text-red-700 rounded hover:bg-red-100">Từ chối yêu cầu</button>
-                                </form>
-                            </div>
-                        </form>
+                            </form>
+                            <form method="post" action="<?php echo base_url('admin.php/users/reset-reject/'); ?>${r.id}" class="flex">
+                                <button type="submit" class="px-4 py-2 text-sm bg-red-50 text-red-700 rounded hover:bg-red-100 w-full">Từ chối yêu cầu</button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
             `;
