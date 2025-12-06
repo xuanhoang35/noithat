@@ -38,7 +38,7 @@
 <?php
     // Badge chỉ xuất hiện khi có bản ghi mới hơn mốc đã xem; khi bấm mục đó reset mốc = max(created_at).
     if (!session_id()) session_start();
-    $keys = ['users','orders','services','chats','complaints','resets'];
+    $keys = ['users','orders','services','chats','complaints'];
     $seen = $_SESSION['admin_seen'] ?? [];
     $maxCreated = function($table) {
         try {
@@ -47,8 +47,6 @@
                 $ts = $db->query("SELECT COALESCE(MAX(created_at), NOW()) FROM services WHERE is_booking = 1")->fetchColumn();
             } elseif ($table === 'chat_messages') {
                 $ts = $db->query("SELECT COALESCE(MAX(created_at), NOW()) FROM chat_messages")->fetchColumn();
-            } elseif ($table === 'resets') {
-                $ts = $db->query("SELECT COALESCE(MAX(reset_requested_at), NOW()) FROM users WHERE reset_token IS NOT NULL")->fetchColumn();
             } else {
                 $ts = $db->query("SELECT COALESCE(MAX(created_at), NOW()) FROM {$table}")->fetchColumn();
             }
@@ -65,13 +63,8 @@
             'services' => 'services',
             'chats' => 'chat_messages',
             'complaints' => 'complaints',
-            'resets' => 'resets',
             default => 'users'
         }));
-        // Khi xem Khách hàng thì coi như đã xem yêu cầu mật khẩu
-        if ($k === 'users') {
-            $seen['resets'] = strtotime($maxCreated('resets'));
-        }
         $_SESSION['admin_seen'] = $seen;
     }
     foreach ($keys as $k) {
@@ -82,7 +75,6 @@
                 'services' => 'services',
                 'chats' => 'chat_messages',
                 'complaints' => 'complaints',
-                'resets' => 'resets',
                 default => 'users'
             }));
         }
@@ -103,24 +95,17 @@
                 $stmt->execute([$ts]);
                 return (int)$stmt->fetchColumn();
             }
-            if ($table === 'resets') {
-                $stmt = $db->prepare("SELECT COUNT(*) FROM users WHERE reset_token IS NOT NULL AND reset_requested_at > ?");
-                $stmt->execute([$ts]);
-                return (int)$stmt->fetchColumn();
-            }
             $stmt = $db->prepare("SELECT COUNT(*) FROM {$table} WHERE created_at > ?");
             $stmt->execute([$ts]);
             return (int)$stmt->fetchColumn();
         } catch (\Throwable $e) { return 0; }
     };
     $sidebarCounts = [
-        // Khách hàng chỉ tính bản ghi mới; yêu cầu mật khẩu cộng động qua JS
         'users' => $getCount('users','users'),
         'orders' => $getCount('orders','orders'),
         'services' => $getCount('services','services'),
         'chats' => $getCount('chat_messages','chats'),
         'complaints' => $getCount('complaints','complaints'),
-        'resets' => $getCount('resets','resets'),
     ];
     $badge = function($num, $key) {
         $n = (int)$num;
@@ -174,33 +159,6 @@
         <?php echo $content ?? ''; ?>
     </main>
 </div>
-<script>
-// Realtime badge cho yêu cầu mật khẩu (gộp vào Khách hàng)
-(function(){
-    const badgeUsers = document.querySelector('[data-badge="users"]');
-    if (!badgeUsers) return;
-    let lastTotal = -1;
-    const pollResets = () => {
-        fetch('<?php echo base_url('admin.php/users/notify'); ?>', { cache: 'no-store', credentials: 'same-origin' })
-            .then(r => r.json())
-            .then(data => {
-                const total = parseInt(data.users_total ?? 0, 10);
-                if (total === lastTotal || isNaN(total)) return;
-                lastTotal = total;
-                if (total > 0) {
-                    badgeUsers.textContent = total;
-                    badgeUsers.classList.remove('hidden');
-                    badgeUsers.style.display = '';
-                } else {
-                    badgeUsers.classList.add('hidden');
-                }
-            })
-            .catch(() => {});
-    };
-    pollResets();
-    setInterval(pollResets, 3000);
-})();
-</script>
 <script>
 (function(){
     const badges = {

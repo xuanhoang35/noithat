@@ -36,7 +36,6 @@ $router->post('/users/delete/{id}', 'admin/UserAdminController@delete');
 $router->get('/users/status', 'admin/UserAdminController@status');
 $router->get('/users/resets', 'admin/UserAdminController@resets');
 $router->post('/users/edit/{id}', 'admin/UserAdminController@update');
-$router->get('/users/notify', 'admin/UserAdminController@notify');
 $router->get('/complaints', 'admin/ComplaintAdminController@index');
 $router->post('/complaints/update-status/{id}', 'admin/ComplaintAdminController@updateStatus');
 $router->post('/complaints/reply/{id}', 'admin/ComplaintAdminController@reply');
