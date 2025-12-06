@@ -60,7 +60,7 @@
         <div class="flex items-center justify-between flex-wrap gap-2">
             <div>
                 <p class="section-title text-slate-500">Danh mục</p>
-                <h2 class="text-xl font-bold text-slate-900">Nổi bật nhất tuần</h2>
+                <h2 class="text-xl font-bold text-white">Nổi bật nhất tuần</h2>
             </div>
             <a class="text-blue-700 text-sm font-semibold hover:underline" href="<?php echo base_url('products'); ?>">Xem tất cả</a>
         </div>
@@ -78,7 +78,7 @@
         <div class="flex justify-between items-center flex-wrap gap-2">
             <div>
                 <p class="section-title text-slate-500">Sản phẩm</p>
-                <h2 class="text-xl font-bold text-slate-900">Được yêu thích</h2>
+                <h2 class="text-xl font-bold text-white">Được yêu thích</h2>
             </div>
             <a href="<?php echo base_url('products'); ?>" class="text-blue-700 hover:underline text-sm font-semibold">Xem tất cả</a>
         </div>

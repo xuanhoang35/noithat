@@ -12,12 +12,12 @@
     <section class="space-y-3">
         <div class="flex items-center justify-between flex-wrap gap-3">
             <div>
-                <h3 class="text-lg font-semibold text-slate-800">Danh sách dịch vụ</h3>
-                <span class="text-sm text-slate-500"><?php echo count($services); ?> dịch vụ</span>
+                <h3 class="text-lg font-semibold text-white">Danh sách dịch vụ</h3>
+                <span class="text-sm text-white/80"><?php echo count($services); ?> dịch vụ</span>
             </div>
             <form method="get" class="flex gap-2">
                 <input class="px-3 py-2 border rounded text-sm" name="q" value="<?php echo htmlspecialchars($search ?? ''); ?>" placeholder="Tìm dịch vụ">
-                <button class="px-4 py-2 bg-slate-900 text-white rounded text-sm">Tìm</button>
+                <button class="px-4 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">Tìm</button>
             </form>
         </div>
         <div class="grid md:grid-cols-3 gap-4">
