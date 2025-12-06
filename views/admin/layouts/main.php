@@ -183,6 +183,7 @@
 </div>
 <script>
 (function(){
+    const adminBase = '<?php echo $adminBase; ?>';
     const badges = {
         users: document.querySelector('[data-badge="users"]'),
         orders: document.querySelector('[data-badge="orders"]'),
@@ -223,6 +224,35 @@
             })
             .catch(() => { location.reload(); });
     };
+    const markSeen = (key) => {
+        if (!key) return;
+        fetch(`${adminBase}?seen=${key}`, { cache: 'no-store', credentials: 'same-origin' })
+            .then(() => {
+                const b = badges[key];
+                if (b) {
+                    b.style.display = 'none';
+                    b.textContent = '0';
+                }
+            })
+            .catch(() => {});
+    };
+    // Tự động clear badge khi đang ở trang tương ứng (không cần nhấn lại menu)
+    (() => {
+        const path = window.location.pathname.toLowerCase();
+        const auto = [
+            { match: '/admin.php/users', key: 'users' },
+            { match: '/admin.php/orders', key: 'orders' },
+            { match: '/admin.php/services', key: 'services' },
+            { match: '/admin.php/chats', key: 'chats' },
+            { match: '/admin.php/complaints', key: 'complaints' },
+            { match: '/admin.php/vouchers', key: 'vouchers' },
+        ];
+        auto.forEach(item => {
+            if (path.includes(item.match)) {
+                markSeen(item.key);
+            }
+        });
+    })();
     const poll = () => {
         fetch('<?php echo $adminUrl('notify/poll'); ?>', { cache: 'no-store' })
             .then(r => r.json())
