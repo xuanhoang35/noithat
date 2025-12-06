@@ -54,7 +54,7 @@ class PasswordReset extends Model {
     }
 
     public function markDelivered(string $token): void {
-        $stmt = $this->db->prepare('UPDATE users SET reset_status="delivered", reset_delivered_at=NOW() WHERE reset_token=? AND reset_status="completed"');
+        $stmt = $this->db->prepare('UPDATE users SET reset_status="delivered", reset_delivered_at=COALESCE(reset_delivered_at,NOW()) WHERE reset_token=?');
         $stmt->execute([$token]);
     }
 
@@ -67,7 +67,7 @@ class PasswordReset extends Model {
     }
 
     public function reject(string $token): void {
-        $stmt = $this->db->prepare('UPDATE users SET reset_token=NULL, reset_status="delivered", reset_password_plain="__REJECTED__", reset_requested_at=NULL, reset_completed_at=NULL, reset_delivered_at=NOW(), reset_email=NULL, reset_phone=NULL WHERE reset_token=?');
+        $stmt = $this->db->prepare('UPDATE users SET reset_status="delivered", reset_password_plain="__REJECTED__", reset_completed_at=NOW(), reset_delivered_at=NOW() WHERE reset_token=?');
         $stmt->execute([$token]);
     }
 

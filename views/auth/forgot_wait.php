@@ -75,6 +75,8 @@
                     clearInterval(countdownTimer);
                     clearInterval(statusTimer);
                     resolved = true;
+                    remaining = 0;
+                    if (countdownEl) countdownEl.textContent = '0';
                     if (countdownWrap) countdownWrap.classList.add('hidden');
                     passwordBox.classList.add('hidden');
                     document.getElementById('reject-box').classList.remove('hidden');
