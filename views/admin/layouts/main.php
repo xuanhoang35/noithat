@@ -38,7 +38,7 @@
 <?php
     // Badge chỉ xuất hiện khi có bản ghi mới hơn mốc đã xem; khi bấm mục đó reset mốc = max(created_at).
     if (!session_id()) session_start();
-    $keys = ['users','orders','services','chats','complaints'];
+    $keys = ['users','orders','services','chats','complaints','resets'];
     $seen = $_SESSION['admin_seen'] ?? [];
     $maxCreated = function($table) {
         try {
@@ -47,6 +47,8 @@
                 $ts = $db->query("SELECT COALESCE(MAX(created_at), NOW()) FROM services WHERE is_booking = 1")->fetchColumn();
             } elseif ($table === 'chat_messages') {
                 $ts = $db->query("SELECT COALESCE(MAX(created_at), NOW()) FROM chat_messages")->fetchColumn();
+            } elseif ($table === 'resets') {
+                $ts = $db->query("SELECT COALESCE(MAX(reset_requested_at), NOW()) FROM users WHERE reset_token IS NOT NULL")->fetchColumn();
             } else {
                 $ts = $db->query("SELECT COALESCE(MAX(created_at), NOW()) FROM {$table}")->fetchColumn();
             }
@@ -65,6 +67,10 @@
             'complaints' => 'complaints',
             default => 'users'
         }));
+        // Khi xem Khách hàng thì coi như đã xem yêu cầu mật khẩu
+        if ($k === 'users') {
+            $seen['resets'] = strtotime($maxCreated('resets'));
+        }
         $_SESSION['admin_seen'] = $seen;
     }
     foreach ($keys as $k) {
@@ -75,6 +81,7 @@
                 'services' => 'services',
                 'chats' => 'chat_messages',
                 'complaints' => 'complaints',
+                'resets' => 'resets',
                 default => 'users'
             }));
         }
@@ -95,17 +102,23 @@
                 $stmt->execute([$ts]);
                 return (int)$stmt->fetchColumn();
             }
+            if ($table === 'resets') {
+                $stmt = $db->prepare("SELECT COUNT(*) FROM users WHERE reset_token IS NOT NULL AND reset_requested_at > ?");
+                $stmt->execute([$ts]);
+                return (int)$stmt->fetchColumn();
+            }
             $stmt = $db->prepare("SELECT COUNT(*) FROM {$table} WHERE created_at > ?");
             $stmt->execute([$ts]);
             return (int)$stmt->fetchColumn();
         } catch (\Throwable $e) { return 0; }
     };
     $sidebarCounts = [
-        'users' => $getCount('users','users'),
+        'users' => $getCount('users','users') + $getCount('resets','resets'),
         'orders' => $getCount('orders','orders'),
         'services' => $getCount('services','services'),
         'chats' => $getCount('chat_messages','chats'),
         'complaints' => $getCount('complaints','complaints'),
+        'resets' => $getCount('resets','resets'),
     ];
     $badge = function($num, $key) {
         $n = (int)$num;
@@ -151,6 +164,9 @@
             </a>
             <a class="px-4 py-3 hover:bg-slate-100 flex items-center justify-between gap-2" href="<?php echo $adminUrl('complaints'); ?>?seen=complaints">
                 <span>Khiếu nại khách</span><?php echo $badge($sidebarCounts['complaints'] ?? 0, 'complaints'); ?>
+            </a>
+            <a class="px-4 py-3 hover:bg-slate-100 flex items-center justify-between gap-2" href="<?php echo $adminUrl('users'); ?>?seen=resets">
+                <span>Yêu cầu mật khẩu</span><?php echo $badge($sidebarCounts['resets'] ?? 0, 'resets'); ?>
             </a>
             <a class="px-4 py-3 hover:bg-slate-100" href="<?php echo $adminUrl('maintenance'); ?>">Bảo trì web</a>
         </div>
