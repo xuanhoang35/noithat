@@ -102,7 +102,7 @@
                             <?php echo $stock > 0 ? 'Còn ' . $stock . ' sản phẩm' : 'Hàng đang về'; ?>
                         </p>
                     </div>
-                    <div class="grid grid-cols-2 gap-2 items-stretch pt-0">
+                    <div class="grid grid-cols-2 gap-2 items-stretch mt-2">
                         <a class="w-full text-center h-12 flex items-center justify-center text-sm border rounded-lg border-slate-200 hover:border-blue-500" href="<?php echo base_url('product/' . $p['id']); ?>">Xem</a>
                         <?php if ($stock <= 0): ?>
                             <a class="w-full h-12 inline-flex items-center justify-center text-sm bg-amber-500 text-white rounded-lg hover:bg-amber-600" href="tel:0974734668">Liên hệ</a>

@@ -44,12 +44,9 @@
                                 <option value="custom" <?php echo ($priceRange ?? '') === 'custom' ? 'selected' : ''; ?>>Tùy chọn</option>
                             </select>
                         </div>
-                        <div class="grid gap-3 md:grid-cols-3 items-end">
-                            <input name="cat_q" value="<?php echo htmlspecialchars($categorySearch ?? ''); ?>" class="px-3 py-2 border rounded-lg focus:outline-none text-sm h-[44px]" placeholder="Lọc danh mục">
-                            <div id="custom-price-wrapper" class="grid grid-cols-2 gap-2 md:col-span-2 <?php echo ($priceRange ?? '') === 'custom' ? '' : 'hidden'; ?>">
-                                <input type="number" name="price_min" class="px-3 py-2 border rounded-lg focus:outline-none" placeholder="Giá min" value="<?php echo htmlspecialchars($priceMin ?? ''); ?>">
-                                <input type="number" name="price_max" class="px-3 py-2 border rounded-lg focus:outline-none" placeholder="Giá max" value="<?php echo htmlspecialchars($priceMax ?? ''); ?>">
-                            </div>
+                        <div id="custom-price-wrapper" class="grid grid-cols-2 gap-3 md:grid-cols-2 items-end <?php echo ($priceRange ?? '') === 'custom' ? '' : 'hidden'; ?>">
+                            <input type="number" name="price_min" class="px-3 py-2 border rounded-lg focus:outline-none" placeholder="Giá min" value="<?php echo htmlspecialchars($priceMin ?? ''); ?>">
+                            <input type="number" name="price_max" class="px-3 py-2 border rounded-lg focus:outline-none" placeholder="Giá max" value="<?php echo htmlspecialchars($priceMax ?? ''); ?>">
                         </div>
                     </div>
                 </form>
@@ -76,15 +73,15 @@
                     <p class="text-[12px] font-semibold mb-3 <?php echo $stock > 0 ? 'text-emerald-600' : 'text-red-600'; ?>">
                         <?php echo $stock > 0 ? 'Còn ' . $stock . ' SP' : 'Hàng đang về'; ?>
                     </p>
-                    <div class="mt-auto grid grid-cols-2 gap-2">
-                        <a class="h-11 w-full inline-flex items-center justify-center text-sm border rounded-lg border-slate-200 hover:border-blue-500" href="<?php echo base_url('product/' . $p['id']); ?>">Xem</a>
+                    <div class="mt-2 grid grid-cols-2 gap-2">
+                        <a class="h-12 w-full inline-flex items-center justify-center text-sm border rounded-lg border-slate-200 hover:border-blue-500" href="<?php echo base_url('product/' . $p['id']); ?>">Xem</a>
                         <?php if ($stock <= 0): ?>
-                            <a class="h-11 w-full inline-flex items-center justify-center text-sm bg-amber-500 text-white rounded-lg hover:bg-amber-600" href="tel:0974734668">Liên hệ</a>
+                            <a class="h-12 w-full inline-flex items-center justify-center text-sm bg-amber-500 text-white rounded-lg hover:bg-amber-600" href="tel:0974734668">Liên hệ</a>
                         <?php else: ?>
                             <form method="post" action="<?php echo base_url('cart/add'); ?>" class="w-full">
                                 <input type="hidden" name="id" value="<?php echo $p['id']; ?>">
                                 <input type="hidden" name="redirect" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI'] ?? '/products'); ?>">
-                                <button class="h-11 w-full inline-flex items-center justify-center text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">Thêm giỏ</button>
+                                <button class="h-12 w-full inline-flex items-center justify-center text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">Thêm giỏ</button>
                             </form>
                         <?php endif; ?>
                     </div>
