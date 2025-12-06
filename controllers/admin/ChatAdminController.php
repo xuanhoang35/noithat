@@ -9,7 +9,11 @@ class ChatAdminController extends Controller {
 
     public function index(){
         $threads = $this->chatModel->threads();
-        $this->view('admin/chat/index', compact('threads'));
+        $openCount = 0;
+        foreach ($threads as $t) {
+            if (($t['status'] ?? '') === 'open') $openCount++;
+        }
+        $this->view('admin/chat/index', compact('threads','openCount'));
     }
 
     public function show($id){

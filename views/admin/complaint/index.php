@@ -4,7 +4,10 @@
     'in_progress' => 'Đang xử lý',
     'resolved' => 'Đã đóng'
 ]; ?>
-<h1 class="text-xl font-semibold mb-3">Khiếu nại từ khách hàng</h1>
+<div class="mb-3">
+    <h1 class="text-xl font-semibold">Khiếu nại từ khách hàng</h1>
+    <p class="text-slate-500 text-sm"><?php echo count(array_filter($complaints, function($c){ return ($c['status'] ?? '') !== 'resolved'; })); ?> khiếu nại cần xử lý</p>
+</div>
 <div class="space-y-3">
     <?php foreach ($complaints as $c): ?>
     <?php $replies = (new \Complaint())->replies($c['id']); ?>

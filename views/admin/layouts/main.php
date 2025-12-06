@@ -38,7 +38,7 @@
 <?php
     // Badge chỉ xuất hiện khi có bản ghi mới hơn mốc đã xem; khi bấm mục đó reset mốc = max(created_at).
     if (!session_id()) session_start();
-    $keys = ['users','orders','services','chats','complaints'];
+    $keys = ['users','orders','services','chats','complaints','vouchers'];
     $seen = $_SESSION['admin_seen'] ?? [];
     $maxCreated = function($table) {
         try {
@@ -47,6 +47,8 @@
                 $ts = $db->query("SELECT COALESCE(MAX(created_at), NOW()) FROM services WHERE is_booking = 1")->fetchColumn();
             } elseif ($table === 'chat_messages') {
                 $ts = $db->query("SELECT COALESCE(MAX(created_at), NOW()) FROM chat_messages")->fetchColumn();
+            } elseif ($table === 'vouchers') {
+                $ts = $db->query("SELECT COALESCE(MAX(created_at), NOW()) FROM vouchers")->fetchColumn();
             } else {
                 $ts = $db->query("SELECT COALESCE(MAX(created_at), NOW()) FROM {$table}")->fetchColumn();
             }
@@ -63,6 +65,7 @@
             'services' => 'services',
             'chats' => 'chat_messages',
             'complaints' => 'complaints',
+            'vouchers' => 'vouchers',
             default => 'users'
         }));
         $_SESSION['admin_seen'] = $seen;
@@ -75,6 +78,7 @@
                 'services' => 'services',
                 'chats' => 'chat_messages',
                 'complaints' => 'complaints',
+                'vouchers' => 'vouchers',
                 default => 'users'
             }));
         }
@@ -87,6 +91,11 @@
             $ts = date('Y-m-d H:i:s', $last);
             if ($table === 'services') {
                 $stmt = $db->prepare("SELECT COUNT(*) FROM services WHERE is_booking = 1 AND created_at > ?");
+                $stmt->execute([$ts]);
+                return (int)$stmt->fetchColumn();
+            }
+            if ($table === 'vouchers') {
+                $stmt = $db->prepare("SELECT COUNT(*) FROM vouchers WHERE created_at > ?");
                 $stmt->execute([$ts]);
                 return (int)$stmt->fetchColumn();
             }
@@ -116,6 +125,7 @@
         'services' => $getCount('services','services'),
         'chats' => $getCount('chat_messages','chats'),
         'complaints' => $getCount('complaints','complaints'),
+        'vouchers' => $getCount('vouchers','vouchers'),
     ];
     $badge = function($num, $key) {
         $n = (int)$num;
@@ -155,7 +165,9 @@
             <a class="px-4 py-3 hover:bg-slate-100 flex items-center justify-between gap-2" href="<?php echo $adminUrl('services'); ?>?seen=services">
                 <span>Dịch vụ</span><?php echo $badge($sidebarCounts['services'] ?? 0, 'services'); ?>
             </a>
-            <a class="px-4 py-3 hover:bg-slate-100" href="<?php echo $adminUrl('vouchers'); ?>">Mã giảm giá</a>
+            <a class="px-4 py-3 hover:bg-slate-100 flex items-center justify-between gap-2" href="<?php echo $adminUrl('vouchers'); ?>?seen=vouchers">
+                <span>Mã giảm giá</span><?php echo $badge($sidebarCounts['vouchers'] ?? 0, 'vouchers'); ?>
+            </a>
             <a class="px-4 py-3 hover:bg-slate-100 flex items-center justify-between gap-2" href="<?php echo $adminUrl('chats'); ?>?seen=chats">
                 <span>Tư vấn khách</span><?php echo $badge($sidebarCounts['chats'] ?? 0, 'chats'); ?>
             </a>
@@ -176,7 +188,8 @@
         orders: document.querySelector('[data-badge="orders"]'),
         services: document.querySelector('[data-badge="services"]'),
         chats: document.querySelector('[data-badge="chats"]'),
-        complaints: document.querySelector('[data-badge="complaints"]')
+        complaints: document.querySelector('[data-badge="complaints"]'),
+        vouchers: document.querySelector('[data-badge="vouchers"]')
     };
     let lastLatest = {};
     let lastCount = {};
@@ -214,7 +227,7 @@
         fetch('<?php echo $adminUrl('notify/poll'); ?>', { cache: 'no-store' })
             .then(r => r.json())
             .then(data => {
-                ['orders','complaints','chats','services','users'].forEach(key => {
+                ['orders','complaints','chats','services','users','vouchers'].forEach(key => {
                     const info = data[key];
                     const badge = badges[key];
                     if (!info || !badge) return;
@@ -228,7 +241,9 @@
                         if ((key === 'orders' && currentPath.includes('/admin.php/orders')) ||
                             (key === 'chats' && currentPath.includes('/admin.php/chats')) ||
                             (key === 'complaints' && currentPath.includes('/admin.php/complaints')) ||
-                            (key === 'services' && currentPath.includes('/admin.php/services'))) {
+                            (key === 'services' && currentPath.includes('/admin.php/services')) ||
+                            (key === 'vouchers' && currentPath.includes('/admin.php/vouchers')) ||
+                            (key === 'users' && currentPath.includes('/admin.php/users'))) {
                             hotReloadMain();
                         }
                     }

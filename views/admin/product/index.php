@@ -42,7 +42,10 @@
 </div>
 <div class="bg-white rounded-2xl shadow-sm p-4">
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-3">
-        <h2 class="text-lg font-semibold">Danh sách sản phẩm (<?php echo count($products); ?> SP)</h2>
+        <div>
+            <h2 class="text-lg font-semibold">Danh sách sản phẩm</h2>
+            <p class="text-slate-500 text-sm"><?php echo count($products); ?> sản phẩm</p>
+        </div>
         <form method="get" class="flex flex-wrap gap-2 items-center">
             <input class="px-3 py-2 border rounded text-sm" name="q" value="<?php echo htmlspecialchars($search ?? ''); ?>" placeholder="Tìm tên/ID sản phẩm">
             <select name="category_id" class="px-3 py-2 border rounded text-sm">
@@ -53,7 +56,7 @@
                     </option>
                 <?php endforeach; ?>
             </select>
-            <button class="px-4 py-2 bg-slate-900 text-white rounded text-sm">Lọc</button>
+            <button class="px-4 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">Lọc</button>
         </form>
     </div>
     <div class="overflow-auto max-h-[360px]">

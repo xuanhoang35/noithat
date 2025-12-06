@@ -4,10 +4,11 @@
         <div>
             <h1 class="text-xl font-semibold">Đơn hàng</h1>
             <span class="text-slate-500 text-sm">Theo dõi & cập nhật trạng thái</span>
+            <p class="text-slate-500 text-sm mt-1"><?php echo count($orders); ?> đơn hàng</p>
         </div>
         <form method="get" class="flex gap-2 items-center">
             <input class="px-3 py-2 border rounded text-sm" name="q" value="<?php echo htmlspecialchars($search ?? ''); ?>" placeholder="Mã đơn, tên, SĐT, email">
-            <button class="px-3 py-2 bg-slate-900 text-white rounded text-sm">Tìm</button>
+            <button class="px-3 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">Tìm</button>
         </form>
     </div>
     <div class="overflow-auto">

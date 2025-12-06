@@ -14,7 +14,8 @@ class NotifyAdminController extends Controller {
             'orders' => 'orders',
             'complaints' => 'complaints',
             'services' => 'services',
-            'users' => 'users'
+            'users' => 'users',
+            'vouchers' => 'vouchers'
         ];
         $seen = $_SESSION['admin_seen'] ?? [];
         $maxCreated = function($table) use ($db) {
@@ -46,6 +47,10 @@ class NotifyAdminController extends Controller {
                     $stmt->execute([$ts]);
                     $newResets = (int)$stmt->fetchColumn();
                     $count = $newUsers + $newResets;
+                } elseif ($table === 'vouchers') {
+                    $stmt = $db->prepare("SELECT COUNT(*) FROM vouchers WHERE created_at > ?");
+                    $stmt->execute([$ts]);
+                    $count = (int)$stmt->fetchColumn();
                 } else {
                     $stmt = $db->prepare("SELECT COUNT(*) FROM {$table} WHERE created_at > ?");
                     $stmt->execute([$ts]);

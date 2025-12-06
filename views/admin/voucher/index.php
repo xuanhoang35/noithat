@@ -4,6 +4,7 @@
         <div>
             <h1 class="text-xl font-semibold">Mã giảm giá</h1>
             <p class="text-slate-500 text-sm">Thêm, sửa, xóa voucher cho từng danh mục</p>
+            <p class="text-slate-500 text-sm mt-1"><?php echo count($vouchers); ?> mã giảm giá</p>
         </div>
         <form method="get" class="flex gap-2 items-center">
             <input class="px-3 py-2 border rounded text-sm" name="q" value="<?php echo htmlspecialchars($search ?? ''); ?>" placeholder="Tìm mã/ mô tả">

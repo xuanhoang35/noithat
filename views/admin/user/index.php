@@ -2,8 +2,8 @@
 <div class="bg-white rounded-2xl shadow-sm p-4">
     <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-3">
         <div>
-            <h1 class="text-xl font-semibold">Khách hàng (Online <?php echo (int)($onlineCount ?? 0); ?>)</h1>
-            <p class="text-slate-500 text-sm">Quản lý tài khoản</p>
+            <h1 class="text-xl font-semibold">Khách hàng</h1>
+            <p class="text-slate-500 text-sm">Quản lý tài khoản (Online <span data-online-count><?php echo (int)($onlineCount ?? 0); ?></span>)</p>
         </div>
         <form method="get" action="<?php echo base_url('admin.php/users'); ?>" class="flex items-center gap-2 w-full md:w-auto md:min-w-[360px]">
             <input type="text" name="search" value="<?php echo htmlspecialchars($search ?? ''); ?>" placeholder="Tìm tên, email, số điện thoại..." class="flex-1 px-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring focus:ring-blue-200" />
@@ -153,11 +153,13 @@ document.addEventListener('DOMContentLoaded', function(){
     const statusUrl = '<?php echo base_url('admin.php/users/status'); ?>';
     const resetUrl = '<?php echo base_url('admin.php/users/resets'); ?>';
     const applyStatus = (users) => {
+        let onlineCount = 0;
         users.forEach(u => {
             const onlineEl = document.querySelector('[data-online="'+u.id+'"]');
             const activeEl = document.querySelector('[data-active="'+u.id+'"]');
             if (onlineEl) {
                 const online = parseInt(u.is_online, 10) === 1;
+                if (online) onlineCount++;
                 onlineEl.textContent = online ? 'Online' : 'Offline';
                 onlineEl.className = 'inline-flex items-center h-8 px-3 text-xs rounded-full ' + (online ? 'bg-blue-50 text-blue-700' : 'bg-slate-100 text-slate-600');
             }
@@ -189,6 +191,10 @@ document.addEventListener('DOMContentLoaded', function(){
                 }
             }
         });
+        const onlineCountEl = document.querySelector('[data-online-count]');
+        if (onlineCountEl) {
+            onlineCountEl.textContent = onlineCount;
+        }
     };
     const renderResets = (resets) => {
         const body = document.getElementById('reset-body');

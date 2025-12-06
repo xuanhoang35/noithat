@@ -12,10 +12,13 @@
     <div class="lg:col-span-2">
         <div class="bg-white rounded-2xl shadow-sm p-4">
             <div class="flex items-center justify-between gap-3 mb-3">
-                <h2 class="text-lg font-semibold">Danh mục</h2>
+                <div>
+                    <h2 class="text-lg font-semibold">Danh mục</h2>
+                    <p class="text-slate-500 text-sm"><?php echo count($categories); ?> danh mục</p>
+                </div>
                 <form method="get" class="flex gap-2">
                     <input class="px-3 py-2 border rounded text-sm" name="q" value="<?php echo htmlspecialchars($search ?? ''); ?>" placeholder="Tìm danh mục">
-                    <button class="px-3 py-2 bg-slate-900 text-white rounded text-sm">Tìm</button>
+                    <button class="px-3 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">Tìm</button>
                 </form>
             </div>
             <ul class="divide-y max-h-[540px] overflow-y-auto pr-1">

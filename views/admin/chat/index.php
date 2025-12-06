@@ -4,6 +4,7 @@
         <div>
             <h1 class="text-xl font-semibold">Tư vấn khách hàng</h1>
             <p class="text-slate-500 text-sm">Danh sách phiên chat giữa khách và admin</p>
+            <p class="text-slate-500 text-sm mt-1"><?php echo (int)($openCount ?? 0); ?> phiên chat đang cần tư vấn</p>
         </div>
     </div>
     <div class="overflow-x-auto max-h-[520px]" id="chat-thread-list">
