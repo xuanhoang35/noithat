@@ -102,19 +102,19 @@
         </table>
     </div>
     <div class="mt-6 pt-4 border-t border-slate-100">
-        <div class="flex flex-col gap-1 md:flex-row md:items-center md:justify-between mb-3">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
             <div class="flex items-center gap-2">
                 <h2 class="text-lg font-semibold">Quản lý mật khẩu khách hàng</h2>
-                <span class="text-slate-500 text-sm">(Có <span data-reset-count><?php echo count(array_filter($resets, function($r){ return ($r['status'] ?? '') === 'pending'; })); ?></span> yêu cầu cấp mật khẩu mới)</span>
             </div>
             <p class="text-slate-500 text-sm">Tiếp nhận yêu cầu quên mật khẩu và cấp mật khẩu mới.</p>
         </div>
+        <p class="text-slate-500 text-sm mb-3">Có <span data-reset-count><?php echo count(array_filter($resets, function($r){ return ($r['status'] ?? '') === 'pending'; })); ?></span> yêu cầu cấp mật khẩu mới</p>
         <div class="overflow-auto max-h-[300px] overflow-y-auto">
             <table class="min-w-full text-sm">
                 <tr class="bg-slate-100 text-left">
                     <th class="p-3">Khách hàng</th>
                     <th class="p-3">Email</th>
-                    <th class="p-3">SĐT</th>
+                    <th class="p-3">Điện thoại</th>
                     <th class="p-3">Trạng thái</th>
                     <th class="p-3">Hành động</th>
                 </tr>
