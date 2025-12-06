@@ -65,6 +65,7 @@
             'services' => 'services',
             'chats' => 'chat_messages',
             'complaints' => 'complaints',
+            'resets' => 'resets',
             default => 'users'
         }));
         // Khi xem Khách hàng thì coi như đã xem yêu cầu mật khẩu
