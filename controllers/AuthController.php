@@ -2,7 +2,6 @@
 require_once __DIR__ . '/../core/Controller.php';
 require_once __DIR__ . '/../core/Auth.php';
 require_once __DIR__ . '/../models/User.php';
-require_once __DIR__ . '/../models/PasswordReset.php';
 
 class AuthController extends Controller {
     public function loginForm() { $this->view('auth/login'); }
@@ -132,8 +131,8 @@ class AuthController extends Controller {
             $this->view('auth/forgot', compact('error', 'email', 'phone'));
             return;
         }
-        $passwordReset = new PasswordReset();
-        $requestId = $passwordReset->create((int)$user['id'], $email, $phone);
+        $passwordReset = new User();
+        $requestId = $passwordReset->requestPasswordReset((int)$user['id'], $email, $phone);
         $_SESSION['reset_request_id'] = $requestId;
         $this->redirect('/forgot/wait/' . $requestId);
     }
@@ -156,14 +155,14 @@ class AuthController extends Controller {
             echo json_encode(['status' => 'invalid']);
             return;
         }
-        $passwordReset = new PasswordReset();
-        $reset = $passwordReset->find($id);
+        $passwordReset = new User();
+        $reset = $passwordReset->findPasswordReset($id);
         if (!$reset) {
             echo json_encode(['status' => 'missing']);
             return;
         }
         if ($reset['status'] === 'completed' || $reset['status'] === 'delivered') {
-            $passwordReset->markDelivered($id);
+            $passwordReset->markResetDelivered($id);
             unset($_SESSION['reset_request_id']);
             if (($reset['new_password_plain'] ?? '') === '__REJECTED__') {
                 echo json_encode(['status' => 'rejected']);
@@ -182,8 +181,8 @@ class AuthController extends Controller {
             $this->redirect('/forgot');
             return;
         }
-        $passwordReset = new PasswordReset();
-        $newId = $passwordReset->resend($id);
+        $passwordReset = new User();
+        $newId = $passwordReset->resendPasswordReset($id);
         if ($newId) {
             $_SESSION['reset_request_id'] = $newId;
             $this->redirect('/forgot/wait/' . $newId);

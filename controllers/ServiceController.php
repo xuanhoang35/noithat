@@ -1,10 +1,10 @@
 <?php
 require_once __DIR__ . '/../core/Controller.php';
-require_once __DIR__ . '/../models/ServiceBooking.php';
+require_once __DIR__ . '/../models/Service.php';
 
 class ServiceController extends Controller {
-    private ServiceBooking $bookingModel;
-    public function __construct(){ $this->bookingModel = new ServiceBooking(); }
+    private Service $serviceModel;
+    public function __construct(){ $this->serviceModel = new Service(); }
 
     public function book() {
         $name = trim($_POST['name'] ?? '');
@@ -45,7 +45,7 @@ class ServiceController extends Controller {
             return;
         }
         if ($name && $phone && $address && $schedule_at && $service_id > 0) {
-            $this->bookingModel->create($service_id, $name, $phone, $email, $address, $schedule_at, $note);
+            $this->serviceModel->createBooking($service_id, $name, $phone, $email, $address, $schedule_at, $note);
             $this->redirect('/services?success=1');
             return;
         }

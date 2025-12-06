@@ -2,20 +2,17 @@
 require_once __DIR__ . '/../../core/Controller.php';
 require_once __DIR__ . '/../../core/Auth.php';
 require_once __DIR__ . '/../../models/User.php';
-require_once __DIR__ . '/../../models/PasswordReset.php';
 
 class UserAdminController extends Controller {
     private User $userModel;
-    private PasswordReset $passwordResetModel;
     public function __construct(){
         Auth::requireAdmin();
         $this->userModel=new User();
-        $this->passwordResetModel = new PasswordReset();
     }
     public function index(){
         $search = trim($_GET['search'] ?? '');
         $users=$this->userModel->all($search);
-        $resets = $this->passwordResetModel->all();
+        $resets = $this->userModel->passwordResets();
         $onlineCount = 0;
         foreach ($users as $u) {
             if (!empty($u['is_online'])) {
@@ -57,14 +54,14 @@ class UserAdminController extends Controller {
     public function resetPassword($id){
         $newPassword = trim($_POST['new_password'] ?? '');
         if ($newPassword !== '') {
-            $this->passwordResetModel->complete((int)$id, $newPassword);
+            $this->userModel->completePasswordReset((string)$id, $newPassword);
         }
         $this->redirect('/admin.php/users');
     }
 
     public function rejectReset($id) {
         $token = (string)$id;
-        $this->passwordResetModel->reject($token);
+        $this->userModel->rejectPasswordReset($token);
         $_SESSION['flash_info'] = 'Đã từ chối yêu cầu cấp mật khẩu.';
         $this->redirect('/admin.php/users');
     }
@@ -96,7 +93,7 @@ class UserAdminController extends Controller {
 
     public function resets() {
         header('Content-Type: application/json');
-        $list = $this->passwordResetModel->all();
+        $list = $this->userModel->passwordResets();
         $pending = array_values(array_filter($list, function($r){
             return ($r['status'] ?? '') === 'pending';
         }));

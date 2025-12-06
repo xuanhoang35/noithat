@@ -2,18 +2,16 @@
 require_once __DIR__ . '/../../core/Controller.php';
 require_once __DIR__ . '/../../core/Auth.php';
 require_once __DIR__ . '/../../models/Service.php';
-require_once __DIR__ . '/../../models/ServiceBooking.php';
 
 class ServiceAdminController extends Controller {
     private Service $serviceModel;
-    private ServiceBooking $bookingModel;
-    public function __construct(){ Auth::requireAdmin(); $this->serviceModel = new Service(); $this->bookingModel = new ServiceBooking(); }
+    public function __construct(){ Auth::requireAdmin(); $this->serviceModel = new Service(); }
 
     public function index() {
         $services = $this->serviceModel->all();
         $search = trim($_GET['q'] ?? '');
         $serviceId = isset($_GET['service_id']) && $_GET['service_id'] !== '' ? (int)$_GET['service_id'] : null;
-        $bookings = $this->bookingModel->filter($search, $serviceId);
+        $bookings = $this->serviceModel->bookings($search, $serviceId);
         $this->view('admin/service/index', [
             'services' => $services,
             'bookings' => $bookings,
