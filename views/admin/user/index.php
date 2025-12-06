@@ -3,7 +3,7 @@
     <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-3">
         <div>
             <h1 class="text-xl font-semibold">Khách hàng</h1>
-            <p class="text-slate-500 text-sm">Quản lý tài khoản (Online <span data-online-count><?php echo (int)($onlineCount ?? 0); ?></span>)</p>
+            <p class="text-slate-500 text-sm">Quản lý tài khoản (Online <span data-online-count><?php echo (int)($onlineCount ?? 0); ?></span> · Offline <span data-offline-count><?php echo max(0, count($users) - (int)($onlineCount ?? 0)); ?></span>)</p>
         </div>
         <form method="get" action="<?php echo base_url('admin.php/users'); ?>" class="flex items-center gap-2 w-full md:w-auto md:min-w-[360px]">
             <input type="text" name="search" value="<?php echo htmlspecialchars($search ?? ''); ?>" placeholder="Tìm tên, email, số điện thoại..." class="flex-1 px-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring focus:ring-blue-200" />
@@ -105,6 +105,7 @@
         <div class="flex flex-col gap-1 md:flex-row md:items-center md:justify-between mb-3">
             <div class="flex items-center gap-2">
                 <h2 class="text-lg font-semibold">Quản lý mật khẩu khách hàng</h2>
+                <span class="text-slate-500 text-sm">(Có <span data-reset-count><?php echo count(array_filter($resets, function($r){ return ($r['status'] ?? '') === 'pending'; })); ?></span> yêu cầu cấp mật khẩu mới)</span>
             </div>
             <p class="text-slate-500 text-sm">Tiếp nhận yêu cầu quên mật khẩu và cấp mật khẩu mới.</p>
         </div>
@@ -192,14 +193,18 @@ document.addEventListener('DOMContentLoaded', function(){
             }
         });
         const onlineCountEl = document.querySelector('[data-online-count]');
-        if (onlineCountEl) {
-            onlineCountEl.textContent = onlineCount;
-        }
+        if (onlineCountEl) onlineCountEl.textContent = onlineCount;
+        const offlineCountEl = document.querySelector('[data-offline-count]');
+        if (offlineCountEl) offlineCountEl.textContent = Math.max(0, users.length - onlineCount);
     };
     const renderResets = (resets) => {
         const body = document.getElementById('reset-body');
         if (!body) return;
         if (window.__resetInputFocus) return; // tránh ghi đè khi đang nhập
+        const resetCountEl = document.querySelector('[data-reset-count]');
+        if (resetCountEl) {
+            resetCountEl.textContent = Array.isArray(resets) ? resets.length : 0;
+        }
         if (!Array.isArray(resets) || resets.length === 0) {
             body.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-500">Chưa có yêu cầu quên mật khẩu nào.</td></tr>';
             return;
