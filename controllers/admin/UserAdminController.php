@@ -35,6 +35,17 @@ class UserAdminController extends Controller {
             'onlineCount' => $onlineCount,
         ]);
     }
+
+    public function resetsCount() {
+        header('Content-Type: application/json');
+        $count = 0;
+        try {
+            $db = Database::connection();
+            $stmt = $db->query("SELECT COUNT(*) FROM users WHERE reset_token IS NOT NULL");
+            $count = (int)$stmt->fetchColumn();
+        } catch (\Throwable $e) { $count = 0; }
+        echo json_encode(['resets' => $count]);
+    }
     public function toggleActive($id){
         $this->userModel->toggleActive((int)$id);
         $user = $this->userModel->findById((int)$id);

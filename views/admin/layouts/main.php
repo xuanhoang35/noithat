@@ -95,6 +95,16 @@
                 $stmt->execute([$ts]);
                 return (int)$stmt->fetchColumn();
             }
+            if ($table === 'users') {
+                // đếm khách mới + yêu cầu reset mới (cộng dồn)
+                $stmt = $db->prepare("SELECT COUNT(*) FROM users WHERE created_at > ?");
+                $stmt->execute([$ts]);
+                $newUsers = (int)$stmt->fetchColumn();
+                $stmt = $db->prepare("SELECT COUNT(*) FROM users WHERE reset_token IS NOT NULL AND reset_requested_at > ?");
+                $stmt->execute([$ts]);
+                $newResets = (int)$stmt->fetchColumn();
+                return $newUsers + $newResets;
+            }
             $stmt = $db->prepare("SELECT COUNT(*) FROM {$table} WHERE created_at > ?");
             $stmt->execute([$ts]);
             return (int)$stmt->fetchColumn();

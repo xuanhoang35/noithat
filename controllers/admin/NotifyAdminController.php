@@ -37,6 +37,15 @@ class NotifyAdminController extends Controller {
                     $stmt = $db->prepare("SELECT COUNT(*) FROM services WHERE is_booking = 1 AND created_at > ?");
                     $stmt->execute([$ts]);
                     $count = (int)$stmt->fetchColumn();
+                } elseif ($table === 'users') {
+                    // khách mới + yêu cầu reset mới (theo mốc seen users)
+                    $stmt = $db->prepare("SELECT COUNT(*) FROM users WHERE created_at > ?");
+                    $stmt->execute([$ts]);
+                    $newUsers = (int)$stmt->fetchColumn();
+                    $stmt = $db->prepare("SELECT COUNT(*) FROM users WHERE reset_token IS NOT NULL AND reset_requested_at > ?");
+                    $stmt->execute([$ts]);
+                    $newResets = (int)$stmt->fetchColumn();
+                    $count = $newUsers + $newResets;
                 } else {
                     $stmt = $db->prepare("SELECT COUNT(*) FROM {$table} WHERE created_at > ?");
                     $stmt->execute([$ts]);
