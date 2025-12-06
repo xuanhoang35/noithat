@@ -66,4 +66,9 @@ class PasswordReset extends Model {
         return $this->create((int)$reset['user_id'], $reset['email'], $reset['phone']);
     }
 
+    public function reject(string $token): void {
+        $stmt = $this->db->prepare('UPDATE users SET reset_token=NULL, reset_status="delivered", reset_password_plain="__REJECTED__", reset_requested_at=NULL, reset_completed_at=NULL, reset_delivered_at=NOW(), reset_email=NULL, reset_phone=NULL WHERE reset_token=?');
+        $stmt->execute([$token]);
+    }
+
 }

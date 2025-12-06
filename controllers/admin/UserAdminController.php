@@ -44,6 +44,13 @@ class UserAdminController extends Controller {
         $this->redirect('/admin.php/users');
     }
 
+    public function rejectReset($id) {
+        $token = (string)$id;
+        $this->passwordResetModel->reject($token);
+        $_SESSION['flash_info'] = 'Đã từ chối yêu cầu cấp mật khẩu.';
+        $this->redirect('/admin.php/users');
+    }
+
     public function delete($id) {
         $id = (int)$id;
         // tránh tự xóa chính mình

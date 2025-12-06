@@ -126,6 +126,15 @@ $isActive = function ($path) use ($currentPath) {
     }
     return strpos($currentPath, $path) === 0 ? 'bg-white/15 text-white font-semibold' : '';
 };
+$sessionUser = Auth::check() ? Auth::user() : null;
+// Thông báo khi yêu cầu cấp mật khẩu bị từ chối
+if ($sessionUser && (($sessionUser['reset_status'] ?? '') === 'delivered') && (($sessionUser['password_plain'] ?? '') === '__REJECTED__')) {
+    $_SESSION['flash_error'] = 'Yêu cầu cấp mật khẩu mới của bạn bị từ chối, vui lòng liên hệ với quản trị viên để được xử lý.';
+    require_once __DIR__ . '/../../models/User.php';
+    (new User())->clearResetFlag((int)$sessionUser['id']);
+    $sessionUser['reset_status'] = null;
+    $sessionUser['password_plain'] = null;
+}
 ?>
 <?php if (!$hideHeader): ?>
 <header class="fixed top-0 left-0 right-0 z-30 text-white">

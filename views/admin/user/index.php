@@ -90,7 +90,7 @@
                             </form>
                             <button type="submit" form="user-save-<?php echo $u['id']; ?>" class="h-8 px-3 mt-3 inline-flex items-center justify-center text-xs leading-none rounded bg-blue-50 text-blue-700 hover:bg-blue-100">Lưu</button>
                             <form method="post" action="<?php echo base_url('admin.php/users/delete/' . $u['id']); ?>" onsubmit="return confirm('Xóa khách hàng này?');">
-                                <button class="h-8 px-3 mt-3 inline-flex items-center justify-center text-xs leading-none rounded bg-amber-50 text-amber-700 hover:bg-amber-100">Xóa</button>
+                                <button class="h-8 px-3 mt-3 inline-flex items-center justify-center text-xs leading-none rounded bg-red-50 text-red-700 hover:bg-red-100">Xóa</button>
                             </form>
                         </div>
                     <?php else: ?>
@@ -105,7 +105,6 @@
         <div class="flex flex-col gap-1 md:flex-row md:items-center md:justify-between mb-3">
             <div class="flex items-center gap-2">
                 <h2 class="text-lg font-semibold">Quản lý mật khẩu khách hàng</h2>
-                <span data-reset-badge class="hidden px-2 py-1 rounded-full bg-red-500 text-white text-xs font-semibold"></span>
             </div>
             <p class="text-slate-500 text-sm">Tiếp nhận yêu cầu quên mật khẩu và cấp mật khẩu mới.</p>
         </div>
@@ -132,6 +131,9 @@
                                 <form method="post" action="<?php echo base_url('admin.php/users/reset-password/' . $reset['id']); ?>" class="flex flex-col md:flex-row gap-2">
                                     <input type="text" name="new_password" class="px-3 py-2 border rounded text-sm" placeholder="Nhập mật khẩu mới" required>
                                     <button class="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">Gửi mật khẩu</button>
+                                </form>
+                                <form method="post" action="<?php echo base_url('admin.php/users/reset-reject/' . $reset['id']); ?>" class="mt-2">
+                                    <button class="px-4 py-2 text-sm bg-red-50 text-red-700 rounded hover:bg-red-100 w-full">Từ chối yêu cầu</button>
                                 </form>
                             </td>
                         </tr>
@@ -190,12 +192,6 @@ document.addEventListener('DOMContentLoaded', function(){
         const body = document.getElementById('reset-body');
         if (!body) return;
         if (window.__resetInputFocus) return; // tránh ghi đè khi đang nhập
-        const badge = document.querySelector('[data-reset-badge]');
-        if (badge) {
-            const count = Array.isArray(resets) ? resets.length : 0;
-            badge.textContent = count;
-            badge.classList.toggle('hidden', count === 0);
-        }
         if (!Array.isArray(resets) || resets.length === 0) {
             body.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-500">Chưa có yêu cầu quên mật khẩu nào.</td></tr>';
             return;
@@ -211,6 +207,9 @@ document.addEventListener('DOMContentLoaded', function(){
                         <form method="post" action="<?php echo base_url('admin.php/users/reset-password/'); ?>${r.id}" class="flex flex-col md:flex-row gap-2">
                             <input type="text" name="new_password" class="px-3 py-2 border rounded text-sm" placeholder="Nhập mật khẩu mới" required onfocus="window.__resetInputFocus=true;" onblur="window.__resetInputFocus=false;">
                             <button class="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">Gửi mật khẩu</button>
+                        </form>
+                        <form method="post" action="<?php echo base_url('admin.php/users/reset-reject/'); ?>${r.id}" class="mt-2">
+                            <button class="w-full px-4 py-2 text-sm bg-red-50 text-red-700 rounded hover:bg-red-100">Từ chối yêu cầu</button>
                         </form>
                     </td>
                 </tr>
