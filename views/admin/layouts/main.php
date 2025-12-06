@@ -113,8 +113,8 @@
         } catch (\Throwable $e) { return 0; }
     };
     $sidebarCounts = [
-        // Gộp thêm yêu cầu mật khẩu vào Khách hàng
-        'users' => $getCount('users','users') + $getCount('resets','resets'),
+        // Khách hàng chỉ tính bản ghi mới; yêu cầu mật khẩu cộng động qua JS
+        'users' => $getCount('users','users'),
         'orders' => $getCount('orders','orders'),
         'services' => $getCount('services','services'),
         'chats' => $getCount('chat_messages','chats'),
@@ -178,22 +178,28 @@
 (function(){
     const badgeUsers = document.querySelector('[data-badge="users"]');
     if (!badgeUsers) return;
+    const baseCount = parseInt((badgeUsers.textContent || '').trim(), 10) || 0;
+    let lastReset = -1;
     const pollResets = () => {
         fetch('<?php echo base_url('admin.php/users/resets'); ?>', { cache: 'no-store', credentials: 'same-origin' })
             .then(r => r.json())
             .then(data => {
                 const count = Array.isArray(data) ? data.length : 0;
-                if (count > 0) {
-                    badgeUsers.textContent = count;
+                if (count === lastReset) return;
+                lastReset = count;
+                const total = baseCount + count;
+                if (total > 0) {
+                    badgeUsers.textContent = total;
+                    badgeUsers.classList.remove('hidden');
                     badgeUsers.style.display = '';
                 } else {
-                    badgeUsers.style.display = 'none';
+                    badgeUsers.classList.add('hidden');
                 }
             })
             .catch(() => {});
     };
     pollResets();
-    setInterval(pollResets, 5000);
+    setInterval(pollResets, 3000);
 })();
 </script>
 <script>
