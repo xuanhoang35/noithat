@@ -144,37 +144,37 @@
 ?>
 <nav class="fixed top-0 left-0 right-0 z-30 bg-slate-900 text-white shadow">
     <div class="max-w-6xl mx-auto px-4 py-2 flex items-center justify-between">
-        <a class="text-lg font-semibold tracking-tight" href="<?php echo $adminUrl(); ?>">Admin</a>
+        <a class="text-lg font-semibold tracking-tight" href="<?php echo $adminUrl(); ?>">Administrator</a>
         <a class="text-sm px-3 py-2 bg-white/15 rounded hover:bg-white/25" href="<?php echo base_url('logout'); ?>">Đăng xuất</a>
     </div>
 </nav>
 <div class="flex pt-16">
     <aside class="fixed left-0 top-12 w-64 h-[calc(100vh-3rem)] bg-white shadow-sm border-r overflow-y-auto">
-        <div class="px-4 py-3 text-xs uppercase text-slate-500 border-b">Quản trị</div>
+        <div class="px-4 py-3 text-xs uppercase text-slate-500 border-b text-center font-semibold">TRANG QUẢN TRỊ VIÊN</div>
         <div class="flex flex-col">
             <a class="px-4 py-3 hover:bg-slate-100" href="<?php echo $adminUrl(); ?>">Dashboard</a>
             <a class="px-4 py-3 hover:bg-slate-100 flex items-center justify-between gap-2" href="<?php echo $adminUrl('users'); ?>?seen=users">
-                <span>Khách hàng</span><?php echo $badge($sidebarCounts['users'] ?? 0, 'users'); ?>
+                <span>Quản lý khách hàng</span><?php echo $badge($sidebarCounts['users'] ?? 0, 'users'); ?>
             </a>
-            <a class="px-4 py-3 hover:bg-slate-100" href="<?php echo $adminUrl('categories'); ?>">Danh mục</a>
-            <a class="px-4 py-3 hover:bg-slate-100" href="<?php echo $adminUrl('products'); ?>">Sản phẩm</a>
-            <a class="px-4 py-3 hover:bg-slate-100" href="<?php echo $adminUrl('sliders'); ?>">Slide banner</a>
+            <a class="px-4 py-3 hover:bg-slate-100" href="<?php echo $adminUrl('categories'); ?>">Quản lý danh mục</a>
+            <a class="px-4 py-3 hover:bg-slate-100" href="<?php echo $adminUrl('products'); ?>">Quản lý sản phẩm</a>
             <a class="px-4 py-3 hover:bg-slate-100 flex items-center justify-between gap-2" href="<?php echo $adminUrl('orders'); ?>?seen=orders">
-                <span>Đơn hàng</span><?php echo $badge($sidebarCounts['orders'] ?? 0, 'orders'); ?>
+                <span>Quản lý đơn hàng</span><?php echo $badge($sidebarCounts['orders'] ?? 0, 'orders'); ?>
             </a>
             <a class="px-4 py-3 hover:bg-slate-100 flex items-center justify-between gap-2" href="<?php echo $adminUrl('services'); ?>?seen=services">
-                <span>Dịch vụ</span><?php echo $badge($sidebarCounts['services'] ?? 0, 'services'); ?>
+                <span>Quản lý dịch vụ</span><?php echo $badge($sidebarCounts['services'] ?? 0, 'services'); ?>
             </a>
             <a class="px-4 py-3 hover:bg-slate-100 flex items-center justify-between gap-2" href="<?php echo $adminUrl('vouchers'); ?>?seen=vouchers">
-                <span>Mã giảm giá</span><?php echo $badge($sidebarCounts['vouchers'] ?? 0, 'vouchers'); ?>
+                <span>Quản lý mã giảm giá</span><?php echo $badge($sidebarCounts['vouchers'] ?? 0, 'vouchers'); ?>
             </a>
             <a class="px-4 py-3 hover:bg-slate-100 flex items-center justify-between gap-2" href="<?php echo $adminUrl('chats'); ?>?seen=chats">
-                <span>Tư vấn khách</span><?php echo $badge($sidebarCounts['chats'] ?? 0, 'chats'); ?>
+                <span>Tư vấn khách hàng</span><?php echo $badge($sidebarCounts['chats'] ?? 0, 'chats'); ?>
             </a>
             <a class="px-4 py-3 hover:bg-slate-100 flex items-center justify-between gap-2" href="<?php echo $adminUrl('complaints'); ?>?seen=complaints">
-                <span>Khiếu nại khách</span><?php echo $badge($sidebarCounts['complaints'] ?? 0, 'complaints'); ?>
+                <span>Khiếu nại khách hàng</span><?php echo $badge($sidebarCounts['complaints'] ?? 0, 'complaints'); ?>
             </a>
-            <a class="px-4 py-3 hover:bg-slate-100" href="<?php echo $adminUrl('maintenance'); ?>">Bảo trì web</a>
+            <a class="px-4 py-3 hover:bg-slate-100" href="<?php echo $adminUrl('sliders'); ?>">Slide banner</a>
+            <a class="px-4 py-3 hover:bg-slate-100" href="<?php echo $adminUrl('maintenance'); ?>">Bảo trì Website</a>
         </div>
     </aside>
     <main class="flex-1 ml-64 px-6 py-6">
