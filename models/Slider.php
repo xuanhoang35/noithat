@@ -30,6 +30,17 @@ class Slider extends Model {
         $this->ensureStorage();
         file_put_contents($this->storage, json_encode($items, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
+    public function existsByImage(string $path): bool {
+        $path = trim($path);
+        if ($path === '') return false;
+        $items = $this->load();
+        foreach ($items as $row) {
+            if (isset($row['image']) && trim((string)$row['image']) === $path) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public function all(bool $onlyActive = true): array {
         $items = $this->load();

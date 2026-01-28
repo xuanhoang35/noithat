@@ -25,9 +25,16 @@ class ServiceAdminController extends Controller {
         $description = trim($_POST['description'] ?? '');
         $sla = trim($_POST['sla'] ?? '');
         $price = (float)($_POST['price'] ?? 0);
-        if ($name !== '') {
-            $this->serviceModel->create($name, $description, $sla, $price);
+        if ($name === '') {
+            $_SESSION['flash_error'] = 'Vui lòng nhập tên dịch vụ.';
+            $this->redirect('/admin.php/services');
         }
+        if ($this->serviceModel->existsByName($name)) {
+            $_SESSION['flash_error'] = 'Tên dịch vụ đã tồn tại.';
+            $this->redirect('/admin.php/services');
+        }
+        $this->serviceModel->create($name, $description, $sla, $price);
+        $_SESSION['flash_success'] = 'Đã thêm dịch vụ.';
         $this->redirect('/admin.php/services');
     }
 
@@ -36,9 +43,17 @@ class ServiceAdminController extends Controller {
         $description = trim($_POST['description'] ?? '');
         $sla = trim($_POST['sla'] ?? '');
         $price = (float)($_POST['price'] ?? 0);
-        if ($name !== '') {
-            $this->serviceModel->update((int)$id, $name, $description, $sla, $price);
+        $id = (int)$id;
+        if ($name === '') {
+            $_SESSION['flash_error'] = 'Vui lòng nhập tên dịch vụ.';
+            $this->redirect('/admin.php/services?edit=' . $id);
         }
+        if ($this->serviceModel->existsByName($name, $id)) {
+            $_SESSION['flash_error'] = 'Tên dịch vụ đã tồn tại.';
+            $this->redirect('/admin.php/services?edit=' . $id);
+        }
+        $this->serviceModel->update($id, $name, $description, $sla, $price);
+        $_SESSION['flash_success'] = 'Đã cập nhật dịch vụ.';
         $this->redirect('/admin.php/services');
     }
 

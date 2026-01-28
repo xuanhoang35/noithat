@@ -33,7 +33,12 @@ class SliderAdminController extends Controller {
             $path = trim($_POST['image_url']);
         }
         if ($path !== '') {
+            if ($this->sliderModel->existsByImage($path)) {
+                $_SESSION['flash_error'] = 'Ảnh này đã tồn tại trong slider.';
+                $this->redirect('/admin.php/sliders');
+            }
             $this->sliderModel->create($path);
+            $_SESSION['flash_success'] = 'Đã thêm ảnh vào slider.';
         }
         $this->redirect('/admin.php/sliders');
     }

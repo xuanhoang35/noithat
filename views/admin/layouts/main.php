@@ -12,7 +12,11 @@
     <link rel="icon" type="image/png" sizes="192x192" href="<?php echo asset_url('public/favicon.png'); ?>">
     <link rel="apple-touch-icon" href="<?php echo asset_url('public/apple-touch-icon.png'); ?>">
     <link rel="shortcut icon" href="<?php echo asset_url('public/favicon.png'); ?>">
-    <link rel="stylesheet" href="<?php echo asset_url('public/assets/css/style.css'); ?>">
+    <?php
+        $cssPath = __DIR__ . '/../../public/assets/css/style.css';
+        $cssVer = file_exists($cssPath) ? filemtime($cssPath) : time();
+    ?>
+    <link rel="stylesheet" href="<?php echo asset_url('public/assets/css/style.css') . '?v=' . $cssVer; ?>">
     <script>
         (function () {
             function suppressCFError(event) {

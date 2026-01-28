@@ -25,6 +25,12 @@ if (!function_exists('asset_url')) {
         if (preg_match('#^(?:https?:)?//#', $path)) {
             return $path;
         }
+        // Normalize legacy "public/" prefix when the web root is already /public
+        if (str_starts_with($path, 'public/')) {
+            $path = substr($path, strlen('public/'));
+        } elseif (str_starts_with($path, '/public/')) {
+            $path = substr($path, strlen('/public/'));
+        }
         $legacyPrefix = '/Noithat_store';
         if (str_starts_with($path, $legacyPrefix)) {
             $path = substr($path, strlen($legacyPrefix));

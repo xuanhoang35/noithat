@@ -73,6 +73,13 @@ class User extends Model {
         $row=$stmt->fetch();
         return $row ?: null;
     }
+    public function findByPhone(string $phone): ?array {
+        $this->ensureSchema();
+        $stmt=$this->db->prepare('SELECT * FROM users WHERE phone = ? AND deleted_at IS NULL LIMIT 1');
+        $stmt->execute([$phone]);
+        $row=$stmt->fetch();
+        return $row ?: null;
+    }
 
     public function updateAdmin(int $id, array $data): void {
         $this->ensureSchema();

@@ -12,6 +12,18 @@
             <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">Thêm ảnh</button>
         </form>
     </div>
+    <?php if (!empty($_SESSION['flash_error'])): ?>
+        <div class="px-3 py-2 rounded bg-red-50 text-red-700 text-sm">
+            <?php echo htmlspecialchars($_SESSION['flash_error']); ?>
+        </div>
+        <?php unset($_SESSION['flash_error']); ?>
+    <?php endif; ?>
+    <?php if (!empty($_SESSION['flash_success'])): ?>
+        <div class="px-3 py-2 rounded bg-emerald-50 text-emerald-700 text-sm">
+            <?php echo htmlspecialchars($_SESSION['flash_success']); ?>
+        </div>
+        <?php unset($_SESSION['flash_success']); ?>
+    <?php endif; ?>
     <?php if (!empty($sliders)): ?>
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <?php foreach ($sliders as $s): $img = asset_url($s['image']); ?>

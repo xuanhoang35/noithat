@@ -1,8 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@700&family=Noto+Serif+Display:wght@700&display=swap');
 
 :root {
     color-scheme: light;
-    font-family: 'Space Grotesk', 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Roboto Slab', 'Times New Roman', serif;
+    font-weight: 700;
     --brand: #2563eb;
     --brand-dark: #1d4ed8;
     --ink: #0f172a;
@@ -15,6 +16,37 @@ body {
     color: var(--ink);
     letter-spacing: -0.01em;
 }
+
+html, body, button, input, select, textarea {
+    font-family: 'Roboto Slab', 'Times New Roman', serif;
+    font-weight: 700;
+}
+
+.font-sans, .prose {
+    font-family: 'Roboto Slab', 'Times New Roman', serif;
+    font-weight: 700;
+}
+
+strong, b {
+    font-weight: 700;
+}
+
+* {
+    font-weight: 700 !important;
+}
+
+h1, h2, h3, .headline, .section-title {
+    font-family: 'Noto Serif Display', 'Times New Roman', serif;
+    letter-spacing: 0.01em;
+}
+
+html, body, button, input, select, textarea {
+    font-family: 'Quicksand', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.font-sans, .prose {
+    font-family: 'Quicksand', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}*** End Patch}ٺassistant to=functions.apply_patch  彩神争霸大发json file_path='*** Begin Patch
 
 a {
     text-decoration: none;

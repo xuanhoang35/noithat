@@ -94,7 +94,11 @@ window.addEventListener('unhandledrejection', function(e) {
     <link rel="icon" type="image/png" sizes="192x192" href="<?php echo asset_url('public/favicon.png'); ?>">
     <link rel="apple-touch-icon" href="<?php echo asset_url('public/apple-touch-icon.png'); ?>">
     <link rel="shortcut icon" href="<?php echo asset_url('public/favicon.png'); ?>">
-    <link rel="stylesheet" href="<?php echo base_url('public/assets/css/style.css'); ?>">
+    <?php
+        $cssPath = __DIR__ . '/../../public/assets/css/style.css';
+        $cssVer = file_exists($cssPath) ? filemtime($cssPath) : time();
+    ?>
+    <link rel="stylesheet" href="<?php echo asset_url('public/assets/css/style.css') . '?v=' . $cssVer; ?>">
 </head>
 <!-- Shield chống lỗi extension (chrome-extension://...) -->
 <body class="relative min-h-screen flex flex-col text-slate-900">

@@ -5,6 +5,18 @@
             <h1 class="text-xl font-semibold">Quản lý dịch vụ</h1>
         </div>
     </div>
+    <?php if (!empty($_SESSION['flash_error'])): ?>
+        <div class="px-3 py-2 rounded bg-red-50 text-red-700 text-sm">
+            <?php echo htmlspecialchars($_SESSION['flash_error']); ?>
+        </div>
+        <?php unset($_SESSION['flash_error']); ?>
+    <?php endif; ?>
+    <?php if (!empty($_SESSION['flash_success'])): ?>
+        <div class="px-3 py-2 rounded bg-emerald-50 text-emerald-700 text-sm">
+            <?php echo htmlspecialchars($_SESSION['flash_success']); ?>
+        </div>
+        <?php unset($_SESSION['flash_success']); ?>
+    <?php endif; ?>
 
     <form method="post" action="<?php echo base_url('admin.php/services/create'); ?>" class="grid md:grid-cols-4 gap-3 bg-slate-50 rounded-xl p-4 border border-slate-100">
         <input name="name" required class="px-3 py-2 border rounded" placeholder="Tên dịch vụ">

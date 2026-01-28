@@ -33,9 +33,18 @@ class ProductAdminController extends Controller {
             'description'=>$_POST['description']??'',
             'image'=>''
         ];
+        $data['name'] = trim($data['name']);
+        if ($data['name'] === '') {
+            $_SESSION['flash_error'] = 'Vui lòng nhập tên sản phẩm.';
+            $this->redirect('/admin.php/products');
+        }
         if ($data['category_id']<=0 || !$this->categoryModel->find($data['category_id'])) {
             // Không có danh mục hợp lệ -> về trang danh mục để tạo
             $this->redirect('/admin.php/categories');
+        }
+        if ($this->productModel->existsByNameOrSlug($data['name'], $data['slug'])) {
+            $_SESSION['flash_error'] = 'Tên sản phẩm này đã tồn tại.';
+            $this->redirect('/admin.php/products');
         }
         // Upload file ảnh nếu có
         if (!empty($_FILES['image_file']['tmp_name']) && is_uploaded_file($_FILES['image_file']['tmp_name'])) {
@@ -60,6 +69,7 @@ class ProductAdminController extends Controller {
             $data['image'] = trim($_POST['image_url']);
         }
         $this->productModel->create($data);
+        $_SESSION['flash_success'] = 'Đã thêm sản phẩm mới.';
         $this->redirect('/admin.php/products');
     }
 
@@ -83,8 +93,17 @@ class ProductAdminController extends Controller {
             'description'=>$_POST['description']??'',
             'image'=>$product['image'] ?? ''
         ];
+        $data['name'] = trim($data['name']);
+        if ($data['name'] === '') {
+            $_SESSION['flash_error'] = 'Vui lòng nhập tên sản phẩm.';
+            $this->redirect('/admin.php/products/edit/' . (int)$id);
+        }
         if ($data['category_id']<=0 || !$this->categoryModel->find($data['category_id'])) {
             $this->redirect('/admin.php/categories');
+        }
+        if ($this->productModel->existsByNameOrSlug($data['name'], $data['slug'], (int)$id)) {
+            $_SESSION['flash_error'] = 'Tên sản phẩm này đã tồn tại.';
+            $this->redirect('/admin.php/products/edit/' . (int)$id);
         }
         if (!empty($_FILES['image_file']['tmp_name']) && is_uploaded_file($_FILES['image_file']['tmp_name'])) {
             $uploadDir = __DIR__ . '/../../public/uploads';
@@ -111,6 +130,7 @@ class ProductAdminController extends Controller {
             }
         }
         $this->productModel->update((int)$id, $data);
+        $_SESSION['flash_success'] = 'Đã cập nhật sản phẩm.';
         $this->redirect('/admin.php/products');
     }
 

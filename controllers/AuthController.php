@@ -59,6 +59,7 @@ class AuthController extends Controller {
         }
         $userModel = new User();
         if ($userModel->findByEmail($email)) { $error='Email đã tồn tại'; $this->view('auth/register', compact('error')); return; }
+        if ($userModel->findByPhone($phone)) { $error='Số điện thoại đã tồn tại'; $this->view('auth/register', compact('error')); return; }
         $userModel->create($name,$email,$phone,$password);
         $user = $userModel->findByEmail($email);
         $_SESSION['welcome_message'] = 'Đăng ký thành công! Vui lòng đăng nhập.';

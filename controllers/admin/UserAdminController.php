@@ -84,8 +84,7 @@ class UserAdminController extends Controller {
             $data[] = [
                 'id' => (int)$u['id'],
                 'is_online' => (int)($u['is_online'] ?? 0),
-                'is_active' => (int)($u['is_active'] ?? 1),
-                'password_plain' => $u['password_plain'] ?? ''
+                'is_active' => (int)($u['is_active'] ?? 1)
             ];
         }
         echo json_encode($data);
@@ -117,13 +116,19 @@ class UserAdminController extends Controller {
         $newPassword = trim($_POST['password'] ?? '');
         if ($name === '' || $email === '' || $phone === '') {
             $_SESSION['flash_error'] = 'Vui lòng nhập đủ tên, email, số điện thoại.';
-            $this->redirect('/admin.php/users/edit/' . $id);
+        $this->redirect('/admin.php/users');
         }
         // check email dup
         $existing = $this->userModel->findByEmail($email);
         if ($existing && (int)$existing['id'] !== (int)$id) {
             $_SESSION['flash_error'] = 'Email đã tồn tại trên hệ thống.';
-            $this->redirect('/admin.php/users/edit/' . $id);
+            $this->redirect('/admin.php/users');
+        }
+        // check phone dup
+        $existingPhone = $this->userModel->findByPhone($phone);
+        if ($existingPhone && (int)$existingPhone['id'] !== (int)$id) {
+            $_SESSION['flash_error'] = 'Số điện thoại đã tồn tại trên hệ thống.';
+            $this->redirect('/admin.php/users');
         }
         $payload = [
             'name' => $name,
@@ -133,7 +138,7 @@ class UserAdminController extends Controller {
             'role' => $role,
             'is_active' => $isActive
         ];
-        if ($newPassword !== '' && $newPassword !== ($user['password_plain'] ?? '')) {
+        if ($newPassword !== '') {
             $payload['password'] = password_hash($newPassword, PASSWORD_DEFAULT);
             $payload['password_plain'] = $newPassword;
         }

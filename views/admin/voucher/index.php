@@ -11,6 +11,18 @@
             <button class="px-4 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">Tìm</button>
         </form>
     </div>
+    <?php if (!empty($_SESSION['flash_error'])): ?>
+        <div class="px-3 py-2 rounded bg-red-50 text-red-700 text-sm">
+            <?php echo htmlspecialchars($_SESSION['flash_error']); ?>
+        </div>
+        <?php unset($_SESSION['flash_error']); ?>
+    <?php endif; ?>
+    <?php if (!empty($_SESSION['flash_success'])): ?>
+        <div class="px-3 py-2 rounded bg-emerald-50 text-emerald-700 text-sm">
+            <?php echo htmlspecialchars($_SESSION['flash_success']); ?>
+        </div>
+        <?php unset($_SESSION['flash_success']); ?>
+    <?php endif; ?>
 
     <form method="post" action="<?php echo base_url('admin.php/vouchers/create'); ?>" class="grid md:grid-cols-5 gap-3 bg-slate-50 rounded-xl p-4 border border-slate-100">
         <input class="px-3 py-2 border rounded" name="code" placeholder="Mã voucher" required>

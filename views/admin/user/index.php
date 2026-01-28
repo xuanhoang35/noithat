@@ -15,10 +15,22 @@
             </button>
         </form>
     </div>
+    <?php if (!empty($_SESSION['flash_error'])): ?>
+        <div class="mb-3 px-3 py-2 rounded bg-red-50 text-red-700 text-sm">
+            <?php echo htmlspecialchars($_SESSION['flash_error']); ?>
+        </div>
+        <?php unset($_SESSION['flash_error']); ?>
+    <?php endif; ?>
+    <?php if (!empty($_SESSION['flash_info'])): ?>
+        <div class="mb-3 px-3 py-2 rounded bg-amber-50 text-amber-700 text-sm">
+            <?php echo htmlspecialchars($_SESSION['flash_info']); ?>
+        </div>
+        <?php unset($_SESSION['flash_info']); ?>
+    <?php endif; ?>
     <div class="overflow-auto max-h-[320px] overflow-y-auto">
         <table class="min-w-full text-sm">
             <tr class="bg-slate-100 text-left">
-                <th class="p-3">ID</th><th class="p-3">Tên</th><th class="p-3">Email</th><th class="p-3">Điện thoại</th><th class="p-3">Địa chỉ</th><th class="p-3">Online</th><th class="p-3">Trạng thái</th><th class="p-3">Mật khẩu</th><th class="p-3">Hành động</th>
+                <th class="p-3">ID</th><th class="p-3">Tên</th><th class="p-3">Email</th><th class="p-3">Điện thoại</th><th class="p-3">Địa chỉ</th><th class="p-3">Online</th><th class="p-3">Trạng thái</th><th class="p-3">Hành động</th>
             </tr>
             <?php foreach ($users as $u): ?>
             <tr class="border-b hover:bg-slate-50">
@@ -55,31 +67,6 @@
                             </form>
                         <?php endif; ?>
                     </div>
-                </td>
-                <td class="p-3 space-y-1" data-password="<?php echo $u['id']; ?>">
-                    <?php
-                        $resetInfo = $resetMap[$u['id']] ?? null;
-                        $pw = $u['password_plain'] ?? '';
-                        $timeIssued = '';
-                        if (!$pw && $resetInfo) {
-                            $pw = $resetInfo['new_password_plain'] ?? '';
-                            $timeIssued = $resetInfo['completed_at'] ?? '';
-                        }
-                        if ($pw && !$timeIssued && $resetInfo) {
-                            $timeIssued = $resetInfo['completed_at'] ?? '';
-                        }
-                    ?>
-                    <?php if ($u['role'] !== 'admin'): ?>
-                        <input form="user-save-<?php echo $u['id']; ?>" name="password" type="text" class="w-full px-2 py-1 border rounded text-sm" value="<?php echo htmlspecialchars($pw); ?>" placeholder="Nhập mật khẩu mới">
-                    <?php else: ?>
-                        <?php if ($pw !== ''): ?>
-                            <span data-password-text class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold inline-flex items-center gap-2">
-                                <span class="text-slate-600">PW:</span> <span class="font-semibold text-emerald-700"><?php echo htmlspecialchars($pw); ?></span>
-                            </span>
-                        <?php else: ?>
-                            <span data-password-text class="text-xs text-slate-400">Chưa cấp</span>
-                        <?php endif; ?>
-                    <?php endif; ?>
                 </td>
                 <td class="p-3 align-middle">
                     <?php if ($u['role'] !== 'admin'): ?>
@@ -178,18 +165,6 @@ document.addEventListener('DOMContentLoaded', function(){
             const activeInput = document.querySelector('#user-save-'+u.id+' input[name=\"is_active\"]');
             if (activeInput) {
                 activeInput.value = parseInt(u.is_active, 10) === 1 ? '1' : '0';
-            }
-            const pwEl = document.querySelector('[data-password="'+u.id+'"]');
-            if (pwEl) {
-                const textEl = pwEl.querySelector('[data-password-text]');
-                if (textEl) {
-                    textEl.textContent = u.password_plain ? u.password_plain : 'Chưa cấp';
-                    textEl.className = u.password_plain ? 'font-semibold text-emerald-700' : 'text-slate-400';
-                }
-                const inputEl = pwEl.querySelector('input[name="password"]');
-                if (inputEl && !document.activeElement.isSameNode(inputEl)) {
-                    inputEl.value = u.password_plain || '';
-                }
             }
         });
         const onlineCountEl = document.querySelector('[data-online-count]');

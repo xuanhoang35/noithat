@@ -1,6 +1,18 @@
 <?php
 require_once __DIR__ . '/../core/Model.php';
 class Product extends Model {
+    public function existsByNameOrSlug(string $name, string $slug, ?int $excludeId = null): bool {
+        $sql = 'SELECT 1 FROM products WHERE (LOWER(name) = LOWER(?) OR slug = ?)';
+        $params = [$name, $slug];
+        if ($excludeId !== null) {
+            $sql .= ' AND id <> ?';
+            $params[] = $excludeId;
+        }
+        $sql .= ' LIMIT 1';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return (bool)$stmt->fetchColumn();
+    }
     private function reseedAutoIncrement(): void {
         try {
             $next = (int)$this->db->query('SELECT COALESCE(MAX(id), 0) + 1 FROM products')->fetchColumn();

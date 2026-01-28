@@ -6,6 +6,18 @@ class Service extends Model {
         parent::__construct();
         $this->ensureSchema();
     }
+    public function existsByName(string $name, ?int $excludeId = null): bool {
+        $sql = 'SELECT 1 FROM services WHERE is_booking = 0 AND LOWER(name) = LOWER(?)';
+        $params = [$name];
+        if ($excludeId !== null) {
+            $sql .= ' AND id <> ?';
+            $params[] = $excludeId;
+        }
+        $sql .= ' LIMIT 1';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return (bool)$stmt->fetchColumn();
+    }
 
     private function ensureSchema(): void {
         $this->db->exec("

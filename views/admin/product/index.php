@@ -4,6 +4,18 @@
         <h1 class="text-xl font-semibold">Sản phẩm</h1>
         <span class="text-slate-500 text-sm">Thêm nhanh sản phẩm mới</span>
     </div>
+    <?php if (!empty($_SESSION['flash_error'])): ?>
+        <div class="mb-3 px-3 py-2 rounded bg-red-50 text-red-700 text-sm">
+            <?php echo htmlspecialchars($_SESSION['flash_error']); ?>
+        </div>
+        <?php unset($_SESSION['flash_error']); ?>
+    <?php endif; ?>
+    <?php if (!empty($_SESSION['flash_success'])): ?>
+        <div class="mb-3 px-3 py-2 rounded bg-emerald-50 text-emerald-700 text-sm">
+            <?php echo htmlspecialchars($_SESSION['flash_success']); ?>
+        </div>
+        <?php unset($_SESSION['flash_success']); ?>
+    <?php endif; ?>
     <form method="post" action="<?php echo base_url('admin.php/products/create'); ?>" enctype="multipart/form-data" class="grid md:grid-cols-3 gap-3">
         <input class="px-3 py-2 border rounded" name="name" placeholder="Tên" required>
         <select class="px-3 py-2 border rounded" name="category_id">

@@ -21,6 +21,18 @@
                     <button class="px-3 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">Tìm</button>
                 </form>
             </div>
+            <?php if (!empty($_SESSION['flash_error'])): ?>
+                <div class="mb-3 px-3 py-2 rounded bg-red-50 text-red-700 text-sm">
+                    <?php echo htmlspecialchars($_SESSION['flash_error']); ?>
+                </div>
+                <?php unset($_SESSION['flash_error']); ?>
+            <?php endif; ?>
+            <?php if (!empty($_SESSION['flash_success'])): ?>
+                <div class="mb-3 px-3 py-2 rounded bg-emerald-50 text-emerald-700 text-sm">
+                    <?php echo htmlspecialchars($_SESSION['flash_success']); ?>
+                </div>
+                <?php unset($_SESSION['flash_success']); ?>
+            <?php endif; ?>
             <ul class="divide-y max-h-[540px] overflow-y-auto pr-1">
                 <?php $editId = isset($_GET['edit']) ? (int)$_GET['edit'] : 0; ?>
                 <?php foreach ($categories as $c): ?>

@@ -6,6 +6,18 @@ class Voucher extends Model {
         parent::__construct();
         $this->ensureSchema();
     }
+    public function existsByCode(string $code, ?int $excludeId = null): bool {
+        $sql = 'SELECT 1 FROM vouchers WHERE code = ?';
+        $params = [$code];
+        if ($excludeId !== null) {
+            $sql .= ' AND id <> ?';
+            $params[] = $excludeId;
+        }
+        $sql .= ' LIMIT 1';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return (bool)$stmt->fetchColumn();
+    }
 
     private function ensureSchema(): void {
         $this->db->exec("

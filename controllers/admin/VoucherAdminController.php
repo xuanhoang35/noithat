@@ -29,9 +29,16 @@ class VoucherAdminController extends Controller {
             'description' => trim($_POST['description'] ?? ''),
             'usage_limit' => (int)($_POST['usage_limit'] ?? 1),
         ];
-        if ($data['code'] !== '' && $data['discount_percent'] > 0) {
-            $this->voucherModel->create($data);
+        if ($data['code'] === '' || $data['discount_percent'] <= 0) {
+            $_SESSION['flash_error'] = 'Vui lòng nhập mã và % giảm hợp lệ.';
+            $this->redirect('/admin.php/vouchers');
         }
+        if ($this->voucherModel->existsByCode($data['code'])) {
+            $_SESSION['flash_error'] = 'Mã voucher đã tồn tại.';
+            $this->redirect('/admin.php/vouchers');
+        }
+        $this->voucherModel->create($data);
+        $_SESSION['flash_success'] = 'Đã thêm mã giảm giá.';
         $this->redirect('/admin.php/vouchers');
     }
 
@@ -43,9 +50,17 @@ class VoucherAdminController extends Controller {
             'description' => trim($_POST['description'] ?? ''),
             'usage_limit' => (int)($_POST['usage_limit'] ?? 1),
         ];
-        if ($data['code'] !== '' && $data['discount_percent'] > 0) {
-            $this->voucherModel->update((int)$id, $data);
+        $id = (int)$id;
+        if ($data['code'] === '' || $data['discount_percent'] <= 0) {
+            $_SESSION['flash_error'] = 'Vui lòng nhập mã và % giảm hợp lệ.';
+            $this->redirect('/admin.php/vouchers');
         }
+        if ($this->voucherModel->existsByCode($data['code'], $id)) {
+            $_SESSION['flash_error'] = 'Mã voucher đã tồn tại.';
+            $this->redirect('/admin.php/vouchers');
+        }
+        $this->voucherModel->update($id, $data);
+        $_SESSION['flash_success'] = 'Đã cập nhật mã giảm giá.';
         $this->redirect('/admin.php/vouchers');
     }
 
